@@ -10,3 +10,4 @@ pnpm-lock.yaml
 *_GUIDE.md
 .next
 *.pdf
+out
