@@ -19,7 +19,7 @@ const nextConfig = {
     serverComponentsHmrCache: true,
     
     // Enable worker threads for parallel compilation
-    workerThreads: process.env.DISABLE_WORKERS !== 'true',
+    workerThreads: false,
   },
 }
 
