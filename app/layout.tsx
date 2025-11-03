@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'QRDX Foundation' }],
   creator: 'QRDX Foundation',
   publisher: 'QRDX Foundation',
+  icons: {
+    icon: '/logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
