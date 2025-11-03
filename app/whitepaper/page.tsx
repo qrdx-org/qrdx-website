@@ -6,6 +6,7 @@ import { FileText, Download, Shield, Lock, Zap, Users, Layers, ArrowRightLeft, D
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -377,6 +378,8 @@ export default function WhitepaperPage() {
           </motion.div>
         </motion.div>
       </div>
+      
+      <Footer />
     </div>
   )
 }

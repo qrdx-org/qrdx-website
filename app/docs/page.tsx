@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -186,6 +187,8 @@ export default function DocsPage() {
           </motion.div>
         </motion.div>
       </div>
+
+      <Footer />
     </div>
   )
 }
