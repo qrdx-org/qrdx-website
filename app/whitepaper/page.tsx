@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Download, Shield, Lock, Zap, Users } from 'lucide-react'
+import { FileText, Download, Shield, Lock, Zap, Users, Layers, ArrowRightLeft, Database, Network } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Navigation from '@/components/Navigation'
@@ -31,40 +31,50 @@ export default function WhitepaperPage() {
               <FileText className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Technical Documentation</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">QRDX Whitepaper</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-4">QRDX Protocol Whitepaper</h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-              A comprehensive guide to the world's first quantum-resistant decentralized exchange
+              Quantum-Resistant DEX & Asset Shielding Protocol built on Uniswap v3/v4 architecture
             </p>
-            <Button size="lg" className="flex items-center gap-2">
-              <Download className="h-5 w-5" />
-              Download PDF (v1.2)
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="flex items-center gap-2" asChild>
+                <a href="/QRDX-Whitepaper-v2.0.md" download>
+                  <Download className="h-5 w-5" />
+                  Download Whitepaper (v2.0)
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
+                <a href="https://github.com/qrdx-org" target="_blank" rel="noopener noreferrer">
+                  <FileText className="h-5 w-5" />
+                  View on GitHub
+                </a>
+              </Button>
+            </div>
           </motion.div>
 
           {/* Quick Stats */}
           <motion.div variants={fadeIn(0.1)} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">v1.2</div>
+                <div className="text-2xl font-bold text-primary mb-1">v2.0</div>
                 <div className="text-sm text-muted-foreground">Current Version</div>
               </CardContent>
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">48 Pages</div>
+                <div className="text-2xl font-bold text-primary mb-1">76 Pages</div>
                 <div className="text-sm text-muted-foreground">Technical Details</div>
               </CardContent>
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">Q4 2024</div>
+                <div className="text-2xl font-bold text-primary mb-1">Nov 2025</div>
                 <div className="text-sm text-muted-foreground">Last Updated</div>
               </CardContent>
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">50K+</div>
-                <div className="text-sm text-muted-foreground">Downloads</div>
+                <div className="text-2xl font-bold text-primary mb-1">5K+ TPS</div>
+                <div className="text-sm text-muted-foreground">Throughput</div>
               </CardContent>
             </Card>
           </motion.div>
@@ -76,17 +86,23 @@ export default function WhitepaperPage() {
                 <h2 className="text-2xl font-bold mb-6">Table of Contents</h2>
                 <div className="space-y-4">
                   {[
-                    { number: '1', title: 'Executive Summary', description: 'Overview of QRDX and the quantum threat' },
-                    { number: '2', title: 'The Quantum Computing Threat', description: 'How quantum computers threaten current cryptography' },
-                    { number: '3', title: 'Post-Quantum Cryptography', description: 'NIST-approved algorithms and implementation' },
-                    { number: '4', title: 'QRDX Architecture', description: 'Technical design and blockchain infrastructure' },
-                    { number: '5', title: 'Tokenomics', description: 'QRDX token distribution, utility, and economics' },
-                    { number: '6', title: 'Governance Model', description: 'Decentralized decision-making and voting' },
-                    { number: '7', title: 'Security Audits', description: 'Third-party security reviews and certifications' },
-                    { number: '8', title: 'Roadmap', description: 'Development milestones and future plans' },
+                    { number: '1', title: 'Introduction', description: 'QRDX solution and key innovations' },
+                    { number: '2', title: 'The Quantum Threat', description: 'Shor\'s and Grover\'s algorithms impact on blockchain' },
+                    { number: '3', title: 'QRDX Chain Architecture', description: 'Layer-1 blockchain with QEVM and QR-PoS consensus' },
+                    { number: '4', title: 'Post-Quantum Cryptography', description: 'CRYSTALS-Dilithium & Kyber implementation' },
+                    { number: '5', title: 'QRDX Protocol: Quantum-Resistant AMM', description: 'Uniswap v3/v4-based concentrated liquidity DEX' },
+                    { number: '6', title: 'Asset Shielding Mechanism', description: 'Convert ETH → qETH and cross-chain migration' },
+                    { number: '7', title: 'qRC20 Token Standard', description: 'Quantum-resistant ERC-20 compatible standard' },
+                    { number: '8', title: 'Cross-Chain Bridge Infrastructure', description: 'Trustless bridges for Ethereum, Bitcoin, and more' },
+                    { number: '9', title: 'Consensus Mechanism', description: 'Quantum-Resistant Proof-of-Stake (QR-PoS)' },
+                    { number: '10', title: 'Tokenomics', description: '100M fixed supply with deflationary mechanics' },
+                    { number: '11', title: 'Governance Model', description: 'On-chain voting and decentralized decision-making' },
+                    { number: '12', title: 'Security Analysis', description: 'Threat model and cryptographic guarantees' },
+                    { number: '13', title: 'Performance Benchmarks', description: '5,000+ TPS with sub-second finality' },
+                    { number: '14', title: 'Roadmap', description: 'Development phases from testnet to mainnet' },
                   ].map((section) => (
-                    <div key={section.number} className="flex gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    <div key={section.number} className="flex gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                         {section.number}
                       </div>
                       <div>
@@ -102,16 +118,28 @@ export default function WhitepaperPage() {
 
           {/* Key Highlights */}
           <motion.div variants={fadeIn(0.3)}>
-            <h2 className="text-3xl font-bold mb-6 text-center">Key Highlights</h2>
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+            <h2 className="text-3xl font-bold mb-6 text-center">Key Innovations</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
               <Card className="border-primary/20 hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                     <Shield className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">Quantum-Resistant Security</h3>
+                  <h3 className="text-xl font-bold mb-3">Post-Quantum Security</h3>
                   <p className="text-muted-foreground">
-                    QRDX implements CRYSTALS-Dilithium for digital signatures and CRYSTALS-Kyber for key encapsulation, both NIST-approved post-quantum algorithms that resist attacks from both classical and quantum computers.
+                    CRYSTALS-Dilithium signatures and CRYSTALS-Kyber key encapsulation provide NIST Level 3 security against quantum attacks.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20 hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <Layers className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">QRDX Chain (Layer-1)</h3>
+                  <p className="text-muted-foreground">
+                    Purpose-built blockchain with QEVM (Quantum-resistant EVM) and QR-PoS consensus achieving 5,000+ TPS.
                   </p>
                 </CardContent>
               </Card>
@@ -121,9 +149,9 @@ export default function WhitepaperPage() {
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                     <Zap className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">High Performance</h3>
+                  <h3 className="text-xl font-bold mb-3">Concentrated Liquidity</h3>
                   <p className="text-muted-foreground">
-                    Our custom consensus mechanism achieves 5,000+ transactions per second with sub-second finality, making QRDX one of the fastest quantum-resistant blockchains available.
+                    Based on Uniswap v3/v4 architecture with capital-efficient market making and custom price ranges for LPs.
                   </p>
                 </CardContent>
               </Card>
@@ -131,11 +159,11 @@ export default function WhitepaperPage() {
               <Card className="border-primary/20 hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <Lock className="h-6 w-6 text-primary" />
+                    <ArrowRightLeft className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">Sustainable Tokenomics</h3>
+                  <h3 className="text-xl font-bold mb-3">Asset Shielding</h3>
                   <p className="text-muted-foreground">
-                    Fixed supply of 100 million QRDX tokens with deflationary mechanics through transaction fee burns and strategic token distribution to ensure long-term value accrual.
+                    Native conversion of classical assets (ETH, BTC, USDC) to quantum-resistant equivalents (qETH, qBTC, qUSDC).
                   </p>
                 </CardContent>
               </Card>
@@ -143,11 +171,23 @@ export default function WhitepaperPage() {
               <Card className="border-primary/20 hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <Users className="h-6 w-6 text-primary" />
+                    <Network className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-3">Community Governance</h3>
+                  <h3 className="text-xl font-bold mb-3">Cross-Chain Bridges</h3>
                   <p className="text-muted-foreground">
-                    QRDX token holders participate in protocol decisions through on-chain voting, including parameter adjustments, treasury management, and protocol upgrades.
+                    Trustless bridge infrastructure with multi-validator consensus and fraud proof mechanisms for secure transfers.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/20 hover:shadow-lg transition-shadow">
+                <CardContent className="p-6">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <Database className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">qRC20 Standard</h3>
+                  <p className="text-muted-foreground">
+                    Quantum-resistant token standard compatible with ERC-20 tooling while enforcing post-quantum cryptography.
                   </p>
                 </CardContent>
               </Card>
@@ -155,23 +195,176 @@ export default function WhitepaperPage() {
           </motion.div>
 
           {/* Abstract */}
-          <motion.div variants={fadeIn(0.4)} className="max-w-4xl mx-auto">
+          <motion.div variants={fadeIn(0.4)} className="max-w-4xl mx-auto mb-12">
             <Card className="border-primary/20">
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold mb-4">Abstract</h2>
                 <div className="space-y-4 text-muted-foreground leading-relaxed">
                   <p>
-                    The advent of quantum computing poses an existential threat to current blockchain infrastructure, particularly the elliptic curve cryptography (ECC) that secures most digital assets today. QRDX addresses this challenge by implementing a quantum-resistant decentralized exchange built on post-quantum cryptographic primitives.
+                    The emergence of quantum computing threatens the cryptographic foundations of blockchain technology. QRDX addresses this existential challenge by introducing the first quantum-resistant decentralized exchange protocol with native asset shielding capabilities. Built on Uniswap v3 and v4 architecture principles and secured by NIST-standardized post-quantum cryptographic algorithms, QRDX enables users to shield traditional assets (e.g., ETH → qETH) into quantum-resistant equivalents while maintaining the efficiency and capital utilization of modern automated market makers (AMMs).
                   </p>
                   <p>
-                    This whitepaper introduces QRDX, a high-performance decentralized exchange (DEX) that leverages NIST-standardized post-quantum algorithms to protect user assets against both current and future cryptographic attacks. Our protocol combines quantum-resistant security with the efficiency and user experience expected from modern DeFi platforms.
+                    QRDX Chain serves as the foundational Layer-1 blockchain implementing post-quantum security primitives, enabling cross-chain asset migration, decentralized trading, and long-term cryptographic security. The protocol combines CRYSTALS-Dilithium for digital signatures and CRYSTALS-Kyber for key encapsulation, providing NIST Level 3 security guarantees while maintaining performance comparable to traditional blockchain systems.
                   </p>
                   <p>
-                    QRDX utilizes CRYSTALS-Dilithium for digital signatures and CRYSTALS-Kyber for key encapsulation, providing long-term security guarantees while maintaining performance comparable to traditional blockchain systems. The protocol supports automated market making (AMM), liquidity provision, and yield farming, all secured by quantum-resistant cryptography.
+                    Through innovative Quantum-Resistant Proof-of-Stake (QR-PoS) consensus and optimized implementations of post-quantum algorithms, QRDX achieves transaction throughput exceeding 5,000 TPS with sub-second finality. The protocol supports concentrated liquidity market making, cross-chain asset bridges, and the qRC20 token standard—a quantum-resistant equivalent of ERC-20.
                   </p>
                   <p>
-                    Through innovative consensus mechanisms and optimized implementations of post-quantum algorithms, QRDX achieves transaction throughput exceeding 5,000 TPS with sub-second finality, making it practical for real-world DeFi applications.
+                    This whitepaper presents the technical architecture, economic model, and security guarantees of the QRDX ecosystem, demonstrating how quantum-resistant cryptography can be practically integrated into high-performance DeFi protocols without sacrificing user experience or capital efficiency.
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Protocol Features */}
+          <motion.div variants={fadeIn(0.5)} className="max-w-4xl mx-auto mb-12">
+            <Card className="border-primary/20">
+              <CardContent className="p-8">
+                <h2 className="text-2xl font-bold mb-6">Asset Shielding Example</h2>
+                <div className="space-y-6">
+                  <div className="bg-muted/30 rounded-lg p-6 border border-primary/10">
+                    <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                      <ArrowRightLeft className="h-5 w-5 text-primary" />
+                      Converting ETH to qETH
+                    </h3>
+                    <div className="space-y-3 text-sm text-muted-foreground">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 text-primary rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                        <p>User locks ETH in the QRDX Bridge contract on Ethereum</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 text-primary rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                        <p>Bridge validators verify the lock transaction with quantum-resistant signatures</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 text-primary rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">3</div>
+                        <p>qETH tokens are minted 1:1 on QRDX Chain to the user's quantum-resistant address</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="bg-primary/10 text-primary rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">4</div>
+                        <p>User can now trade qETH on QRDX Protocol with full quantum-resistant security</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-muted/20 rounded-lg border border-primary/10">
+                      <div className="text-2xl font-bold text-primary mb-1">1:1</div>
+                      <div className="text-sm text-muted-foreground">Asset Backing Ratio</div>
+                    </div>
+                    <div className="text-center p-4 bg-muted/20 rounded-lg border border-primary/10">
+                      <div className="text-2xl font-bold text-primary mb-1">0.1%</div>
+                      <div className="text-sm text-muted-foreground">Bridge Fee</div>
+                    </div>
+                    <div className="text-center p-4 bg-muted/20 rounded-lg border border-primary/10">
+                      <div className="text-2xl font-bold text-primary mb-1">7 Days</div>
+                      <div className="text-sm text-muted-foreground">Unshielding Period</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Technical Specifications */}
+          <motion.div variants={fadeIn(0.6)} className="max-w-4xl mx-auto">
+            <Card className="border-primary/20">
+              <CardContent className="p-8">
+                <h2 className="text-2xl font-bold mb-6">Technical Specifications</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-bold mb-3 text-primary">Blockchain Layer</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Consensus:</strong> Quantum-Resistant Proof-of-Stake (QR-PoS)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Block Time:</strong> 2 seconds</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Finality:</strong> Sub-second (single slot)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Throughput:</strong> 5,000+ TPS</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>VM:</strong> QEVM (Quantum-resistant EVM)</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-3 text-primary">Cryptography</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Signatures:</strong> CRYSTALS-Dilithium (FIPS 204)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Key Encapsulation:</strong> CRYSTALS-Kyber (FIPS 203)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Hash Functions:</strong> BLAKE3 (512-bit), SHA3-512</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Security Level:</strong> NIST Level 3 (AES-192 equivalent)</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-3 text-primary">AMM Protocol</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Architecture:</strong> Uniswap v3/v4 based</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Liquidity:</strong> Concentrated liquidity (custom ranges)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Design:</strong> Singleton architecture (single contract)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Extensions:</strong> Hooks system for custom logic</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Fee Tiers:</strong> 0.01%, 0.05%, 0.30%, 1.00%</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-bold mb-3 text-primary">Token Economics</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Total Supply:</strong> 100,000,000 QRDX (fixed)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Staking APY:</strong> 5-12% (dynamic)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Min Validator Stake:</strong> 100,000 QRDX</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-1">•</span>
+                        <span><strong>Deflationary:</strong> Fee burns + buybacks</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </CardContent>
             </Card>

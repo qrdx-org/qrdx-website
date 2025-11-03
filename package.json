@@ -5,10 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "bun --bun run next dev --turbopack",
+    "prebuild": "bash scripts/generate-whitepaper-pdf.sh || echo 'Warning: PDF generation skipped (pandoc not available)'",
     "build": "bun --bun run next build",
     "start": "bun --bun run next start",
     "lint": "bun --bun run next lint",
-    "clean": "rm -rf .next node_modules"
+    "clean": "rm -rf .next node_modules",
+    "generate-pdf": "bash scripts/generate-whitepaper-pdf.sh"
   },
   "keywords": [
     "nextjs",
