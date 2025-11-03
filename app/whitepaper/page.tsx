@@ -37,9 +37,15 @@ export default function WhitepaperPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="flex items-center gap-2" asChild>
-                <a href="/QRDX-Whitepaper-v2.0.md" download>
+                <a href="/QRDX-Whitepaper-v2.0.pdf" download>
                   <Download className="h-5 w-5" />
-                  Download Whitepaper (v2.0)
+                  Download PDF (v2.0)
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
+                <a href="/QRDX-Whitepaper-v2.0.md" download>
+                  <FileText className="h-5 w-5" />
+                  Download Markdown
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
@@ -61,7 +67,7 @@ export default function WhitepaperPage() {
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">76 Pages</div>
+                <div className="text-2xl font-bold text-primary mb-1">21 Pages</div>
                 <div className="text-sm text-muted-foreground">Technical Details</div>
               </CardContent>
             </Card>
