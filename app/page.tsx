@@ -74,7 +74,7 @@ export default function Home() {
               variants={fadeIn()}
             >
               The Future of{' '}
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-foreground">
                 Decentralized Trading
               </span>
             </motion.h1>
@@ -104,7 +104,7 @@ export default function Home() {
             </motion.div>
 
             {/* Stats Grid */}
-            <motion.div 
+            {/*<motion.div 
               className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
               variants={fadeIn(0.2)}
             >
@@ -146,7 +146,7 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </div>
-      </section>
+      </section>*/}
 
       {/* Features Section */}
       <section className="py-16 md:py-24">
