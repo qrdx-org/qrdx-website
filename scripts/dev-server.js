@@ -2,9 +2,19 @@ const esbuild = require('esbuild');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const PORT = process.env.PORT || 3000;
 const clients = [];
+
+// Generate routes on startup
+console.log('🔄 Generating routes...');
+try {
+  execSync('node scripts/generate-routes.js', { stdio: 'inherit' });
+} catch (error) {
+  console.error('❌ Failed to generate routes');
+  process.exit(1);
+}
 
 // esbuild configuration
 const buildOptions = {
@@ -113,10 +123,39 @@ const server = http.createServer((req, res) => {
   });
 });
 
+// Watch for changes in pages directory to regenerate routes
+function watchPages() {
+  const pagesDir = path.join(__dirname, '..', 'src', 'pages');
+  let debounceTimer;
+  
+  fs.watch(pagesDir, (eventType, filename) => {
+    // Only regenerate for .jsx files
+    if (filename && filename.endsWith('.jsx')) {
+      // Debounce to avoid multiple regenerations
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log(`\n📝 Detected change in pages: ${filename}`);
+        console.log('🔄 Regenerating routes...');
+        try {
+          execSync('node scripts/generate-routes.js', { stdio: 'inherit' });
+          console.log('✅ Routes regenerated - reloading...\n');
+          // Trigger rebuild
+          build();
+        } catch (error) {
+          console.error('❌ Failed to regenerate routes');
+        }
+      }, 100);
+    }
+  });
+  
+  console.log('👁️  Watching pages directory for new routes...');
+}
+
 // Start everything
 async function start() {
   await build();
   await watch();
+  watchPages();
   
   server.listen(PORT, () => {
     console.log(`🚀 Dev server running at http://localhost:${PORT}`);

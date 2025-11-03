@@ -1,8 +1,18 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 console.log('🏗️  Building for production...\n');
+
+// Generate routes before building
+console.log('🔄 Generating routes...');
+try {
+  execSync('node scripts/generate-routes.js', { stdio: 'inherit' });
+} catch (error) {
+  console.error('❌ Failed to generate routes');
+  process.exit(1);
+}
 
 // Clean dist directory
 const distDir = path.join(__dirname, '..', 'dist');

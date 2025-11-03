@@ -27,4 +27,13 @@ const About = () => {
   );
 };
 
+// Route configuration metadata
+export const route = {
+  path: '/about',
+  meta: {
+    title: 'About Us',
+    description: 'Learn more about our mission and technology stack'
+  }
+};
+
 export default About;

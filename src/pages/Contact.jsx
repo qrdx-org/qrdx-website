@@ -26,4 +26,13 @@ const Contact = () => {
   );
 };
 
+// Route configuration metadata
+export const route = {
+  path: '/contact',
+  meta: {
+    title: 'Contact Us',
+    description: 'Get in touch with us for more information'
+  }
+};
+
 export default Contact;

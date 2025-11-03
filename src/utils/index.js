@@ -2,6 +2,9 @@
  * Utility functions for the application
  */
 
+// Export route utilities
+export { generateRoutes, createRoute, validateRoutes } from './routes';
+
 /**
  * Debounce function to limit the rate at which a function can fire
  * @param {Function} func - The function to debounce
