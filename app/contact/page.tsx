@@ -138,7 +138,7 @@ export default function Contact() {
                       </div>
                       <div>
                         <h3 className="font-medium">Email Support</h3>
-                        <p className="text-sm text-muted-foreground">support@qrdx.io</p>
+                        <p className="text-sm text-muted-foreground">support@mail.qrdx.org</p>
                       </div>
                     </div>
                   </CardContent>
@@ -152,7 +152,7 @@ export default function Contact() {
                       </div>
                       <div>
                         <h3 className="font-medium">Community</h3>
-                        <p className="text-sm text-muted-foreground">Join our Discord community</p>
+                        <p className="text-sm text-muted-foreground">Join our Telegram community</p>
                       </div>
                     </div>
                   </CardContent>
