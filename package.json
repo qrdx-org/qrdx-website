@@ -4,10 +4,10 @@
   "description": "A modern Next.js website with Tailwind CSS and shadcn/ui",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "bun --bun run next dev --turbopack",
+    "build": "bun --bun run next build",
+    "start": "bun --bun run next start",
+    "lint": "bun --bun run next lint",
     "clean": "rm -rf .next node_modules"
   },
   "keywords": [

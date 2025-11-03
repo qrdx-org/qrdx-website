@@ -44,7 +44,7 @@ export default function Home() {
             }}
           >
             <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60"
+              className="text-4xl md:text-6xl font-bold mb-6 text-foreground"
               variants={fadeIn()}
             >
               The Future of Quantum-Resistant 

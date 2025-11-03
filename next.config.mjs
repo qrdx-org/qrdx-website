@@ -7,9 +7,21 @@ const nextConfig = {
       unoptimized: true
     }
   }),
+  
+  // Enable production browser source maps via env (default: false for speed)
+  productionBrowserSourceMaps: process.env.NEXT_PUBLIC_SOURCE_MAPS === 'true',
+  
+  // Parallel build optimization
   experimental: {
-    optimizePackageImports: ['lucide-react']
-  }
+    // Package import optimizations - reduces bundle size
+    optimizePackageImports: ['lucide-react'],
+    
+    // Server Components HMR cache - faster hot reloading
+    serverComponentsHmrCache: true,
+    
+    // Enable worker threads for parallel compilation
+    workerThreads: process.env.DISABLE_WORKERS !== 'true',
+  },
 }
 
 export default nextConfig
