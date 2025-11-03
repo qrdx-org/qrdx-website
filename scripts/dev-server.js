@@ -3,6 +3,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const postcss = require('esbuild-plugin-postcss2').default;
 
 const PORT = process.env.PORT || 3000;
 const clients = [];
@@ -24,8 +25,15 @@ const buildOptions = {
   loader: {
     '.jsx': 'jsx',
     '.js': 'jsx',
-    '.css': 'css',
   },
+  plugins: [
+    postcss({
+      plugins: [
+        require('@tailwindcss/postcss'),
+        require('autoprefixer'),
+      ],
+    }),
+  ],
   define: {
     'process.env.NODE_ENV': '"development"',
   },

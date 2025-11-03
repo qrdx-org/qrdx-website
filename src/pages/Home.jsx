@@ -4,7 +4,7 @@ import './Pages.css';
 const Home = () => {
   return (
     <div className="page">
-      <h1>Welcome Home!</h1>
+      <h1>Welcome Home</h1>
       <p>This is the home page of your React application with routing.</p>
       <p>Navigate using the links above to explore other pages.</p>
       

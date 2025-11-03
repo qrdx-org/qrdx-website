@@ -5,6 +5,9 @@
 // Export route utilities
 export { generateRoutes, createRoute, validateRoutes } from './routes';
 
+// Export Tailwind utility
+export { cn } from './cn';
+
 /**
  * Debounce function to limit the rate at which a function can fire
  * @param {Function} func - The function to debounce

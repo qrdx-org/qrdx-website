@@ -2,6 +2,7 @@ const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const postcss = require('esbuild-plugin-postcss2').default;
 
 console.log('🏗️  Building for production...\n');
 
@@ -29,8 +30,15 @@ const buildOptions = {
   loader: {
     '.jsx': 'jsx',
     '.js': 'jsx',
-    '.css': 'css',
   },
+  plugins: [
+    postcss({
+      plugins: [
+        require('@tailwindcss/postcss'),
+        require('autoprefixer'),
+      ],
+    }),
+  ],
   define: {
     'process.env.NODE_ENV': '"production"',
   },
