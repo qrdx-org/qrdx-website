@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bun --bun run next dev --turbopack",
     "prebuild": "bash scripts/generate-whitepaper-pdf.sh || echo 'Warning: PDF generation skipped (pandoc not available)'",
+    "build:nobun": "pnpm exec next build",
     "build": "bun --bun run next build",
     "fullbuild": "pnpm run build && pnpm run build",
     "start": "bun --bun run next start",
