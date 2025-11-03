@@ -126,27 +126,55 @@ const server = http.createServer((req, res) => {
 // Watch for changes in pages directory to regenerate routes
 function watchPages() {
   const pagesDir = path.join(__dirname, '..', 'src', 'pages');
+  let previousFiles = new Set();
   let debounceTimer;
   
-  fs.watch(pagesDir, (eventType, filename) => {
-    // Only regenerate for .jsx files
-    if (filename && filename.endsWith('.jsx')) {
-      // Debounce to avoid multiple regenerations
+  // Get current page files
+  function getPageFiles() {
+    try {
+      const files = fs.readdirSync(pagesDir);
+      return new Set(
+        files.filter(f => f.endsWith('.jsx') && !f.startsWith('_'))
+      );
+    } catch (error) {
+      return new Set();
+    }
+  }
+  
+  // Initialize with current files
+  previousFiles = getPageFiles();
+  
+  // Poll for changes every 500ms
+  setInterval(() => {
+    const currentFiles = getPageFiles();
+    
+    // Check if files were added or removed
+    const filesAdded = [...currentFiles].filter(f => !previousFiles.has(f));
+    const filesRemoved = [...previousFiles].filter(f => !currentFiles.has(f));
+    
+    if (filesAdded.length > 0 || filesRemoved.length > 0) {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        console.log(`\n📝 Detected change in pages: ${filename}`);
+        if (filesAdded.length > 0) {
+          console.log(`\n✨ New page(s) detected: ${filesAdded.join(', ')}`);
+        }
+        if (filesRemoved.length > 0) {
+          console.log(`\n🗑️  Page(s) removed: ${filesRemoved.join(', ')}`);
+        }
+        
         console.log('🔄 Regenerating routes...');
         try {
           execSync('node scripts/generate-routes.js', { stdio: 'inherit' });
-          console.log('✅ Routes regenerated - reloading...\n');
+          console.log('✅ Routes regenerated - rebuilding...\n');
+          previousFiles = currentFiles;
           // Trigger rebuild
           build();
         } catch (error) {
           console.error('❌ Failed to regenerate routes');
         }
-      }, 100);
+      }, 200);
     }
-  });
+  }, 500);
   
   console.log('👁️  Watching pages directory for new routes...');
 }
