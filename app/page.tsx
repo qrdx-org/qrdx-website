@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, TrendingUp, Zap, Users, Lock, ArrowRight, ChevronRight, Droplets, Activity } from 'lucide-react'
+import { Shield, TrendingUp, Zap, Users, Lock, ArrowRight, ChevronRight, Droplets, Activity, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import Navigation from '@/components/Navigation'
 
 const fadeIn = (delay = 0) => ({
@@ -47,8 +48,18 @@ export default function Home() {
     <div className="min-h-screen">
       <Navigation />
       
+      {/* Under Construction Banner */}
+      <div className="container px-4 mx-auto pt-20">
+        <Alert className="bg-yellow-500/10 border-yellow-500/50 text-yellow-600 dark:text-yellow-500">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Under Construction:</strong> QRDX is currently in development. Features and information are subject to change.
+          </AlertDescription>
+        </Alert>
+      </div>
+      
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
+      <section className="relative pt-16 pb-16 md:pt-20 md:pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
         
         <div className="container px-4 mx-auto">
@@ -73,9 +84,9 @@ export default function Home() {
               className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground"
               variants={fadeIn()}
             >
-              The Future of{' '}
+              Shield Your Assets for the{' '}
               <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-foreground">
-                Decentralized Trading
+                Quantum Era
               </span>
             </motion.h1>
             
@@ -83,7 +94,7 @@ export default function Home() {
               className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto"
               variants={fadeIn()}
             >
-              Trade, earn, and build on the first quantum-resistant decentralized exchange
+              Convert ETH → qETH, BTC → qBTC with quantum-resistant cryptography. Trade and secure your assets on the first post-quantum DEX.
             </motion.p>
             
             <motion.div 
@@ -103,8 +114,8 @@ export default function Home() {
               </Button>
             </motion.div>
 
-            {/* Stats Grid */}
-            {/*<motion.div 
+            {/* Stats Grid - Commented out for now
+            <motion.div 
               className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
               variants={fadeIn(0.2)}
             >
@@ -144,9 +155,95 @@ export default function Home() {
                 </CardContent>
               </Card>
             </motion.div>
+            */}
           </motion.div>
         </div>
-      </section>*/}
+      </section>
+
+      {/* Asset Shielding Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="container px-4 mx-auto">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={{
+              initial: {},
+              animate: { transition: { staggerChildren: 0.1 } }
+            }}
+            className="text-center mb-12"
+          >
+            <motion.h2 
+              className="text-3xl md:text-5xl font-bold mb-4"
+              variants={fadeIn()}
+            >
+              Asset Shielding: Quantum-Safe Migration
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-muted-foreground max-w-3xl mx-auto"
+              variants={fadeIn()}
+            >
+              Protect your cryptocurrency from quantum computing threats. Shield your assets with NIST-standardized post-quantum cryptography.
+            </motion.p>
+          </motion.div>
+
+          <motion.div 
+            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={{
+              initial: {},
+              animate: { transition: { staggerChildren: 0.15 } }
+            }}
+          >
+            <motion.div variants={fadeIn()}>
+              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
+                <div className="text-5xl font-bold mb-4 text-primary">ETH → qETH</div>
+                <h3 className="text-xl font-bold mb-3">Shield Ethereum</h3>
+                <p className="text-muted-foreground">
+                  Lock your ETH on Ethereum mainnet and receive quantum-resistant qETH on QRDX Chain. 1:1 backed and fully redeemable.
+                </p>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={fadeIn()}>
+              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
+                <div className="text-5xl font-bold mb-4 text-primary">BTC → qBTC</div>
+                <h3 className="text-xl font-bold mb-3">Shield Bitcoin</h3>
+                <p className="text-muted-foreground">
+                  Convert your Bitcoin (via WBTC) into quantum-safe qBTC. Secured by CRYSTALS-Dilithium signatures and trustless bridges.
+                </p>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={fadeIn()}>
+              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
+                <div className="text-5xl font-bold mb-4 text-primary">ANY → qRC20</div>
+                <h3 className="text-xl font-bold mb-3">Shield Any Asset</h3>
+                <p className="text-muted-foreground">
+                  Migrate USDC, USDT, and any ERC-20 token to their quantum-resistant qRC20 equivalents on QRDX Chain.
+                </p>
+              </Card>
+            </motion.div>
+          </motion.div>
+
+          <motion.div 
+            className="mt-12 text-center"
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={fadeIn(0.3)}
+          >
+            <Button size="lg" className="text-lg px-8" asChild>
+              <Link href="/whitepaper#asset-shielding" className="flex items-center">
+                Learn About Asset Shielding
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Features Section */}
       <section className="py-16 md:py-24">
