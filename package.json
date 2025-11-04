@@ -8,7 +8,7 @@
     "prebuild": "bash scripts/generate-whitepaper-pdf.sh || echo 'Warning: PDF generation skipped (pandoc not available)'",
     "build:nobun": "pnpm exec next build",
     "build": "bun --bun run next build",
-    "fullbuild": "pnpm run build && pnpm run build",
+    "fullbuild": "pnpm run prebuild && pnpm run build:nobun",
     "start": "bun --bun run next start",
     "lint": "bun --bun run next lint",
     "clean": "rm -rf .next node_modules",
