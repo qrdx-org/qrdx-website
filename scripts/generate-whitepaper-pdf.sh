@@ -16,7 +16,10 @@ if ! command -v pandoc &> /dev/null; then
     echo "  macOS:         brew install pandoc basictex"
     echo "  Or visit:      https://pandoc.org/installing.html"
     echo ""
-    exit 1
+    # Assume Linux environment for installation attempt
+    sudo apt-get update
+    sudo apt-get install -y pandoc texlive-xetex
+    #exit 1
 fi
 
 echo "✅ Pandoc found: $(pandoc --version | head -n1)"
