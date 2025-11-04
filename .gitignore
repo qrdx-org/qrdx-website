@@ -9,5 +9,5 @@ node_modules/
 pnpm-lock.yaml
 *_GUIDE.md
 .next
-*.pdf
+#*.pdf
 out
