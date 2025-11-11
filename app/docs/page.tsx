@@ -69,28 +69,28 @@ export default function DocsPage() {
           {/* Quick Links */}
           <motion.div variants={fadeIn(0.1)} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             <Button variant="outline" size="lg" className="h-auto py-6 flex flex-col gap-2" asChild>
-              <Link href="/docs/quickstart">
+              <a href="https://docs.qrdx.org/quickstart" target="_blank" rel="noopener noreferrer">
                 <TrendingUp className="h-6 w-6" />
                 <span>Quick Start</span>
-              </Link>
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="h-auto py-6 flex flex-col gap-2" asChild>
-              <Link href="/docs/api">
+              <a href="https://docs.qrdx.org/api" target="_blank" rel="noopener noreferrer">
                 <Code className="h-6 w-6" />
                 <span>API Docs</span>
-              </Link>
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="h-auto py-6 flex flex-col gap-2" asChild>
-              <Link href="/docs/guides">
+              <a href="https://docs.qrdx.org/guides" target="_blank" rel="noopener noreferrer">
                 <BookOpen className="h-6 w-6" />
                 <span>Guides</span>
-              </Link>
+              </a>
             </Button>
             <Button variant="outline" size="lg" className="h-auto py-6 flex flex-col gap-2" asChild>
-              <Link href="/docs/security">
+              <a href="https://docs.qrdx.org/security" target="_blank" rel="noopener noreferrer">
                 <Shield className="h-6 w-6" />
                 <span>Security</span>
-              </Link>
+              </a>
             </Button>
           </motion.div>
 
@@ -116,13 +116,15 @@ export default function DocsPage() {
                     <ul className="space-y-2">
                       {section.items.map((item, idx) => (
                         <li key={idx}>
-                          <Link 
-                            href={`/docs/${section.title.toLowerCase().replace(/\s+/g, '-')}/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                          <a 
+                            href={`https://docs.qrdx.org/${section.title.toLowerCase().replace(/\s+/g, '-')}/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                           >
                             <span className="text-primary">→</span>
                             {item}
-                          </Link>
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -144,9 +146,11 @@ export default function DocsPage() {
                   { title: 'Post-Quantum Cryptography Explained', category: 'Security', readTime: '12 min' },
                   { title: 'Maximizing Staking Rewards', category: 'User Guides', readTime: '6 min' },
                 ].map((article, idx) => (
-                  <Link 
+                  <a 
                     key={idx}
-                    href={`/docs/article/${article.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    href={`https://docs.qrdx.org/article/${article.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="block p-6 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center justify-between">
@@ -160,7 +164,7 @@ export default function DocsPage() {
                       </div>
                       <div className="text-primary">→</div>
                     </div>
-                  </Link>
+                  </a>
                 ))}
               </CardContent>
             </Card>
@@ -176,10 +180,10 @@ export default function DocsPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button size="lg" asChild>
-                    <Link href="/help">Help Center</Link>
+                    <a href="https://docs.qrdx.org/help" target="_blank" rel="noopener noreferrer">Help Center</a>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <Link href="/discord">Join Discord</Link>
+                    <a href="https://docs.qrdx.org/discord" target="_blank" rel="noopener noreferrer">Join Discord</a>
                   </Button>
                 </div>
               </CardContent>
