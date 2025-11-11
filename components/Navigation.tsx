@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Menu, FileText, TrendingUp, Droplets, Coins, BookOpen, Search, HelpCircle } from 'lucide-react'
+import { Menu, FileText, TrendingUp, Droplets, Coins, BookOpen, Search, HelpCircle, Rocket } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   NavigationMenu,
@@ -40,6 +40,16 @@ const Navigation = () => {
         <div className="hidden md:flex flex-1">
           <NavigationMenu>
             <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/get-started" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
+                    <div className="flex items-center font-medium">
+                      <Rocket className="mr-2 h-4 w-4" />
+                      Get Started
+                    </div>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link href="/trade" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
@@ -127,6 +137,10 @@ const Navigation = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[240px] sm:w-[280px]">
               <div className="flex flex-col space-y-4 mt-8">
+                <Link href="/get-started" className="flex items-center space-x-2 text-lg font-medium">
+                  <Rocket className="h-5 w-5" />
+                  <span>Get Started</span>
+                </Link>
                 <Link href="/trade" className="flex items-center space-x-2 text-lg font-medium">
                   <TrendingUp className="h-5 w-5" />
                   <span>Trade</span>
