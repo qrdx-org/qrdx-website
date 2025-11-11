@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Menu, FileText, TrendingUp, Droplets, Coins, BookOpen } from 'lucide-react'
+import { Menu, FileText, TrendingUp, Droplets, Coins, BookOpen, Search, HelpCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   NavigationMenu,
@@ -80,6 +80,26 @@ const Navigation = () => {
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <a href="https://explorer.qrdx.org" target="_blank" rel="noopener noreferrer" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
+                    <div className="flex items-center font-medium">
+                      <Search className="mr-2 h-4 w-4" />
+                      Explorer
+                    </div>
+                  </a>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/contact" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
+                    <div className="flex items-center font-medium">
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      Support
+                    </div>
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -122,6 +142,14 @@ const Navigation = () => {
                 <Link href="/docs" className="flex items-center space-x-2 text-lg font-medium">
                   <BookOpen className="h-5 w-5" />
                   <span>Docs</span>
+                </Link>
+                <a href="https://explorer.qrdx.org" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-lg font-medium">
+                  <Search className="h-5 w-5" />
+                  <span>Explorer</span>
+                </a>
+                <Link href="/contact" className="flex items-center space-x-2 text-lg font-medium">
+                  <HelpCircle className="h-5 w-5" />
+                  <span>Support</span>
                 </Link>
                 <Link href="/whitepaper" className="flex items-center space-x-2 text-lg font-medium">
                   <FileText className="h-5 w-5" />

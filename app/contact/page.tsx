@@ -1,8 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, MessageSquare, Send } from 'lucide-react'
+import { Mail, MessageSquare, Send, BookOpen, Handshake } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,35 @@ const fadeIn = (delay = 0) => ({
 })
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const { firstName, lastName, email, subject, message } = formData
+    const fullName = `${firstName} ${lastName}`.trim()
+    
+    const mailtoSubject = encodeURIComponent(subject || 'Contact Form Submission')
+    const mailtoBody = encodeURIComponent(
+      `Name: ${fullName}\nEmail: ${email}\n\n${message}`
+    )
+    
+    window.location.href = `mailto:support@mail.qrdx.org?subject=${mailtoSubject}&body=${mailtoBody}`
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.id]: e.target.value
+    }))
+  }
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -45,6 +74,29 @@ export default function Contact() {
             >
               Get in touch with our team. We&apos;re here to help and answer any questions you might have.
             </motion.p>
+
+            <motion.div
+              className="bg-accent/50 border border-border rounded-lg p-6 max-w-2xl mx-auto"
+              variants={fadeIn(0.3)}
+            >
+              <div className="flex items-start gap-3">
+                <BookOpen className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <h3 className="font-semibold mb-1">Small Issue?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    For quick answers, check out our{' '}
+                    <a href="/docs" className="text-primary hover:underline font-medium">
+                      documentation
+                    </a>
+                    {' '}or visit our{' '}
+                    <a href="https://docs.qrdx.org/support" className="text-primary hover:underline font-medium">
+                      support section
+                    </a>
+                    .
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -68,32 +120,55 @@ export default function Contact() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="text-sm font-medium">
                           First Name
                         </label>
-                        <Input id="firstName" placeholder="John" />
+                        <Input 
+                          id="firstName" 
+                          placeholder="John" 
+                          value={formData.firstName}
+                          onChange={handleChange}
+                        />
                       </div>
                       <div>
                         <label htmlFor="lastName" className="text-sm font-medium">
                           Last Name
                         </label>
-                        <Input id="lastName" placeholder="Doe" />
+                        <Input 
+                          id="lastName" 
+                          placeholder="Doe"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                        />
                       </div>
                     </div>
                     <div>
                       <label htmlFor="email" className="text-sm font-medium">
                         Email
                       </label>
-                      <Input id="email" type="email" placeholder="john@example.com" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="john@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                     <div>
                       <label htmlFor="subject" className="text-sm font-medium">
                         Subject
                       </label>
-                      <Input id="subject" placeholder="How can we help?" />
+                      <Input 
+                        id="subject" 
+                        placeholder="How can we help?"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                     <div>
                       <label htmlFor="message" className="text-sm font-medium">
@@ -103,9 +178,12 @@ export default function Contact() {
                         id="message" 
                         placeholder="Tell us more about your inquiry..."
                         rows={5}
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
-                    <Button className="w-full gap-2">
+                    <Button type="submit" className="w-full gap-2">
                       Send Message
                       <Send className="h-4 w-4" />
                     </Button>
@@ -147,15 +225,43 @@ export default function Contact() {
 
                 <Card>
                   <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                        <MessageSquare className="h-5 w-5" />
+                    <a 
+                      href="https://t.me/qrdx_official" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                          <MessageSquare className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium">Community</h3>
+                          <p className="text-sm text-muted-foreground">Join our Telegram community</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-medium">Community</h3>
-                        <p className="text-sm text-muted-foreground">Join our Telegram community</p>
+                    </a>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="pt-6">
+                    <a 
+                      href="https://docs.qrdx.org/partnerships" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                          <Handshake className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium">Partnerships</h3>
+                          <p className="text-sm text-muted-foreground">Explore partnership opportunities</p>
+                        </div>
                       </div>
-                    </div>
+                    </a>
                   </CardContent>
                 </Card>
               </div>
