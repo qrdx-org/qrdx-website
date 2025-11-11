@@ -85,7 +85,7 @@ export default function GetStarted() {
               variants={fadeIn()}
             >
               Start Your{' '}
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <span className="text-primary">
                 Quantum-Safe Journey
               </span>
             </motion.h1>
