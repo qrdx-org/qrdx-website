@@ -1,12 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Download, Shield, Lock, Zap, Users, Layers, ArrowRightLeft, Database, Network } from 'lucide-react'
+import { FileText, Download, Shield, Lock, Zap, Users, Layers, ArrowRightLeft, Database, Network, Book, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -14,6 +20,68 @@ const fadeIn = (delay = 0) => ({
 })
 
 export default function WhitepaperPage() {
+  const [markdownContent, setMarkdownContent] = useState('')
+  const [showFullContent, setShowFullContent] = useState(false)
+  const [activeSection, setActiveSection] = useState('')
+
+  useEffect(() => {
+    // Fetch the markdown content
+    fetch('/QRDX-Whitepaper-v2.0.md')
+      .then((res) => res.text())
+      .then((text) => setMarkdownContent(text))
+      .catch((err) => console.error('Failed to load whitepaper:', err))
+  }, [])
+
+  useEffect(() => {
+    // Track active section on scroll
+    const handleScroll = () => {
+      const headings = document.querySelectorAll('.markdown-content h2[id]')
+      let current = ''
+      
+      headings.forEach((heading) => {
+        const rect = heading.getBoundingClientRect()
+        if (rect.top <= 150) {
+          current = heading.id
+        }
+      })
+      
+      setActiveSection(current)
+    }
+
+    if (showFullContent) {
+      window.addEventListener('scroll', handleScroll)
+      return () => window.removeEventListener('scroll', handleScroll)
+    }
+  }, [showFullContent])
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      const offset = 100
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth'
+      })
+    }
+  }
+  const tocSections = [
+    { id: '1-introduction', title: 'Introduction', description: 'QRDX solution and key innovations' },
+    { id: '2-the-quantum-threat', title: 'The Quantum Threat', description: 'Shor\'s and Grover\'s algorithms impact on blockchain' },
+    { id: '3-qrdx-chain-architecture', title: 'QRDX Chain Architecture', description: 'Layer-1 blockchain with QEVM and QR-PoS consensus' },
+    { id: '4-post-quantum-cryptography-implementation', title: 'Post-Quantum Cryptography', description: 'CRYSTALS-Dilithium & Kyber implementation' },
+    { id: '5-qrdx-protocol-quantum-resistant-amm', title: 'QRDX Protocol: Quantum-Resistant AMM', description: 'Uniswap v3/v4-based concentrated liquidity DEX' },
+    { id: '6-asset-shielding-mechanism', title: 'Asset Shielding Mechanism', description: 'Convert ETH → qETH and cross-chain migration' },
+    { id: '7-qrc20-token-standard', title: 'qRC20 Token Standard', description: 'Quantum-resistant ERC-20 compatible standard' },
+    { id: '8-cross-chain-bridge-infrastructure', title: 'Cross-Chain Bridge Infrastructure', description: 'Trustless bridges for Ethereum, Bitcoin, and more' },
+    { id: '9-consensus-mechanism', title: 'Consensus Mechanism', description: 'Quantum-Resistant Proof-of-Stake (QR-PoS)' },
+    { id: '10-tokenomics', title: 'Tokenomics', description: '100M fixed supply with deflationary mechanics' },
+    { id: '11-governance-model', title: 'Governance Model', description: 'On-chain voting and decentralized decision-making' },
+    { id: '12-security-analysis', title: 'Security Analysis', description: 'Threat model and cryptographic guarantees' },
+    { id: '13-performance-benchmarks', title: 'Performance Benchmarks', description: '5,000+ TPS with sub-second finality' },
+    { id: '14-roadmap', title: 'Roadmap', description: 'Development phases from testnet to mainnet' },
+  ]
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <Navigation />
@@ -37,22 +105,24 @@ export default function WhitepaperPage() {
               Quantum-Resistant DEX & Asset Shielding Protocol built on Uniswap v3/v4 architecture
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="flex items-center gap-2" asChild>
+              <Button 
+                size="lg" 
+                className="flex items-center gap-2"
+                onClick={() => setShowFullContent(!showFullContent)}
+              >
+                <Book className="h-5 w-5" />
+                {showFullContent ? 'Hide Full Content' : 'Read Full Whitepaper'}
+              </Button>
+              <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
                 <a href="/QRDX-Whitepaper-v2.0.pdf" download>
                   <Download className="h-5 w-5" />
-                  Download PDF (v2.0)
+                  Download PDF
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
                 <a href="/QRDX-Whitepaper-v2.0.md" download>
                   <FileText className="h-5 w-5" />
                   Download Markdown
-                </a>
-              </Button>
-              <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
-                <a href="https://github.com/qrdx-org" target="_blank" rel="noopener noreferrer">
-                  <FileText className="h-5 w-5" />
-                  View on GitHub
                 </a>
               </Button>
             </div>
@@ -92,31 +162,30 @@ export default function WhitepaperPage() {
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold mb-6">Table of Contents</h2>
                 <div className="space-y-4">
-                  {[
-                    { number: '1', title: 'Introduction', description: 'QRDX solution and key innovations' },
-                    { number: '2', title: 'The Quantum Threat', description: 'Shor\'s and Grover\'s algorithms impact on blockchain' },
-                    { number: '3', title: 'QRDX Chain Architecture', description: 'Layer-1 blockchain with QEVM and QR-PoS consensus' },
-                    { number: '4', title: 'Post-Quantum Cryptography', description: 'CRYSTALS-Dilithium & Kyber implementation' },
-                    { number: '5', title: 'QRDX Protocol: Quantum-Resistant AMM', description: 'Uniswap v3/v4-based concentrated liquidity DEX' },
-                    { number: '6', title: 'Asset Shielding Mechanism', description: 'Convert ETH → qETH and cross-chain migration' },
-                    { number: '7', title: 'qRC20 Token Standard', description: 'Quantum-resistant ERC-20 compatible standard' },
-                    { number: '8', title: 'Cross-Chain Bridge Infrastructure', description: 'Trustless bridges for Ethereum, Bitcoin, and more' },
-                    { number: '9', title: 'Consensus Mechanism', description: 'Quantum-Resistant Proof-of-Stake (QR-PoS)' },
-                    { number: '10', title: 'Tokenomics', description: '100M fixed supply with deflationary mechanics' },
-                    { number: '11', title: 'Governance Model', description: 'On-chain voting and decentralized decision-making' },
-                    { number: '12', title: 'Security Analysis', description: 'Threat model and cryptographic guarantees' },
-                    { number: '13', title: 'Performance Benchmarks', description: '5,000+ TPS with sub-second finality' },
-                    { number: '14', title: 'Roadmap', description: 'Development phases from testnet to mainnet' },
-                  ].map((section) => (
-                    <div key={section.number} className="flex gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                  {tocSections.map((section, index) => (
+                    <button
+                      key={section.id}
+                      onClick={() => {
+                        setShowFullContent(true)
+                        setTimeout(() => scrollToSection(section.id), 100)
+                      }}
+                      className={`w-full flex gap-4 p-4 rounded-lg transition-all text-left ${
+                        activeSection === section.id && showFullContent
+                          ? 'bg-primary/10 border border-primary/30'
+                          : 'hover:bg-muted/50 border border-transparent'
+                      }`}
+                    >
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-                        {section.number}
+                        {index + 1}
                       </div>
-                      <div>
-                        <h3 className="font-medium mb-1">{section.title}</h3>
+                      <div className="flex-1">
+                        <h3 className="font-medium mb-1 flex items-center gap-2">
+                          {section.title}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </h3>
                         <p className="text-sm text-muted-foreground">{section.description}</p>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </CardContent>
@@ -376,6 +445,51 @@ export default function WhitepaperPage() {
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Full Markdown Content */}
+          {showFullContent && markdownContent && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-5xl mx-auto mt-12"
+            >
+              <Card className="border-primary/20">
+                <CardContent className="p-8 md:p-12">
+                  <div className="markdown-content prose prose-slate dark:prose-invert prose-headings:scroll-mt-24 max-w-none
+                    prose-h1:text-4xl prose-h1:font-bold prose-h1:mb-8 prose-h1:text-foreground
+                    prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h2:text-foreground prose-h2:border-b prose-h2:border-border prose-h2:pb-3
+                    prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-foreground
+                    prose-h4:text-xl prose-h4:font-semibold prose-h4:mt-6 prose-h4:mb-3 prose-h4:text-foreground
+                    prose-p:text-muted-foreground prose-p:leading-7 prose-p:mb-4
+                    prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-foreground prose-strong:font-semibold
+                    prose-code:text-primary prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+                    prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:text-foreground
+                    prose-ul:my-4 prose-ul:text-muted-foreground
+                    prose-ol:my-4 prose-ol:text-muted-foreground
+                    prose-li:my-2
+                    prose-table:text-sm prose-table:border-collapse
+                    prose-th:border prose-th:border-border prose-th:bg-muted prose-th:p-2 prose-th:text-foreground
+                    prose-td:border prose-td:border-border prose-td:p-2 prose-td:text-muted-foreground
+                    prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground
+                    prose-hr:border-border
+                  ">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[
+                        rehypeRaw,
+                        rehypeSlug,
+                        [rehypeAutolinkHeadings, { behavior: 'wrap' }]
+                      ]}
+                    >
+                      {markdownContent}
+                    </ReactMarkdown>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
         </motion.div>
       </div>
       
