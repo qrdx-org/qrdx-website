@@ -1,6 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 
 export default function Footer() {
+  const openCookieSettings = () => {
+    localStorage.removeItem('cookie-consent')
+    window.location.reload()
+  }
+
   return (
     <footer className="border-t py-12 md:py-16">
       <div className="container px-4 mx-auto">
@@ -54,7 +61,12 @@ export default function Footer() {
           <div className="flex gap-6 text-sm text-muted-foreground">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <Link href="/cookies" className="hover:text-foreground transition-colors">Cookies</Link>
+            <button 
+              onClick={openCookieSettings} 
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
+              Cookies
+            </button>
           </div>
         </div>
       </div>
