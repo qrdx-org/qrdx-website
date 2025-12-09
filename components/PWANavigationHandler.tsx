@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 export default function PWANavigationHandler() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)
@@ -23,25 +22,9 @@ export default function PWANavigationHandler() {
     if (iframeUrl) {
       document.body.style.overflow = 'hidden'
       document.documentElement.style.overflow = 'hidden'
-      
-      // Hide all direct children of body except our iframe overlay
-      const bodyChildren = Array.from(document.body.children)
-      bodyChildren.forEach((child) => {
-        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
-          (child as HTMLElement).style.display = 'none'
-        }
-      })
     } else {
       document.body.style.overflow = ''
       document.documentElement.style.overflow = ''
-      
-      // Restore all children
-      const bodyChildren = Array.from(document.body.children)
-      bodyChildren.forEach((child) => {
-        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
-          (child as HTMLElement).style.display = ''
-        }
-      })
     }
 
     // Intercept clicks on links and buttons
@@ -91,20 +74,12 @@ export default function PWANavigationHandler() {
       window.open = originalOpen
       document.body.style.overflow = ''
       document.documentElement.style.overflow = ''
-      
-      // Restore all children when component unmounts
-      const bodyChildren = Array.from(document.body.children)
-      bodyChildren.forEach((child) => {
-        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
-          (child as HTMLElement).style.display = ''
-        }
-      })
     }
   }, [iframeUrl])
 
   if (!iframeUrl || !mounted) return null
 
-  const overlay = (
+  return (
     <div 
       className="fixed inset-0 bg-background" 
       style={{ 
@@ -121,7 +96,7 @@ export default function PWANavigationHandler() {
         flexDirection: 'column'
       }}
     >
-      <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0 }}>
+      <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0, zIndex: 1000000 }}>
         <button
           onClick={() => setIframeUrl(null)}
           className="text-sm font-medium hover:underline"
@@ -145,6 +120,4 @@ export default function PWANavigationHandler() {
       />
     </div>
   )
-
-  return createPortal(overlay, document.body)
 }
