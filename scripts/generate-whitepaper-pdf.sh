@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to generate PDF from QRDX whitepaper markdown
+# Script to generate PDFs from QRDX whitepaper markdown files
 
 set -e
 
@@ -25,54 +25,69 @@ fi
 echo "✅ Pandoc found: $(pandoc --version | head -n1)"
 echo ""
 
-# Input and output files
-INPUT_FILE="public/QRDX-Whitepaper-v2.0.md"
-OUTPUT_FILE="public/QRDX-Whitepaper-v2.0.pdf"
-
-# Check if input file exists
-if [ ! -f "$INPUT_FILE" ]; then
-    echo "❌ Input file not found: $INPUT_FILE"
-    exit 1
-fi
-
-echo "📄 Input:  $INPUT_FILE"
-echo "📄 Output: $OUTPUT_FILE"
-echo ""
-
-# Generate PDF
-echo "🔨 Generating PDF..."
-pandoc "$INPUT_FILE" \
-    -o "$OUTPUT_FILE" \
-    --pdf-engine=xelatex \
-    --toc \
-    --toc-depth=2 \
-    --number-sections \
-    -V geometry:margin=1in \
-    -V fontsize=11pt \
-    -V documentclass=article \
-    -V colorlinks=true \
-    -V linkcolor=blue \
-    -V urlcolor=blue \
-    -V toccolor=black \
-    --metadata title="QRDX Protocol Whitepaper v2.0" \
-    --metadata author="QRDX Foundation Research Team" \
-    --metadata date="November 3, 2025"
-
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "✅ PDF generated successfully!"
-    echo "📍 Location: $OUTPUT_FILE"
+# Function to generate PDF
+generate_pdf() {
+    local INPUT_FILE=$1
+    local OUTPUT_FILE=$2
+    local VERSION=$3
+    local DATE=$4
     
-    # Get file size
-    if command -v du &> /dev/null; then
-        SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
-        echo "📊 File size: $SIZE"
+    # Check if input file exists
+    if [ ! -f "$INPUT_FILE" ]; then
+        echo "❌ Input file not found: $INPUT_FILE"
+        return 1
     fi
-else
+    
+    echo "📄 Input:  $INPUT_FILE"
+    echo "📄 Output: $OUTPUT_FILE"
     echo ""
-    echo "❌ PDF generation failed"
-    exit 1
+    
+    # Generate PDF
+    echo "🔨 Generating PDF for version $VERSION..."
+    pandoc "$INPUT_FILE" \
+        -o "$OUTPUT_FILE" \
+        --pdf-engine=xelatex \
+        --toc \
+        --toc-depth=2 \
+        --number-sections \
+        -V geometry:margin=1in \
+        -V fontsize=11pt \
+        -V documentclass=article \
+        -V colorlinks=true \
+        -V linkcolor=blue \
+        -V urlcolor=blue \
+        -V toccolor=black \
+        --metadata title="QRDX Protocol Whitepaper $VERSION" \
+        --metadata author="QRDX Foundation Research Team" \
+        --metadata date="$DATE"
+    
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo "✅ PDF generated successfully!"
+        echo "📍 Location: $OUTPUT_FILE"
+        
+        # Get file size
+        if command -v du &> /dev/null; then
+            SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
+            echo "📊 File size: $SIZE"
+        fi
+        echo ""
+        return 0
+    else
+        echo ""
+        echo "❌ PDF generation failed for $VERSION"
+        return 1
+    fi
+}
+
+# Generate v2.0 PDF
+generate_pdf "public/QRDX-Whitepaper-v2.0.md" "public/QRDX-Whitepaper-v2.0.pdf" "v2.0" "November 3, 2025"
+
+# Generate v2.3 PDF (if file exists)
+if [ -f "public/QRDX-Whitepaper-v2.3.md" ]; then
+    echo "---"
+    echo ""
+    generate_pdf "public/QRDX-Whitepaper-v2.3.md" "public/QRDX-Whitepaper-v2.3.pdf" "v2.3" "December 9, 2025"
 fi
 
-echo ""
 echo "Done! 🎉"
