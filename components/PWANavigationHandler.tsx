@@ -1,9 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export default function PWANavigationHandler() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     // Check if running in standalone mode (PWA)
@@ -61,26 +67,28 @@ export default function PWANavigationHandler() {
     }
   }, [])
 
-  if (!iframeUrl) return null
+  if (!iframeUrl || !mounted) return null
 
-  return (
-    <div className="fixed inset-0 z-[9999] bg-background">
-      <div className="flex items-center justify-between p-4 border-b">
+  const overlay = (
+    <div className="fixed inset-0 z-[99999] bg-background" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <div className="flex items-center justify-between p-4 border-b bg-background">
         <button
           onClick={() => setIframeUrl(null)}
           className="text-sm font-medium hover:underline"
         >
           ← Back
         </button>
-        <span className="text-xs text-muted-foreground">trade.qrdx.org</span>
       </div>
       <iframe
         src={iframeUrl}
-        className="w-full h-[calc(100vh-57px)] border-0"
+        className="w-full border-0"
+        style={{ height: 'calc(100vh - 57px)' }}
         title="QRDX Trade"
         allow="clipboard-write; payment"
         sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
       />
     </div>
   )
+
+  return createPortal(overlay, document.body)
 }
