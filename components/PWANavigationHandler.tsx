@@ -19,13 +19,29 @@ export default function PWANavigationHandler() {
 
     if (!isStandalone) return
 
-    // Prevent body scroll when iframe is open
+    // Prevent body scroll and hide all content when iframe is open
     if (iframeUrl) {
       document.body.style.overflow = 'hidden'
       document.documentElement.style.overflow = 'hidden'
+      
+      // Hide all direct children of body except our iframe overlay
+      const bodyChildren = Array.from(document.body.children)
+      bodyChildren.forEach((child) => {
+        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
+          (child as HTMLElement).style.display = 'none'
+        }
+      })
     } else {
       document.body.style.overflow = ''
       document.documentElement.style.overflow = ''
+      
+      // Restore all children
+      const bodyChildren = Array.from(document.body.children)
+      bodyChildren.forEach((child) => {
+        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
+          (child as HTMLElement).style.display = ''
+        }
+      })
     }
 
     // Intercept clicks on links and buttons
@@ -75,6 +91,14 @@ export default function PWANavigationHandler() {
       window.open = originalOpen
       document.body.style.overflow = ''
       document.documentElement.style.overflow = ''
+      
+      // Restore all children when component unmounts
+      const bodyChildren = Array.from(document.body.children)
+      bodyChildren.forEach((child) => {
+        if (child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
+          (child as HTMLElement).style.display = ''
+        }
+      })
     }
   }, [iframeUrl])
 
@@ -92,7 +116,9 @@ export default function PWANavigationHandler() {
         zIndex: 999999,
         width: '100vw',
         height: '100vh',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0 }}>
@@ -105,11 +131,13 @@ export default function PWANavigationHandler() {
       </div>
       <iframe
         src={iframeUrl}
-        className="w-full border-0"
+        className="border-0"
         style={{ 
-          height: 'calc(100vh - 57px)', 
+          width: '100%',
+          height: '100%',
+          flex: 1,
           display: 'block',
-          overflow: 'auto'
+          border: 'none'
         }}
         title="QRDX Trade"
         allow="clipboard-write; payment"
