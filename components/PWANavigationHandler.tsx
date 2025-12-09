@@ -19,6 +19,15 @@ export default function PWANavigationHandler() {
 
     if (!isStandalone) return
 
+    // Prevent body scroll when iframe is open
+    if (iframeUrl) {
+      document.body.style.overflow = 'hidden'
+      document.documentElement.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
+    }
+
     // Intercept clicks on links and buttons
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
@@ -64,14 +73,29 @@ export default function PWANavigationHandler() {
     return () => {
       document.removeEventListener('click', handleClick, true)
       window.open = originalOpen
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
     }
-  }, [])
+  }, [iframeUrl])
 
   if (!iframeUrl || !mounted) return null
 
   const overlay = (
-    <div className="fixed inset-0 z-[99999] bg-background" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-      <div className="flex items-center justify-between p-4 border-b bg-background">
+    <div 
+      className="fixed inset-0 bg-background" 
+      style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0, 
+        zIndex: 999999,
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden'
+      }}
+    >
+      <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0 }}>
         <button
           onClick={() => setIframeUrl(null)}
           className="text-sm font-medium hover:underline"
@@ -82,7 +106,11 @@ export default function PWANavigationHandler() {
       <iframe
         src={iframeUrl}
         className="w-full border-0"
-        style={{ height: 'calc(100vh - 57px)' }}
+        style={{ 
+          height: 'calc(100vh - 57px)', 
+          display: 'block',
+          overflow: 'auto'
+        }}
         title="QRDX Trade"
         allow="clipboard-write; payment"
         sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
