@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Shield, TrendingUp, Zap, Users, Lock, ArrowRight, ChevronRight, Droplets, Activity, AlertTriangle } from 'lucide-react'
+import { Shield, TrendingUp, Zap, Users, Lock, ArrowRight, ChevronRight, Droplets, Activity, AlertTriangle, Handshake } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -64,61 +64,117 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
         
         <div className="container px-4 mx-auto">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.div
-              variants={fadeIn()}
-              className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-primary/10 border border-primary/20"
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Main Hero Content */}
+            <motion.div 
+              className="flex-1 text-center lg:text-left max-w-4xl"
+              initial="initial"
+              animate="animate"
+              variants={{
+                initial: {},
+                animate: { transition: { staggerChildren: 0.1 } }
+              }}
             >
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Quantum-Resistant Security</span>
+              <motion.div
+                variants={fadeIn()}
+                className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-primary/10 border border-primary/20"
+              >
+                <Shield className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Quantum-Resistant Security</span>
+              </motion.div>
+
+              <motion.h1 
+                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground"
+                variants={fadeIn()}
+              >
+                Shield Your Assets for the{' '}
+                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-foreground">
+                  Quantum Era
+                </span>
+              </motion.h1>
+              
+              <motion.p 
+                className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto lg:mx-0"
+                variants={fadeIn()}
+              >
+                Convert ETH → qETH, BTC → qBTC with quantum-resistant cryptography. Trade and secure your assets on the first post-quantum DEX.
+              </motion.p>
+              
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
+                variants={fadeIn()}
+              >
+                <Button size="lg" className="text-lg px-8" asChild>
+                  <Link href="/get-started" className="flex items-center">
+                    Get Started
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+                  <Link href="/trade">
+                    Launch App
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8" asChild>
+                  <Link href="/whitepaper">
+                    Read Whitepaper
+                  </Link>
+                </Button>
+              </motion.div>
             </motion.div>
 
-            <motion.h1 
-              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground"
-              variants={fadeIn()}
-            >
-              Shield Your Assets for the{' '}
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-foreground">
-                Quantum Era
-              </span>
-            </motion.h1>
-            
-            <motion.p 
-              className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto"
-              variants={fadeIn()}
-            >
-              Convert ETH → qETH, BTC → qBTC with quantum-resistant cryptography. Trade and secure your assets on the first post-quantum DEX.
-            </motion.p>
-            
+            {/* Partnership Sidebar */}
             <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
-              variants={fadeIn()}
+              className="lg:w-80 flex-shrink-0"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
             >
-              <Button size="lg" className="text-lg px-8" asChild>
-                <Link href="/get-started" className="flex items-center">
-                  Get Started
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8" asChild>
-                <Link href="/trade">
-                  Launch App
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8" asChild>
-                <Link href="/whitepaper">
-                  Read Whitepaper
-                </Link>
-              </Button>
+              <Card className="sticky top-24 border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-primary/5 shadow-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
+                      <Handshake className="h-8 w-8 text-primary" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-center mb-3">
+                    Become a Partner
+                  </h3>
+                  
+                  <p className="text-muted-foreground text-center mb-6">
+                    Join the QRDX Partner Program and earn rewards by helping grow the quantum-resistant ecosystem.
+                  </p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-start gap-2">
+                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">Earn referral commissions on trading fees</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">Access exclusive partnership benefits</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">Get priority support and resources</p>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <p className="text-sm">Help shape the future of quantum-safe DeFi</p>
+                    </div>
+                  </div>
+                  
+                  <Button className="w-full" size="lg" asChild>
+                    <a href="https://trade.qrdx.org/partner" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                      Join Partner Program
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </a>
+                  </Button>
+                </CardContent>
+              </Card>
             </motion.div>
+          </div>
 
             {/* Stats Grid - Commented out for now
             <motion.div 
@@ -162,7 +218,6 @@ export default function Home() {
               </Card>
             </motion.div>
             */}
-          </motion.div>
         </div>
       </section>
 

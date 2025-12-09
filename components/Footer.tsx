@@ -39,6 +39,7 @@ export default function Footer() {
               <li><Link href="https://blog.qrdx.org/" className="hover:text-foreground transition-colors">Blog</Link></li>
               <li><Link href="/help" className="hover:text-foreground transition-colors">Help Center</Link></li>
               <li><Link href="/security" className="hover:text-foreground transition-colors">Security</Link></li>
+              <li><Link href="/contact" className="hover:text-foreground transition-colors">Support</Link></li>
             </ul>
           </div>
           
