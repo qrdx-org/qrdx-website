@@ -75,9 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
+          <PWANavigationHandler />
           {children}
           <CookieConsent />
-          <PWANavigationHandler />
         </ThemeProvider>
       </body>
     </html>
