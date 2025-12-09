@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import CookieConsent from '@/components/CookieConsent'
+import PWANavigationHandler from '@/components/PWANavigationHandler'
 import type { Metadata } from 'next'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           {children}
           <CookieConsent />
+          <PWANavigationHandler />
         </ThemeProvider>
       </body>
     </html>
