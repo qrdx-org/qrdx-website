@@ -2,6 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
+// Supported subdomains that should open in the PWA handler
+const SUPPORTED_SUBDOMAINS: Record<string, string> = {
+  'explorer.qrdx.org': 'QRDX Explorer',
+  'trade.qrdx.org': 'QRDX Trade',
+  'docs.qrdx.org': 'QRDX Docs'
+}
+
 export default function PWANavigationHandler() {
   const [iframeUrl, setIframeUrl] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -9,6 +16,19 @@ export default function PWANavigationHandler() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Helper to check if URL matches supported subdomains
+  const isSupportedUrl = (url: string): boolean => {
+    return Object.keys(SUPPORTED_SUBDOMAINS).some(subdomain => 
+      url.includes(subdomain) || url.startsWith(`https://${subdomain}`) || url.startsWith(`http://${subdomain}`)
+    )
+  }
+
+  // Get label for the current URL
+  const getUrlLabel = (url: string): string => {
+    const subdomain = Object.keys(SUPPORTED_SUBDOMAINS).find(sub => url.includes(sub))
+    return subdomain ? SUPPORTED_SUBDOMAINS[subdomain] : 'QRDX'
+  }
 
   // Hide the navigation when iframe is active
   useEffect(() => {
@@ -44,7 +64,7 @@ export default function PWANavigationHandler() {
       const link = target.closest('a')
       if (link) {
         const href = link.getAttribute('href')
-        if (href && (href.includes('trade.qrdx.org') || href.startsWith('https://trade.qrdx.org'))) {
+        if (href && isSupportedUrl(href)) {
           e.preventDefault()
           setIframeUrl(href)
           return
@@ -55,7 +75,7 @@ export default function PWANavigationHandler() {
       const button = target.closest('button')
       if (button) {
         const dataHref = button.getAttribute('data-href') || button.getAttribute('data-url')
-        if (dataHref && (dataHref.includes('trade.qrdx.org') || dataHref.startsWith('https://trade.qrdx.org'))) {
+        if (dataHref && isSupportedUrl(dataHref)) {
           e.preventDefault()
           setIframeUrl(dataHref)
           return
@@ -71,7 +91,7 @@ export default function PWANavigationHandler() {
     const originalOpen = window.open
     window.open = function(url?: string | URL, ...args: any[]) {
       const urlString = url?.toString() || ''
-      if (urlString.includes('trade.qrdx.org')) {
+      if (isSupportedUrl(urlString)) {
         setIframeUrl(urlString)
         return null
       }
@@ -108,13 +128,16 @@ export default function PWANavigationHandler() {
           visibility: 'visible'
         }}
       >
-        <div className="flex items-center p-4 border-b bg-background/100 backdrop-blur-sm" style={{ height: '60px', flexShrink: 0, zIndex: 10000000 }}>
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b bg-background/100 backdrop-blur-sm" style={{ height: '60px', flexShrink: 0, zIndex: 10000000 }}>
           <button
             onClick={() => setIframeUrl(null)}
-            className="text-sm font-medium hover:underline px-2 py-1 rounded-md hover:bg-accent transition-colors"
+            className="text-sm font-medium px-3 py-1.5 rounded-md hover:bg-accent transition-colors flex-shrink-0"
           >
             ← Back
           </button>
+          <div className="flex-1 px-4 py-2 rounded-lg bg-muted/50 border text-sm font-medium text-muted-foreground truncate">
+            {getUrlLabel(iframeUrl)}
+          </div>
         </div>
         <iframe
           src={iframeUrl}
