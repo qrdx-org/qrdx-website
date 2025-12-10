@@ -13,10 +13,18 @@ export default function PWANavigationHandler() {
   // Hide the navigation when iframe is active
   useEffect(() => {
     if (iframeUrl) {
-      // Hide the navigation by adding a class to body
+      // Hide the navigation and all content by adding a class to body
       document.body.setAttribute('data-pwa-iframe-active', 'true')
+      // Prevent scrolling and ensure nothing shows through
+      document.body.style.overflow = 'hidden'
+      document.documentElement.style.overflow = 'hidden'
+      // Hide all body children except the handler
+      document.body.style.visibility = 'hidden'
     } else {
       document.body.removeAttribute('data-pwa-iframe-active')
+      document.body.style.overflow = ''
+      document.documentElement.style.overflow = ''
+      document.body.style.visibility = ''
     }
   }, [iframeUrl])
 
@@ -27,15 +35,6 @@ export default function PWANavigationHandler() {
       document.referrer.includes('android-app://')
 
     if (!isStandalone) return
-
-    // Prevent body scroll and hide all content when iframe is open
-    if (iframeUrl) {
-      document.body.style.overflow = 'hidden'
-      document.documentElement.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-      document.documentElement.style.overflow = ''
-    }
 
     // Intercept clicks on links and buttons
     const handleClick = (e: MouseEvent) => {
@@ -105,13 +104,14 @@ export default function PWANavigationHandler() {
           height: '100vh',
           overflow: 'hidden',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          visibility: 'visible'
         }}
       >
-        <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0, zIndex: 10000000 }}>
+        <div className="flex items-center p-4 border-b bg-background/100 backdrop-blur-sm" style={{ height: '60px', flexShrink: 0, zIndex: 10000000 }}>
           <button
             onClick={() => setIframeUrl(null)}
-            className="text-sm font-medium hover:underline"
+            className="text-sm font-medium hover:underline px-2 py-1 rounded-md hover:bg-accent transition-colors"
           >
             ← Back
           </button>
