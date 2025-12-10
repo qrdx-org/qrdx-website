@@ -10,6 +10,16 @@ export default function PWANavigationHandler() {
     setMounted(true)
   }, [])
 
+  // Hide the navigation when iframe is active
+  useEffect(() => {
+    if (iframeUrl) {
+      // Hide the navigation by adding a class to body
+      document.body.setAttribute('data-pwa-iframe-active', 'true')
+    } else {
+      document.body.removeAttribute('data-pwa-iframe-active')
+    }
+  }, [iframeUrl])
+
   useEffect(() => {
     // Check if running in standalone mode (PWA)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
@@ -80,44 +90,47 @@ export default function PWANavigationHandler() {
   if (!iframeUrl || !mounted) return null
 
   return (
-    <div 
-      className="fixed inset-0 bg-background" 
-      style={{ 
-        position: 'fixed', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        bottom: 0, 
-        zIndex: 999999,
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}
-    >
-      <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0, zIndex: 1000000 }}>
-        <button
-          onClick={() => setIframeUrl(null)}
-          className="text-sm font-medium hover:underline"
-        >
-          ← Back
-        </button>
-      </div>
-      <iframe
-        src={iframeUrl}
-        className="border-0"
+    <>
+      {/* Portal overlay to ensure complete coverage */}
+      <div 
+        className="fixed inset-0 bg-background" 
         style={{ 
-          width: '100%',
-          height: '100%',
-          flex: 1,
-          display: 'block',
-          border: 'none'
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0, 
+          zIndex: 9999999,
+          width: '100vw',
+          height: '100vh',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column'
         }}
-        title="QRDX Trade"
-        allow="clipboard-write; payment"
-        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-      />
-    </div>
+      >
+        <div className="flex items-center justify-between p-4 border-b bg-background" style={{ height: '57px', flexShrink: 0, zIndex: 10000000 }}>
+          <button
+            onClick={() => setIframeUrl(null)}
+            className="text-sm font-medium hover:underline"
+          >
+            ← Back
+          </button>
+        </div>
+        <iframe
+          src={iframeUrl}
+          className="border-0"
+          style={{ 
+            width: '100%',
+            height: '100%',
+            flex: 1,
+            display: 'block',
+            border: 'none'
+          }}
+          title="QRDX Trade"
+          allow="clipboard-write; payment"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+        />
+      </div>
+    </>
   )
 }

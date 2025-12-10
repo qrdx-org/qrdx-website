@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 const Navigation = () => {
   return (
     <motion.nav 
-      className="fixed w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50"
+      className="fixed w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50 [body[data-pwa-iframe-active]_&]:hidden"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
