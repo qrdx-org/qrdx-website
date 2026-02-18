@@ -130,6 +130,7 @@ The exchange engine is not a smart contract application deployed on top of the c
 - **Node Composition**: Modular chain adapters (Ethereum, Bitcoin, Solana, etc.)
 - **Exchange Engine**: Protocol-native integrated AMM + order book
 - **Oracle Layer**: Native cross-chain state attestation by validators
+- **Transaction Model**: OracleTransaction envelope with chain-specific sub-transactions (EthereumTransaction, BitcoinTransaction, SolanaTransaction)
 
 ### 3.2 Layer-0 Design Rationale
 
@@ -282,6 +283,355 @@ Because nodes embed chain adapters, QRDX can execute transactions on external ch
 6. **QRDX state updates** to reflect the completed cross-chain operation
 
 This eliminates the need for separate relayer networks. The validators themselves are the relayers, the oracles, and the bridge operators\u2014all authenticated with post-quantum cryptography.
+
+### 3.8 OracleTransaction: Cross-Chain Transaction Type System
+
+QRDX defines a first-class transaction type called **OracleTransaction** that wraps a fully-formed, natively-signed target chain transaction inside a PQ-signed QRDX envelope. This is the fundamental mechanism by which QRDX users execute operations on external blockchains non-custodially, atomically, and with a complete on-chain audit trail.
+
+#### 3.8.1 Design Principles
+
+The core insight: a user holds both a QRDX PQ keypair and a native keypair for each external chain they interact with. When they want to execute a cross-chain operation, they:
+
+1. **Construct** the target chain transaction locally (e.g., a raw Bitcoin transaction, a signed Ethereum transaction)
+2. **Sign it** with the target chain's native key (secp256k1 for Bitcoin/Ethereum, Ed25519 for Solana)
+3. **Wrap it** in an OracleTransaction envelope and sign the envelope with their Dilithium key
+4. **Submit** the OracleTransaction to QRDX consensus
+
+Validators verify both layers of signatures. The inner transaction is held in QRDX state until execution conditions are met, then validators running the relevant chain adapter broadcast it to the target chain and attest to its confirmation.
+
+This is non-custodial: the user signs the target chain transaction themselves. Validators never hold or derive the user's external chain private keys. They only relay and monitor.
+
+#### 3.8.2 Transaction Type Hierarchy
+
+```
+OracleTransaction (PQ Envelope)
+|
++-- EthereumTransaction    (secp256k1 / EIP-1559 signed)
++-- BitcoinTransaction     (secp256k1 / P2WPKH or P2TR signed)
++-- SolanaTransaction      (Ed25519 signed)
++-- CosmosTransaction      (secp256k1 or Ed25519 signed)
++-- GenericChainTransaction (extensible for future adapters)
+```
+
+#### 3.8.3 OracleTransaction Envelope
+
+The OracleTransaction is an L0-level consensus primitive. Validators deserialize, validate, and process it directly during block production -- it is not a smart contract struct but a core protocol transaction type, encoded in QRDX's binary wire format:
+
+```
+OracleTransaction {
+    // ═══ L0 Envelope (PQ-signed) ═══
+    nonce              : uint64       // QRDX-side nonce (replay protection)
+    sender             : bytes32      // QRDX address (BLAKE3 hash of Dilithium pubkey)
+    target_chain_id    : uint32       // Target chain identifier (1=Ethereum, 2=Bitcoin, 3=Solana, ...)
+    tx_type            : uint8        // Sub-transaction type discriminant
+                                      //   0x01 = EthereumTransaction
+                                      //   0x02 = BitcoinTransaction
+                                      //   0x03 = SolanaTransaction
+                                      //   0x04 = CosmosTransaction
+                                      //   0xFF = GenericChainTransaction
+
+    // ═══ Execution Conditions ═══
+    conditions         : ExecutionCondition[]  // Conditions that must be met before broadcast
+    deadline           : uint64       // Block timestamp after which tx expires (0 = no expiry)
+    max_gas_subsidy    : uint128      // Max QRDX (in base units) user pays for oracle gas reimbursement
+
+    // ═══ Inner Transaction Payload ═══
+    inner_transaction  : bytes        // Fully-formed, natively-signed target chain tx (opaque to QRDX)
+    inner_signature    : bytes        // Target chain signature (secp256k1, Ed25519, etc.)
+    target_chain_pubkey: bytes        // User's public key on the target chain
+
+    // ═══ PQ Signature (outer envelope) ═══
+    dilithium_signature: bytes[3293]  // Dilithium3 signature over all preceding fields
+    dilithium_pubkey   : bytes[1952]  // Sender's Dilithium3 public key
+
+    // ═══ Callback (optional) ═══
+    callback_tx_hash   : bytes32      // If nonzero, triggers a QRDX state transition on confirmation
+    callback_data      : bytes        // Callback payload (e.g., mint qRC20, update oracle state)
+}
+
+ExecutionCondition {
+    condition_type     : uint8        // 0x00 = immediate
+                                      // 0x01 = after_block_height
+                                      // 0x02 = after_oracle_tx_confirms
+                                      // 0x03 = price_threshold
+                                      // 0x04 = balance_threshold
+    chain_id           : uint32       // Which chain the condition references
+    value              : uint256      // Block height, price, balance, or OracleTx nonce
+    reference          : bytes32      // Reference hash (e.g., txHash of prerequisite OracleTx)
+}
+```
+
+Validators decode the `tx_type` discriminant to determine which chain-specific sub-transaction parser to invoke on the `inner_transaction` payload. The entire envelope (all fields before `dilithium_signature`) is the message that the Dilithium signature covers.
+
+#### 3.8.4 Chain-Specific Sub-Transaction Types
+
+**EthereumTransaction (tx_type = 0x01):**
+
+The `inner_transaction` payload for Ethereum targets. This is a fully-formed, RLP-encoded, EIP-1559 (or legacy) Ethereum transaction that the user has already signed with their secp256k1 keypair. QRDX validators parse the following fields for validation, but broadcast the raw RLP bytes directly to Ethereum nodes:
+
+```
+EthereumTransaction {
+    eth_nonce          : uint64       // Ethereum account nonce
+    to                 : bytes20      // Destination address on Ethereum
+    value              : uint256      // ETH value in wei
+    data               : bytes        // Calldata (for contract interactions)
+    max_fee_per_gas    : uint256      // EIP-1559 max fee per gas
+    max_priority_fee   : uint256      // EIP-1559 priority fee per gas
+    gas_limit          : uint64       // Gas limit
+    v                  : uint8        // ECDSA recovery id
+    r                  : bytes32      // ECDSA r component
+    s                  : bytes32      // ECDSA s component
+    rlp_encoded        : bytes        // Full RLP-encoded signed tx (broadcast payload)
+}
+```
+
+Validators verify: `ecrecover(keccak256(rlp_unsigned), v, r, s) == target_chain_pubkey`. The `rlp_encoded` bytes are what gets submitted to the Ethereum network.
+
+**BitcoinTransaction (tx_type = 0x02):**
+
+The `inner_transaction` payload for Bitcoin targets. This is a fully-formed, serialized Bitcoin transaction (SegWit v0 P2WPKH or Taproot P2TR) that the user has already signed with their secp256k1 keypair. QRDX validators parse the structure to verify witness signatures against the referenced UTXOs, then broadcast the raw serialized bytes to the Bitcoin P2P network:
+
+```
+BitcoinTransaction {
+    version            : uint32       // Transaction version (typically 2)
+    inputs             : BTCInput[]   // Transaction inputs (UTXOs being spent)
+    outputs            : BTCOutput[]  // Transaction outputs
+    locktime           : uint32       // Locktime
+    raw_transaction    : bytes        // Full serialized signed tx (broadcast payload)
+    txid               : bytes32      // Computed txid for tracking
+}
+
+BTCInput {
+    prev_tx_hash       : bytes32      // Previous transaction hash (little-endian)
+    prev_output_index  : uint32       // Previous output index (vout)
+    script_sig         : bytes        // ScriptSig (empty for SegWit inputs)
+    sequence           : uint32       // Sequence number
+    witness            : bytes[]      // Witness stack (signature + pubkey for P2WPKH,
+                                      //   or schnorr sig for P2TR)
+}
+
+BTCOutput {
+    satoshis           : uint64       // Output value in satoshis
+    script_pubkey      : bytes        // Output locking script (P2WPKH, P2TR, etc.)
+}
+```
+
+Validators verify: for each input, the witness data satisfies the scriptPubKey of the referenced UTXO (checked against the Bitcoin SPV adapter's UTXO set). The `raw_transaction` bytes are what gets submitted to the Bitcoin network.
+
+**SolanaTransaction (tx_type = 0x03):**
+
+The `inner_transaction` payload for Solana targets. This is a fully-formed Solana transaction that the user has already signed with their Ed25519 keypair. QRDX validators parse the structure to verify the Ed25519 signature, then broadcast the raw serialized bytes to Solana RPC nodes:
+
+```
+SolanaTransaction {
+    recent_blockhash   : bytes32           // Solana recent blockhash
+    instructions       : SolanaInstruction[] // Program instructions
+    signatures         : bytes64[]         // Ed25519 signatures (64 bytes each)
+    serialized_message : bytes             // Serialized transaction message
+    raw_transaction    : bytes             // Full serialized signed tx (broadcast payload)
+}
+
+SolanaInstruction {
+    program_id         : bytes32           // Program address
+    accounts           : SolanaAccountMeta[] // Account metadata
+    data               : bytes             // Instruction data
+}
+
+SolanaAccountMeta {
+    pubkey             : bytes32
+    is_signer          : bool
+    is_writable        : bool
+}
+```
+
+Validators verify: `ed25519_verify(serialized_message, signatures[0], target_chain_pubkey)`. The `raw_transaction` bytes are what gets submitted to the Solana cluster.
+
+#### 3.8.5 Lifecycle of an OracleTransaction
+
+```
+User                          QRDX Consensus              Target Chain
+  |                                |                           |
+  | 1. Construct inner tx          |                           |
+  |    (e.g., ETH transfer)        |                           |
+  |    Sign with ETH key           |                           |
+  |                                |                           |
+  | 2. Wrap in OracleTransaction   |                           |
+  |    Add conditions & callback   |                           |
+  |    Sign envelope with          |                           |
+  |    Dilithium key               |                           |
+  |                                |                           |
+  | 3. Submit to QRDX              |                           |
+  |------------------------------->|                           |
+  |                                |                           |
+  |              4. Validate:      |                           |
+  |                 - Dilithium    |                           |
+  |                   envelope sig |                           |
+  |                 - Inner tx     |                           |
+  |                   native sig   |                           |
+  |                 - Conditions   |                           |
+  |                 - Sufficient   |                           |
+  |                   gas subsidy  |                           |
+  |                                |                           |
+  |              5. Include in     |                           |
+  |                 QRDX block     |                           |
+  |                 (state: PENDING)|                           |
+  |                                |                           |
+  |              6. Check          |                           |
+  |                 conditions     |                           |
+  |                 each block     |                           |
+  |                                |                           |
+  |              7. Conditions met:|                           |
+  |                 Broadcast inner|                           |
+  |                 tx via adapter |                           |
+  |                                |-------------------------->|
+  |                                |                           |
+  |                                | 8. Monitor confirmation   |
+  |                                |<--------------------------|
+  |                                |                           |
+  |              9. Attest to      |                           |
+  |                 confirmation   |                           |
+  |                 (2/3+1         |                           |
+  |                  validators)   |                           |
+  |                                |                           |
+  |             10. Execute        |                           |
+  |                 callback on    |                           |
+  |                 QRDX (if set)  |                           |
+  |                 (state: CONFIRMED)                         |
+  |                                |                           |
+  | 11. Confirmation receipt       |                           |
+  |<-------------------------------|                           |
+```
+
+**State Transitions:**
+
+| State | Description |
+|---|---|
+| `SUBMITTED` | OracleTransaction received and validated by QRDX |
+| `PENDING` | Included in a finalized QRDX block, awaiting conditions |
+| `BROADCASTING` | Conditions met, inner tx submitted to target chain |
+| `CONFIRMING` | Inner tx detected on target chain, awaiting confirmations |
+| `CONFIRMED` | 2/3+1 validators attest to confirmation, callback executed |
+| `FAILED` | Inner tx reverted or expired on target chain |
+| `EXPIRED` | Deadline passed before conditions were met |
+
+#### 3.8.6 Execution Conditions & Cross-Chain Composability
+
+OracleTransactions support conditional execution, enabling complex cross-chain workflows:
+
+**Condition Types:**
+
+| Type | Description | Example |
+|---|---|---|
+| `IMMEDIATE` | Broadcast as soon as included in QRDX block | Simple cross-chain transfer |
+| `AFTER_BLOCK_HEIGHT` | Wait until target chain reaches a specific block | Time-delayed execution |
+| `AFTER_ORACLE_TX` | Wait until another OracleTransaction confirms | Cross-chain atomic sequences |
+| `PRICE_THRESHOLD` | Wait until an exchange pair hits a target price | Cross-chain limit orders |
+| `BALANCE_THRESHOLD` | Wait until a target chain address reaches a balance | Conditional funding flows |
+
+**Cross-Chain Atomic Sequence Example:**
+
+A user wants to atomically swap BTC for SOL, routed through QRDX:
+
+```typescript
+// Step 1: User constructs a Bitcoin transaction sending BTC to the QRDX bridge
+const btcTx = constructBitcoinTx({
+    inputs: [userUtxo],
+    outputs: [{ address: qrdxBridgeBtcAddress, satoshis: 100_000_000 }], // 1 BTC
+});
+const signedBtcTx = signWithBitcoinKey(btcTx, userBtcPrivKey);
+
+// Step 2: User constructs a Solana transaction receiving SOL from QRDX bridge
+const solTx = constructSolanaInstruction({
+    program: QRDX_SOL_BRIDGE_PROGRAM,
+    instruction: "release",
+    amount: 500_000_000_000, // 500 SOL equivalent
+    recipient: userSolAddress,
+});
+const signedSolTx = signWithSolanaKey(solTx, userSolPrivKey);
+
+// Step 3: Wrap both in OracleTransactions with conditional linking
+const oracleTx1 = new OracleTransaction({
+    targetChainId: BITCOIN,
+    txType: 2, // BitcoinTransaction
+    innerTransaction: signedBtcTx.rawTransaction,
+    conditions: [{ type: "IMMEDIATE" }],
+    callback: { action: "MINT_QBTC", amount: "1.0" },
+    dilithiumSignature: signWithDilithium(envelope1, userDilithiumKey),
+});
+
+const oracleTx2 = new OracleTransaction({
+    targetChainId: SOLANA,
+    txType: 3, // SolanaTransaction
+    innerTransaction: signedSolTx.rawTransaction,
+    conditions: [{
+        type: "AFTER_ORACLE_TX",
+        reference: oracleTx1.hash(), // Only execute after BTC tx confirms
+    }],
+    callback: { action: "BURN_QBTC_MINT_QSOL_RELEASE" },
+    dilithiumSignature: signWithDilithium(envelope2, userDilithiumKey),
+});
+
+// Step 4: Submit both to QRDX as an atomic batch
+await qrdx.submitOracleTransactionBatch([oracleTx1, oracleTx2]);
+```
+
+The result: BTC arrives at the bridge, qBTC is minted, an exchange occurs on-chain, qSOL is burned, and the Solana release transaction fires -- all orchestrated by QRDX consensus with full PQ audit trail.
+
+#### 3.8.7 Advanced Use Cases
+
+**1. Cross-Chain DeFi Arbitrage:**
+A user spots a price discrepancy between Uniswap (Ethereum) and Raydium (Solana). They construct an EthereumTransaction buying the underpriced token and a SolanaTransaction selling the overpriced token, linked via `AFTER_ORACLE_TX` conditions. If either leg fails, the sequence halts. QRDX provides the atomicity guarantee across two independent chains.
+
+**2. Multi-Chain Treasury Management:**
+A DAO treasury holds assets across Bitcoin, Ethereum, and Solana. Using OracleTransactions signed by a PQ multisig wallet (Section 6), the DAO can rebalance across all three chains in a single QRDX batch submission. The 3-of-5 threshold Dilithium signature authorizes the OracleTransaction envelope, and each inner transaction is signed by the DAO's chain-specific keys.
+
+**3. Conditional Cross-Chain Payroll:**
+A company pays contractors in their preferred chain and token. Monthly payroll is prepared as a batch of OracleTransactions: ETH payments for some contractors, BTC for others, SOL for the rest. A `BALANCE_THRESHOLD` condition ensures the master wallet on each chain has sufficient funds before any payments fire. If one chain is underfunded, only that chain's payments are held; the rest proceed.
+
+**4. Cross-Chain Liquidation Protection:**
+A user has a leveraged position on an Ethereum lending protocol. They set up a `PRICE_THRESHOLD` OracleTransaction that, if their collateral ratio drops below 150%, automatically submits an Ethereum transaction adding collateral from their wallet. The entire monitoring, triggering, and execution is handled by QRDX validators -- no centralized keeper bot required.
+
+**5. Atomic Cross-Chain NFT Purchases:**
+A user wants to buy an Ethereum NFT using BTC. They construct a BitcoinTransaction paying the seller's BTC address and an EthereumTransaction calling the NFT contract's `transferFrom` (pre-approved by the seller via a signed listing). Both are linked: the NFT transfer only executes after the BTC payment confirms.
+
+#### 3.8.8 Validator Processing of OracleTransactions
+
+When a validator includes an OracleTransaction in a block, the following processing occurs:
+
+1. **Envelope Validation**: Verify Dilithium signature on the OracleTransaction envelope
+2. **Inner Signature Validation**: Verify the target chain's native signature on the inner transaction using the appropriate algorithm:
+   - EthereumTransaction: ecrecover(hash, v, r, s) must match `targetChainPubKey`
+   - BitcoinTransaction: Verify witness/scriptSig against input UTXOs
+   - SolanaTransaction: Ed25519 signature verification against `targetChainPubKey`
+3. **Condition Evaluation**: Check all `ExecutionCondition` entries against current oracle state
+4. **Gas Subsidy Check**: Verify user has sufficient QRDX balance for `maxGasSubsidy`
+5. **State Update**: Record OracleTransaction in protocol state with status `PENDING`
+6. **Broadcast Scheduling**: If all conditions are met, queue inner transaction for broadcast by the relevant chain adapter
+7. **Confirmation Monitoring**: Track inner transaction on target chain via the adapter's light client
+8. **Attestation**: Once confirmed, submit attestation; when 2/3+1 validators attest, mark as `CONFIRMED`
+9. **Callback Execution**: If `callbackTxHash` is set, execute the callback (e.g., mint qRC20, update exchange state, trigger next OracleTransaction in sequence)
+
+#### 3.8.9 Fee Model for OracleTransactions
+
+| Component | Fee | Description |
+|---|---|---|
+| Envelope Processing | 0.001 QRDX | Fixed fee for envelope validation and state storage |
+| Condition Monitoring | 0.0005 QRDX/block | Per-block fee while conditions are being evaluated |
+| Chain Adapter Broadcast | Variable | Reimburses validator for target chain gas/fees |
+| Confirmation Attestation | 0.002 QRDX | Paid to attestation validators on confirmation |
+| Callback Execution | Standard QRDX gas | If callback triggers QRDX state changes |
+
+Users set `maxGasSubsidy` to cap their total cost. If the target chain's gas exceeds the subsidy, the OracleTransaction is held until gas drops or expires at the deadline.
+
+#### 3.8.10 Security Properties
+
+- **Non-custodial**: Users sign inner transactions themselves. Validators never access user private keys for external chains.
+- **Double-signature verification**: Both PQ envelope and native chain signatures must be valid. A compromised Dilithium key alone cannot forge a target chain transaction, and a compromised target chain key alone cannot submit an OracleTransaction.
+- **Replay protection**: QRDX nonce prevents replay on the L0 side. Target chain nonce/UTXO model prevents replay on the target side.
+- **Condition integrity**: Conditions are evaluated against validator-attested oracle state (2/3+1 consensus), not a single source.
+- **Atomicity within QRDX**: OracleTransaction batches are atomic on the QRDX side. If batch submission fails, no inner transactions are broadcast.
+- **Graceful failure**: If an inner transaction fails or reverts on the target chain, the OracleTransaction enters `FAILED` state and the callback is not executed. The user's QRDX state reflects the failure.
+
 
 ---
 
@@ -2338,6 +2688,7 @@ In the L0 model, validators perform all critical protocol roles simultaneously:
 | **Oracle Attestor** | Attests to external chain states (block heights, state roots) | Chain adapter(s) running |
 | **Bridge Operator** | Signs cross-chain transactions using threshold Dilithium | Chain adapter + bridge signer role |
 | **Exchange Settler** | Processes exchange engine state transitions (swaps, fills, LP changes) | Part of block processing |
+| **OracleTx Relay** | Validates, broadcasts, and attests to OracleTransaction inner transactions on target chains | Chain adapter + OracleTx processing |
 
 There is no separate relayer network, no separate oracle network, and no separate bridge operator set. The validator set is the single source of truth for all operations, all authenticated with PQ cryptography.
 
@@ -2375,8 +2726,9 @@ Block {
         validatorNodeId: string (@-schema)
     },
     transactions: Transaction[],
-    exchangeOps: ExchangeOperation[],    // NEW: swaps, orders, LP changes
-    oracleAttestations: OracleAttestation[], // NEW: cross-chain state attestations
+    oracleTransactions: OracleTransaction[], // Cross-chain sub-tx envelopes (Section 3.8)
+    exchangeOps: ExchangeOperation[],    // Swaps, orders, LP changes
+    oracleAttestations: OracleAttestation[], // Cross-chain state attestations
     attestations: Attestation[]
 }
 ```
@@ -2402,6 +2754,7 @@ Validators are slashed for:
 - **Oracle fraud**: Submitting false oracle attestations for external chain states (50% stake)
 - **Exchange manipulation**: Submitting invalid exchange state transitions or front-running through block manipulation (75% stake)
 - **Classical key usage**: Attempting to participate in consensus with non-Dilithium keys (immediate ejection, 100% stake)
+- **OracleTx relay fraud**: Falsely attesting to OracleTransaction confirmation or selectively censoring OracleTransactions (75% stake)
 - **Doomsday violation**: Processing shielding transactions after doomsday activation (100% stake)
 
 ---
@@ -2997,6 +3350,16 @@ The QRDX ecosystem invites developers, liquidity providers, traders, and institu
 **Threshold Dilithium**: A post-quantum threshold signature scheme where m-of-n signers produce a single aggregated Dilithium signature.
 
 **TWAP (Time-Weighted Average Price)**: Price averaging method that weights prices by the time they were active.
+
+**OracleTransaction**: An L0 cross-chain transaction envelope that wraps a fully-formed, natively-signed target chain transaction inside a PQ-signed Dilithium wrapper. Enables non-custodial cross-chain execution with conditional logic and callbacks.
+
+**EthereumTransaction (sub-type)**: An OracleTransaction inner payload containing a fully-formed EIP-1559 Ethereum transaction signed with secp256k1.
+
+**BitcoinTransaction (sub-type)**: An OracleTransaction inner payload containing a fully-formed Bitcoin transaction with witness data, signed with secp256k1.
+
+**SolanaTransaction (sub-type)**: An OracleTransaction inner payload containing a fully-formed Solana transaction signed with Ed25519.
+
+**Execution Condition**: A rule attached to an OracleTransaction that must be satisfied before the inner transaction is broadcast to the target chain (e.g., price threshold, block height, prerequisite OracleTransaction confirmation).
 
 **Unshielding**: Process of converting quantum-resistant assets back to classical blockchain assets (quantum-to-classical).
 
