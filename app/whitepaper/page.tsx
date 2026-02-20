@@ -26,7 +26,7 @@ export default function WhitepaperPage() {
 
   useEffect(() => {
     // Fetch the markdown content
-    fetch('/QRDX-Whitepaper-v2.0.md')
+    fetch('/QRDX-Whitepaper-v3.2.md')
       .then((res) => res.text())
       .then((text) => setMarkdownContent(text))
       .catch((err) => console.error('Failed to load whitepaper:', err))
@@ -114,13 +114,13 @@ export default function WhitepaperPage() {
                 {showFullContent ? 'Hide Full Content' : 'Read Full Whitepaper'}
               </Button>
               <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
-                <a href="/QRDX-Whitepaper-v2.0.pdf" download>
+                <a href="/QRDX-Whitepaper-v3.2.pdf" download>
                   <Download className="h-5 w-5" />
                   Download PDF
                 </a>
               </Button>
               <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
-                <a href="/QRDX-Whitepaper-v2.0.md" download>
+                <a href="/QRDX-Whitepaper-v3.2.md" download>
                   <FileText className="h-5 w-5" />
                   Download Markdown
                 </a>
@@ -132,7 +132,7 @@ export default function WhitepaperPage() {
           <motion.div variants={fadeIn(0.1)} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">v2.0</div>
+                <div className="text-2xl font-bold text-primary mb-1">v3.2</div>
                 <div className="text-sm text-muted-foreground">Current Version</div>
               </CardContent>
             </Card>
@@ -144,7 +144,7 @@ export default function WhitepaperPage() {
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-primary mb-1">Nov 2025</div>
+                <div className="text-2xl font-bold text-primary mb-1">Feb 2026</div>
                 <div className="text-sm text-muted-foreground">Last Updated</div>
               </CardContent>
             </Card>

@@ -90,4 +90,11 @@ if [ -f "public/QRDX-Whitepaper-v2.3.md" ]; then
     generate_pdf "public/QRDX-Whitepaper-v2.3.md" "public/QRDX-Whitepaper-v2.3.pdf" "v2.3" "December 9, 2025"
 fi
 
+# Generate v3.2 PDF (if file exists)
+if [ -f "public/QRDX-Whitepaper-v3.2.md" ]; then
+    echo "---"
+    echo ""
+    generate_pdf "public/QRDX-Whitepaper-v3.2.md" "public/QRDX-Whitepaper-v3.2.pdf" "v3.2" "February 16, 2026"
+fi
+
 echo "Done! 🎉"

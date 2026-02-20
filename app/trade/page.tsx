@@ -108,7 +108,7 @@ export default function TradePage() {
             </Card>
             <Card className="border-primary/20">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">2.4B</div>
+                <div className="text-2xl font-bold text-primary">2.4B (ALT Pools)</div>
                 <div className="text-xs text-muted-foreground">Liquidity</div>
               </CardContent>
             </Card>
