@@ -209,23 +209,25 @@ All colors have dark mode variants.
 
 ## Current Pages
 
-1. **Home** (`/app/page.tsx`): 328 lines
-   - Hero section with quantum-resistant messaging
-   - Animated with Framer Motion
-   - Uses Card, Button, Icons (Shield, Lock, Zap, etc.)
+All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not include them).
 
-2. **About** (`/app/about/page.tsx`)
-3. **Services** (`/app/services/page.tsx`)
-4. **Contact** (`/app/contact/page.tsx`)
+| Route | Page |
+| --- | --- |
+| `/` | Home: hero, live testnet tiles and markets, post-quantum and exchange features, products, status |
+| `/trade`, `/pools`, `/stake` | Product pages with live testnet data (markets, pools, validators) and links into the apps |
+| `/wallet` (`/wallet/create`) | QRDX Wallet (`components/pages/WalletPage.tsx`) |
+| `/wallet/funding` | Getting QRDX: testnet has no public faucet; mainnet not launched |
+| `/wallet/shielding` | Asset shielding: **planned**, from the whitepaper; clearly marked as not available |
+| `/explorer`, `/get-started`, `/services`, `/about`, `/docs`, `/contact` | Product overview, onboarding, what runs, mission, docs index, contact |
+| `/whitepaper` | Reader for `public/QRDX-Whitepaper-v3.2.md`; contents built from its headings |
+| `/terms`, `/privacy` | Legal (`components/LegalPage.tsx`) |
 
-## Navigation Component
+## Content and data rules
 
-Located at `/components/Navigation.tsx`:
-- Fixed positioned header with blur backdrop
-- Desktop: NavigationMenu with dropdowns
-- Mobile: Sheet (slide-out menu)
-- Animated with Framer Motion
-- Icons from Lucide React
+- **Say what is real.** Live means live on testnet; mainnet has not launched. Whitepaper-only features (bridges, asset shielding, governance) are labelled planned. Check claims against qrdx-node, qrdx-trade and qrdx-wallet docs, and docs.qrdx.org.
+- **No generated data.** Live numbers come from the testnet node and the trade API in the visitor's browser (`lib/live.ts`); an unreadable number shows as a dash.
+- **Links live in `lib/site.ts`** (apps, docs pages, socials, contact addresses). Docs links point at docs.qrdx.org (`/docs/...` paths).
+- **Theme**: the shared QRDX tokens in `app/globals.css` (same as trade, explorer and docs): navy with QRDX blue in dark mode, black on white in light mode. Shared page blocks are in `components/site/blocks.tsx`.
 
 ## Utilities
 
@@ -301,7 +303,7 @@ QRDX focuses on:
 
 ---
 
-**Last Updated**: November 3, 2025
+**Last Updated**: October 8, 2026
 **Next.js Version**: 16.0.1
 **Package Manager**: pnpm@10.6.4
 **Runtime**: Bun

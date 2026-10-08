@@ -1,164 +1,49 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Shield, Zap, Lock, Globe } from 'lucide-react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { ArrowLeftRight, Code2, Coins, Layers, QrCode, Search, ShieldCheck, TrendingUp, Wallet } from 'lucide-react'
+import { ButtonLink, Feature, PageHero, Section } from '@/components/site/blocks'
+import { apps, docs } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+const LIVE = [
+  { icon: ArrowLeftRight, title: 'Spot trading', text: 'Order books and best-venue swaps for any pair of native tokens and native QRDX.', href: docs.spot },
+  { icon: Layers, title: 'Liquidity pools', text: 'Concentrated liquidity with four fee tiers; 70 % of fees to in-range providers.', href: docs.liquidity },
+  { icon: TrendingUp, title: 'Perpetuals', text: 'USD-quoted perps with cross and isolated margin, a validator oracle and a backstop vault.', href: docs.perps },
+  { icon: Coins, title: 'Native tokens', text: 'Create a token and its market in one step; extensions and NFTs included.', href: docs.launch },
+  { icon: Wallet, title: 'QRDX Wallet', text: 'Extension, web and iPhone, with a post-quantum key on every account.', href: apps.wallet },
+  { icon: Search, title: 'QRDX Explorer', text: 'The chain, its tokens and markets, and signed public profiles.', href: apps.explorer },
+  { icon: ShieldCheck, title: 'Validation', text: 'Post-quantum proof of stake: run a validator with your own stake.', href: '/stake' },
+  { icon: Code2, title: 'Developer APIs', text: 'JSON-RPC, REST and streams on every node, plus the trade API.', href: docs.build },
+  { icon: QrCode, title: 'QRDX Connect', text: 'Link any site to the wallet on a phone through an encrypted relay.', href: `${docs.build}/qrdx-connect` },
+]
 
-export default function Services() {
+export default function ServicesPage() {
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-6"
-              variants={fadeIn()}
-            >
-              Our Services
-            </motion.h1>
-            
-            <motion.p 
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-              variants={fadeIn(0.2)}
-            >
-              Comprehensive quantum-resistant DeFi solutions designed for the future of finance.
-            </motion.p>
-          </motion.div>
+    <>
+      <PageHero
+        eyebrow="Products"
+        title="What runs on QRDX"
+        actions={
+          <>
+            <ButtonLink href={apps.trade}>Launch app</ButtonLink>
+            <ButtonLink href={docs.roadmap} variant="outline">
+              What is planned
+            </ButtonLink>
+          </>
+        }
+      >
+        Everything here is live on testnet. Bridges, asset shielding and governance are planned and listed on the roadmap.
+      </PageHero>
+      <Section>
+        <div className="grid gap-4 md:grid-cols-3">
+          {LIVE.map((s) => (
+            <a key={s.title} href={s.href} {...(s.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="block">
+              <Feature icon={s.icon} title={s.title}>
+                {s.text}
+              </Feature>
+            </a>
+          ))}
         </div>
-      </section>
-
-      {/* Services Grid */}
-      <section className="py-16 md:py-24">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-6 w-6 text-primary" />
-                    Quantum-Resistant Trading
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Trade with confidence using our quantum-resistant protocols that protect against future cryptographic threats.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn(0.1)}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-6 w-6 text-primary" />
-                    High-Speed Transactions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Experience lightning-fast transactions with our optimized blockchain infrastructure and advanced consensus mechanisms.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn(0.2)}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="h-6 w-6 text-primary" />
-                    Secure Staking
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Earn rewards through our secure staking platform with industry-leading security measures and transparent APY calculations.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn(0.3)}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-6 w-6 text-primary" />
-                    Cross-Chain Bridge
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Seamlessly transfer assets across different blockchain networks with our secure and efficient cross-chain bridge.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn(0.4)}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-6 w-6 text-primary" />
-                    Liquidity Pools
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Provide liquidity and earn fees through our optimized automated market maker (AMM) with dynamic pricing algorithms.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn(0.5)}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-6 w-6 text-primary" />
-                    Yield Farming
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Maximize your returns through our innovative yield farming opportunities with carefully curated DeFi protocols.
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+      </Section>
+    </>
   )
 }

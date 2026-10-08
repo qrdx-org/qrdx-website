@@ -1,143 +1,62 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Shield, Lock, ArrowRightLeft, AlertCircle } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { AlertOctagon, ArrowDownUp, Coins, Link2 } from 'lucide-react'
+import { ButtonLink, Feature, Note, PageHero, Section } from '@/components/site/blocks'
+import { docs } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
-
-export default function ShieldingAssets() {
+export default function ShieldingPage() {
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      <section className="relative pt-32 pb-16 md:pt-36 md:pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
-        
-        <div className="container px-4 mx-auto max-w-4xl">
-          <motion.div 
-            initial="initial"
-            animate="animate"
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.div
-              variants={fadeIn()}
-              className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-primary/10 border border-primary/20"
-            >
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Asset Shielding</span>
-            </motion.div>
+    <>
+      <PageHero
+        eyebrow="Planned"
+        title="Asset shielding"
+        actions={
+          <>
+            <ButtonLink href="/whitepaper#8-asset-shielding-mechanism">Read the design</ButtonLink>
+            <ButtonLink href={docs.roadmap} variant="outline">
+              Status and roadmap
+            </ButtonLink>
+          </>
+        }
+      >
+        Bringing assets from classical chains, such as ETH and BTC, onto QRDX where post-quantum keys secure them, and back again.
+      </PageHero>
 
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-6 text-foreground"
-              variants={fadeIn()}
-            >
-              Shield Your Assets
-            </motion.h1>
-            
-            <motion.p 
-              className="text-xl text-muted-foreground mb-8"
-              variants={fadeIn()}
-            >
-              Convert your traditional cryptocurrency into quantum-resistant tokens for future-proof security.
-            </motion.p>
-
-            <motion.div variants={fadeIn()}>
-              <Alert className="mb-8 bg-yellow-500/10 border-yellow-500/50 text-yellow-600 dark:text-yellow-500">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Coming Soon:</strong> Asset shielding functionality is currently under development. Check back soon!
-                </AlertDescription>
-              </Alert>
-            </motion.div>
-
-            <motion.div 
-              className="grid md:grid-cols-3 gap-6 mb-8"
-              variants={fadeIn()}
-            >
-              <Card>
-                <CardHeader>
-                  <ArrowRightLeft className="h-8 w-8 text-primary mb-2" />
-                  <CardTitle>ETH → qETH</CardTitle>
-                  <CardDescription>
-                    Convert Ethereum to quantum-resistant qETH with 1:1 backing
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Lock className="h-8 w-8 text-primary mb-2" />
-                  <CardTitle>BTC → qBTC</CardTitle>
-                  <CardDescription>
-                    Shield Bitcoin as quantum-safe qBTC via trustless bridge
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <Shield className="h-8 w-8 text-primary mb-2" />
-                  <CardTitle>Any Token</CardTitle>
-                  <CardDescription>
-                    Convert ERC-20 tokens to their qRC20 equivalents
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </motion.div>
-
-            <motion.div 
-              className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8"
-              variants={fadeIn()}
-            >
-              <h3 className="text-xl font-bold mb-3">Why Shield Your Assets?</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Protection against quantum computing threats to traditional cryptography</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>NIST-standardized post-quantum algorithms (CRYSTALS-Dilithium, CRYSTALS-Kyber)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Fully redeemable - convert back to original assets anytime</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>Future-proof your holdings for long-term security</span>
-                </li>
-              </ul>
-            </motion.div>
-
-            <motion.div variants={fadeIn()} className="flex gap-4">
-              <Button size="lg" asChild>
-                <Link href="/get-started">Back to Get Started</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <a href="https://docs.qrdx.org/wallet/shielding" target="_blank" rel="noopener noreferrer">
-                  View Documentation
-                </a>
-              </Button>
-            </motion.div>
-          </motion.div>
+      <Section>
+        <div className="mx-auto max-w-3xl">
+          <Note title="Not available yet" tone="warn">
+            Asset shielding is part of the whitepaper's design and is not live on testnet or mainnet. Nothing on this page can be used today. Be suspicious of anyone offering to shield your assets now.
+          </Note>
         </div>
+      </Section>
+
+      <section className="border-y bg-card/30">
+        <Section title="The design" intro="From the QRDX whitepaper. Details may change before it ships.">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Feature icon={Link2} title="Lock on the origin chain">
+              An asset is locked on its own chain, and validators that follow that chain attest to the deposit.
+            </Feature>
+            <Feature icon={Coins} title="Mint a native token">
+              The shielded asset is a native QRDX token whose mint authority is the bridge: minted when the deposit is proven, held by a post-quantum account, tradable on the exchange.
+            </Feature>
+            <Feature icon={ArrowDownUp} title="Redeem">
+              Burning the shielded token releases the original asset on its chain.
+            </Feature>
+            <Feature icon={AlertOctagon} title="The Doomsday protocol">
+              A circuit breaker that would stop new classical-to-quantum shielding if a quantum computer demonstrably breaks ECDSA, while still letting holders bring shielded assets back.
+            </Feature>
+          </div>
+        </Section>
       </section>
 
-      <Footer />
-    </div>
+      <Section title="What you can do today">
+        <div className="mx-auto max-w-3xl text-center text-muted-foreground">
+          <p>Hold and trade native QRDX tokens with a post-quantum key on testnet: the account and the exchange that shielded assets will use already run.</p>
+          <div className="mt-6 flex justify-center gap-3">
+            <ButtonLink href="/get-started">Get started</ButtonLink>
+          </div>
+        </div>
+      </Section>
+    </>
   )
 }

@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -47,8 +45,6 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen">
-      <Navigation />
-      
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 md:pt-40 md:pb-24">
         <div className="container px-4 mx-auto">
@@ -85,11 +81,11 @@ export default function Contact() {
                   <h3 className="font-semibold mb-1">Small Issue?</h3>
                   <p className="text-sm text-muted-foreground">
                     For quick answers, check out our{' '}
-                    <a href="/docs" className="text-primary hover:underline font-medium">
+                    <a href="https://docs.qrdx.org/docs" className="text-primary hover:underline font-medium">
                       documentation
                     </a>
                     {' '}or visit our{' '}
-                    <a href="https://docs.qrdx.org/support" className="text-primary hover:underline font-medium">
+                    <a href="https://docs.qrdx.org/docs" className="text-primary hover:underline font-medium">
                       support section
                     </a>
                     .
@@ -247,7 +243,7 @@ export default function Contact() {
                 <Card>
                   <CardContent className="pt-6">
                     <a 
-                      href="https://docs.qrdx.org/partnerships" 
+                      href="https://trade.qrdx.org/partner" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="block hover:opacity-80 transition-opacity"
@@ -276,8 +272,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

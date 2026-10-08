@@ -15,7 +15,7 @@ const nextConfig = {
     return [
       {
         source: '/docs/:path*',
-        destination: 'https://docs.qrdx.org/:path*',
+        destination: 'https://docs.qrdx.org/docs/:path*',
         permanent: true,
       },
     ]

@@ -1,195 +1,113 @@
 'use client'
 
-import React from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Menu, FileText, TrendingUp, Droplets, Coins, BookOpen, Search, HelpCircle, Rocket, Users } from 'lucide-react'
-import { motion } from 'framer-motion'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { usePathname } from 'next/navigation'
+import { ArrowUpRight, BookOpen, ChevronDown, Code2, FileText, LineChart, Menu, Search, ShieldCheck, Wallet, X } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { Wordmark } from '@/components/site/Logo'
+import { apps, docs } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
-const Navigation = () => {
+const PRODUCTS = [
+  { href: '/trade', icon: LineChart, title: 'Trade', text: 'Spot books, pools and perpetuals' },
+  { href: '/wallet', icon: Wallet, title: 'Wallet', text: 'Web, iPhone and browser extension' },
+  { href: '/explorer', icon: Search, title: 'Explorer', text: 'Blocks, tokens, markets, profiles' },
+  { href: '/stake', icon: ShieldCheck, title: 'Validate', text: 'Run a post-quantum validator' },
+]
+
+const DEVELOPERS = [
+  { href: docs.build, icon: Code2, title: 'Build on QRDX', text: 'JSON-RPC, REST, streams, signing' },
+  { href: docs.home, icon: BookOpen, title: 'Documentation', text: 'Guides, concepts and references' },
+  { href: '/whitepaper', icon: FileText, title: 'Whitepaper', text: 'The protocol design' },
+]
+
+function Menu_({ label, items }: { label: string; items: typeof PRODUCTS }) {
   return (
-    <motion.nav 
-      className="fixed w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b z-50 [body[data-pwa-iframe-active]_&]:hidden"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="container flex h-16 items-center px-4 mx-auto">
-        <Link href="/" className="mr-8">
-          <motion.div
-            className="font-bold text-2xl"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            QRDX
-          </motion.div>
-        </Link>
-        
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex flex-1">
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/get-started" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <Rocket className="mr-2 h-4 w-4" />
-                      Get Started
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/trade" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <TrendingUp className="mr-2 h-4 w-4" />
-                      Trade
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/pools" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <Droplets className="mr-2 h-4 w-4" />
-                      Pools
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/stake" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <Coins className="mr-2 h-4 w-4" />
-                      Stake
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/docs" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <BookOpen className="mr-2 h-4 w-4" />
-                      Docs
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a href="https://explorer.qrdx.org" target="_blank" rel="noopener noreferrer" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <Search className="mr-2 h-4 w-4" />
-                      Explorer
-                    </div>
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              {/* <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/contact" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <HelpCircle className="mr-2 h-4 w-4" />
-                      Support
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem> */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <a href="https://trade.qrdx.org/partner" target="_blank" rel="noopener noreferrer" className={cn("block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground")}>
-                    <div className="flex items-center font-medium">
-                      <Users className="mr-2 h-4 w-4" />
-                      Partnership
-                    </div>
-                  </a>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
-        
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild className="hidden md:flex">
-            <Link href="/whitepaper" className="flex items-center">
-              <FileText className="mr-2 h-4 w-4" />
-              Whitepaper
-            </Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/trade">Launch App</Link>
-          </Button>
-          <ThemeToggle />
-        </div>
-        
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[240px] sm:w-[280px]">
-              <div className="flex flex-col space-y-4 mt-8">
-                <Link href="/get-started" className="flex items-center space-x-2 text-lg font-medium">
-                  <Rocket className="h-5 w-5" />
-                  <span>Get Started</span>
-                </Link>
-                <Link href="/trade" className="flex items-center space-x-2 text-lg font-medium">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>Trade</span>
-                </Link>
-                <Link href="/pools" className="flex items-center space-x-2 text-lg font-medium">
-                  <Droplets className="h-5 w-5" />
-                  <span>Pools</span>
-                </Link>
-                <Link href="/stake" className="flex items-center space-x-2 text-lg font-medium">
-                  <Coins className="h-5 w-5" />
-                  <span>Stake</span>
-                </Link>
-                <Link href="/docs" className="flex items-center space-x-2 text-lg font-medium">
-                  <BookOpen className="h-5 w-5" />
-                  <span>Docs</span>
-                </Link>
-                <a href="https://explorer.qrdx.org" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-lg font-medium">
-                  <Search className="h-5 w-5" />
-                  <span>Explorer</span>
-                </a>
-                {/* <Link href="/contact" className="flex items-center space-x-2 text-lg font-medium">
-                  <HelpCircle className="h-5 w-5" />
-                  <span>Support</span>
-                </Link> */}
-                <a href="https://trade.qrdx.org/partner" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-lg font-medium">
-                  <Users className="h-5 w-5" />
-                  <span>Partnership</span>
-                </a>
-                <Link href="/whitepaper" className="flex items-center space-x-2 text-lg font-medium">
-                  <FileText className="h-5 w-5" />
-                  <span>Whitepaper</span>
-                </Link>
-              </div>
-            </SheetContent>
-          </Sheet>
+    <div className="group relative">
+      <button className="flex items-center gap-1 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+        {label} <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180" />
+      </button>
+      <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition-all group-hover:visible group-hover:opacity-100">
+        <div className="w-80 rounded-xl border bg-popover p-2 shadow-xl">
+          {items.map((i) => {
+            const external = i.href.startsWith('http')
+            return (
+              <Link
+                key={i.href}
+                href={i.href}
+                {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-accent"
+              >
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-card">
+                  <i.icon className="h-4 w-4 text-primary" />
+                </span>
+                <span>
+                  <span className="flex items-center gap-1 text-sm font-medium">
+                    {i.title} {external && <ArrowUpRight className="h-3 w-3 text-muted-foreground" />}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">{i.text}</span>
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
-    </motion.nav>
+    </div>
   )
 }
 
-export default Navigation
+export default function Navigation() {
+  const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  useEffect(() => setOpen(false), [pathname])
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 border-b bg-background/85 backdrop-blur-md [body[data-pwa-iframe-active]_&]:hidden">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-4">
+        <Link href="/" className="mr-4" aria-label="QRDX home">
+          <Wordmark />
+        </Link>
+        <div className="hidden items-center md:flex">
+          <Menu_ label="Products" items={PRODUCTS} />
+          <Menu_ label="Developers" items={DEVELOPERS} />
+          <Link href="/get-started" className={cn('rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground', pathname === '/get-started' ? 'text-foreground' : 'text-muted-foreground')}>
+            Get started
+          </Link>
+          <Link href="/about" className={cn('rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground', pathname === '/about' ? 'text-foreground' : 'text-muted-foreground')}>
+            About
+          </Link>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <span className="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground lg:inline-flex">
+            <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-bid text-bid" /> Testnet live
+          </span>
+          <ThemeToggle />
+          <a
+            href={apps.trade}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-1.5 rounded-lg bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:inline-flex"
+          >
+            Launch app <ArrowUpRight className="h-4 w-4" />
+          </a>
+          <button onClick={() => setOpen((o) => !o)} aria-label="Menu" className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent md:hidden">
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </nav>
+      {open && (
+        <div className="border-t bg-background px-4 pb-4 md:hidden">
+          {[...PRODUCTS, ...DEVELOPERS, { href: '/get-started', icon: BookOpen, title: 'Get started', text: '' }, { href: '/about', icon: FileText, title: 'About', text: '' }].map((i) => (
+            <Link key={i.href} href={i.href} className="flex items-center gap-3 border-b py-3 text-sm last:border-b-0">
+              <i.icon className="h-4 w-4 text-primary" /> {i.title}
+            </Link>
+          ))}
+          <a href={apps.trade} className="mt-3 flex items-center justify-center gap-1.5 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground">
+            Launch app <ArrowUpRight className="h-4 w-4" />
+          </a>
+        </div>
+      )}
+    </header>
+  )
+}

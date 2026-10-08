@@ -1,122 +1,83 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { TrendingUp, Zap, Shield } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
-
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+import { ArrowLeftRight, BarChart3, Gauge, Layers, LineChart, Rocket, ShieldCheck, TrendingUp, Zap } from 'lucide-react'
+import { ButtonLink, Feature, LiveMarkets, Note, PageHero, Section } from '@/components/site/blocks'
+import { apps, docs } from '@/lib/site'
 
 export default function TradePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <Navigation />
-      
-      <div className="container px-4 mx-auto pt-32 pb-16">
-        <motion.div
-          className="max-w-2xl mx-auto"
-          initial="initial"
-          animate="animate"
-          variants={{
-            initial: {},
-            animate: { transition: { staggerChildren: 0.1 } }
-          }}
-        >
-          <motion.div variants={fadeIn()} className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-6">
-              <TrendingUp className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-5xl font-bold mb-4">Trading Platform</h1>
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
-              <span className="text-lg font-medium text-primary">Coming Soon</span>
-            </div>
-            <p className="text-xl text-muted-foreground mb-8">
-              QRDX trading interface is under development
-            </p>
-          </motion.div>
+    <>
+      <PageHero
+        eyebrow="QRDX Trade"
+        title="Trade on the protocol's own exchange"
+        actions={
+          <>
+            <ButtonLink href={apps.trade}>Open QRDX Trade</ButtonLink>
+            <ButtonLink href={docs.spot} variant="outline">
+              How trading works
+            </ButtonLink>
+          </>
+        }
+      >
+        Spot order books, concentrated-liquidity pools and perpetual futures, executed by QRDX validators and signed with your post-quantum key. Live on testnet.
+      </PageHero>
 
-          <motion.div variants={fadeIn(0.1)}>
-            <Card className="border-primary/20">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-center">What to Expect</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Instant Token Swaps</h3>
-                      <p className="text-muted-foreground">
-                        Trade any token pair instantly with the best rates and minimal slippage
-                      </p>
-                    </div>
-                  </div>
+      <Section title="Markets, live from testnet" intro="Every price and trade below comes from the chain, read in your browser.">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">Spot</h3>
+            <LiveMarkets kind="spot" limit={8} />
+          </div>
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">Perpetuals</h3>
+            <LiveMarkets kind="perp" limit={8} />
+          </div>
+        </div>
+      </Section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Zap className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Lightning Fast Execution</h3>
-                      <p className="text-muted-foreground">
-                        Sub-second transaction finality powered by quantum-resistant blockchain
-                      </p>
-                    </div>
-                  </div>
+      <section className="border-y bg-card/30">
+        <Section title="What you can do">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Feature icon={LineChart} title="Limit orders">
+              Rest orders on any pair's book with price-time priority. Funds are escrowed by the protocol until the order fills or you cancel.
+            </Feature>
+            <Feature icon={ArrowLeftRight} title="Best-venue swaps">
+              A swap prices every pool and the book and settles with the one that pays the most, against a minimum you set from an exact quote.
+            </Feature>
+            <Feature icon={TrendingUp} title="Perpetuals">
+              BTC, ETH, SOL and more against USD, cross or isolated margin, priced by a validator-voted oracle, with hourly funding.
+            </Feature>
+            <Feature icon={Layers} title="Liquidity pools">
+              Provide liquidity in a price range and earn 70 % of the pool fee while the price is inside it. Fee tiers from 0.01 % to 1 %.
+            </Feature>
+            <Feature icon={Rocket} title="Launch a token">
+              Create a native token and open its market in one step, with a launch curve buyers walk up like a bonding curve.
+            </Feature>
+            <Feature icon={BarChart3} title="Portfolio and PnL">
+              Every balance, order and position in one place, with realized and open PnL charted over time.
+            </Feature>
+          </div>
+        </Section>
+      </section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Shield className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Non-Custodial & Secure</h3>
-                      <p className="text-muted-foreground">
-                        Trade directly from your wallet with quantum-resistant security
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.2)} className="mt-8 text-center">
-            <Button size="lg" asChild>
-              <Link href="/">Back to Home</Link>
-            </Button>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.3)} className="mt-8 grid grid-cols-3 gap-4">
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">0.05%</div>
-                <div className="text-xs text-muted-foreground">Trading Fee</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">&lt;1s</div>
-                <div className="text-xs text-muted-foreground">Finality</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">2.4B (ALT Pools)</div>
-                <div className="text-xs text-muted-foreground">Liquidity</div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </div>
-      
-      <Footer />
-    </div>
+      <Section title="How it is different">
+        <div className="grid gap-4 md:grid-cols-3">
+          <Feature icon={ShieldCheck} title="Post-quantum signatures">
+            Every order is an exchange transaction signed with ML-DSA-65. A classic key cannot place one.
+          </Feature>
+          <Feature icon={Zap} title="No contracts, no relayers">
+            Books, pools and the perps clearinghouse are protocol state. There is no exchange contract to exploit and no off-chain matching engine.
+          </Feature>
+          <Feature icon={Gauge} title="All-or-nothing">
+            Every operation succeeds whole or changes nothing but its fee. A swap below your minimum simply fails.
+          </Feature>
+        </div>
+        <div className="mx-auto mt-10 max-w-3xl">
+          <Note title="Testnet">
+            Trading is live on testnet, where tokens have no value. Perps collateral on testnet is native QRDX; mainnet will settle in a bridged USD stablecoin.
+          </Note>
+        </div>
+      </Section>
+    </>
   )
 }

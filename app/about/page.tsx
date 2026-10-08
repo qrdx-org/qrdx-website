@@ -1,181 +1,83 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Shield, Users, Target, Zap } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { Atom, Eye, GitBranch, Layers, Scale, ShieldCheck } from 'lucide-react'
+import { ButtonLink, Feature, PageHero, Section } from '@/components/site/blocks'
+import { contact, docs, social } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
-
-export default function About() {
+export default function AboutPage() {
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-6"
-              variants={fadeIn()}
-            >
-              About QRDX
-            </motion.h1>
-            
-            <motion.p 
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-              variants={fadeIn(0.2)}
-            >
-              Building the future of quantum-resistant decentralized finance with cutting-edge technology and unwavering commitment to security.
-            </motion.p>
-          </motion.div>
+    <>
+      <PageHero
+        eyebrow="About"
+        title="Why QRDX exists"
+        actions={
+          <>
+            <ButtonLink href="/whitepaper">Read the whitepaper</ButtonLink>
+            <ButtonLink href={social.github} variant="outline">
+              Source on GitHub
+            </ButtonLink>
+          </>
+        }
+      >
+        Public blockchains are secured by signatures a large quantum computer could forge. Migrating a live chain later is slow and contentious. QRDX starts post-quantum.
+      </PageHero>
+
+      <Section title="The problem">
+        <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-muted-foreground">
+          <p>
+            Bitcoin and Ethereum accounts are protected by elliptic-curve signatures. Shor&apos;s algorithm, run on a large fault-tolerant quantum computer, would derive a private key from its public key, and every account that has
+            ever published its public key would be open to theft. No such computer exists today, but keys and ledgers last for decades, and a chain cannot change its signatures overnight.
+          </p>
+          <p>
+            QRDX signs with <span className="text-foreground">ML-DSA-65</span>, the lattice-based signature NIST standardised in FIPS 204. Validators can only use it, and every account has a post-quantum key from its first day.
+          </p>
+          <p>
+            We also built the exchange into the protocol. Order books, pools and perpetuals are state every node computes, rather than contracts and off-chain services glued to a chain, so there are fewer seams to attack.
+          </p>
         </div>
+      </Section>
+
+      <section className="border-y bg-card/30">
+        <Section title="How we build">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Feature icon={ShieldCheck} title="Standards, not inventions">
+              NIST FIPS 204 signatures, verified against liboqs, and widely reviewed libraries in the wallet. We do not roll our own cryptography.
+            </Feature>
+            <Feature icon={Scale} title="Conservation first">
+              The exchange is tested for invariants: supply always equals the sum of balances, perps are zero-sum, every operation is all-or-nothing, and every node rebuilds the same state.
+            </Feature>
+            <Feature icon={Eye} title="Say what is real">
+              Live means live on testnet; planned means planned. Market data comes from the chain, and outside prices are labelled as reference.
+            </Feature>
+            <Feature icon={Layers} title="Compatible where it counts">
+              Post-quantum accounts map to 20-byte ids, so Ethereum tools, contracts and wallets keep working.
+            </Feature>
+            <Feature icon={GitBranch} title="Open source">
+              The node, wallet, trading site, explorer and docs are public on GitHub.
+            </Feature>
+            <Feature icon={Atom} title="Testnet before mainnet">
+              Mainnet follows security audits. Until then everything runs on testnet, where tokens have no value.
+            </Feature>
+          </div>
+        </Section>
       </section>
 
-      {/* Mission Section */}
-      <section className="py-16 md:py-24 bg-accent">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="max-w-5xl mx-auto"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.2 } }
-            }}
-          >
-            <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
-              <motion.div variants={fadeIn()}>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Mission</h2>
-                <p className="text-lg text-muted-foreground mb-6">
-                  We strive to build the most secure and efficient decentralized exchange platform, 
-                  designed to withstand the challenges of both classical and quantum computing threats.
-                </p>
-                <p className="text-muted-foreground">
-                  Our commitment extends beyond just creating another DeFi platform. We&apos;re building 
-                  the infrastructure for a quantum-safe financial future, ensuring that digital assets 
-                  remain secure as technology continues to evolve.
-                </p>
-              </motion.div>
-              
-              <motion.div variants={fadeIn(0.2)} className="relative">
-                <div className="aspect-square bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl flex items-center justify-center">
-                  <Target className="h-24 w-24 text-primary/40" />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Values Grid */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <motion.div variants={fadeIn(0.1)}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                      Security First
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Quantum-resistant cryptography and multi-layered security protocols 
-                      ensure your assets are protected against future threats.
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={fadeIn(0.2)}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-primary" />
-                      Community Driven
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Built by the community, for the community. Our governance model 
-                      ensures every voice is heard in shaping the future of QRDX.
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div variants={fadeIn(0.3)}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Zap className="h-5 w-5 text-primary" />
-                      Innovation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Cutting-edge technology meets user-friendly design. We&apos;re pushing 
-                      the boundaries of what&apos;s possible in decentralized finance.
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-          </motion.div>
+      <Section title="Get in touch">
+        <div className="mx-auto grid max-w-3xl gap-3 text-sm sm:grid-cols-3">
+          <a href={`mailto:${contact.support}`} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+            <div className="font-semibold">Support</div>
+            <div className="mt-1 text-muted-foreground">{contact.support}</div>
+          </a>
+          <a href={`mailto:${contact.research}`} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+            <div className="font-semibold">Research</div>
+            <div className="mt-1 text-muted-foreground">{contact.research}</div>
+          </a>
+          <a href={docs.reporting} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+            <div className="font-semibold">Security</div>
+            <div className="mt-1 text-muted-foreground">{contact.security}</div>
+          </a>
         </div>
-      </section>
-
-      {/* Technology Stack Section */}
-      <section className="py-16 md:py-24">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="max-w-4xl mx-auto text-center"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeIn()}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Technology Stack</h2>
-            <p className="text-lg text-muted-foreground mb-12">
-              Built with modern technologies and quantum-resistant protocols
-            </p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              <div className="p-4">
-                <h3 className="font-semibold mb-2">Next.js 15</h3>
-                <p className="text-sm text-muted-foreground">React Framework</p>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2">Tailwind CSS</h3>
-                <p className="text-sm text-muted-foreground">Utility-First CSS</p>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2">shadcn/ui</h3>
-                <p className="text-sm text-muted-foreground">Component Library</p>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2">Framer Motion</h3>
-                <p className="text-sm text-muted-foreground">Animation Library</p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+      </Section>
+    </>
   )
 }

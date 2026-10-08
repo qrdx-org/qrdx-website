@@ -1,122 +1,113 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Droplets, TrendingUp, Coins } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { useEffect, useState } from 'react'
+import { Coins, Droplets, Lock, Percent, Ruler, Shuffle } from 'lucide-react'
+import { ButtonLink, Feature, Note, PageHero, Section } from '@/components/site/blocks'
+import { apps, docs, testnet } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+interface Pool {
+  pool_id: string
+  token0: string
+  token1: string
+  fee_tier: number
+  positions: number
+  price: string
+  paused: boolean
+}
 
 export default function PoolsPage() {
+  const [pools, setPools] = useState<Pool[] | null>(null)
+  const [symbols, setSymbols] = useState<Record<string, string>>({})
+  useEffect(() => {
+    const rpc = (method: string) =>
+      fetch(testnet.rpc, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params: [] }) }).then((r) => r.json())
+    rpc('exchange_getPools').then((b) => setPools(b.result ?? [])).catch(() => setPools([]))
+    rpc('exchange_getTokens')
+      .then((b: { result?: { token_address: string; symbol: string }[] }) => setSymbols(Object.fromEntries((b.result ?? []).map((t) => [t.token_address.toLowerCase(), t.symbol]))))
+      .catch(() => undefined)
+  }, [])
+  const sym = (a: string) => (a.toUpperCase() === 'QRDX' ? 'QRDX' : symbols[a.toLowerCase()] ?? `${a.slice(0, 8)}…`)
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <Navigation />
-      
-      <div className="container px-4 mx-auto pt-32 pb-16">
-        <motion.div
-          className="max-w-2xl mx-auto"
-          initial="initial"
-          animate="animate"
-          variants={{
-            initial: {},
-            animate: { transition: { staggerChildren: 0.1 } }
-          }}
-        >
-          <motion.div variants={fadeIn()} className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-6">
-              <Droplets className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-5xl font-bold mb-4">Liquidity Pools</h1>
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
-              <span className="text-lg font-medium text-primary">Coming Soon</span>
-            </div>
-            <p className="text-xl text-muted-foreground mb-8">
-              Liquidity pool functionality is under development
-            </p>
-          </motion.div>
+    <>
+      <PageHero
+        eyebrow="Liquidity"
+        title="Concentrated liquidity, in the protocol"
+        actions={
+          <>
+            <ButtonLink href={`${apps.trade}/pools`}>Provide liquidity</ButtonLink>
+            <ButtonLink href={docs.liquidity} variant="outline">
+              Liquidity guide
+            </ButtonLink>
+          </>
+        }
+      >
+        Choose a price range and earn fees while the price is inside it. Pools for any pair of native tokens, including native QRDX, with the mathematics of Uniswap v3.
+      </PageHero>
 
-          <motion.div variants={fadeIn(0.1)}>
-            <Card className="border-primary/20">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-center">What to Expect</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Droplets className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Provide Liquidity</h3>
-                      <p className="text-muted-foreground">
-                        Add liquidity to pools and earn a share of trading fees from every swap
-                      </p>
-                    </div>
-                  </div>
+      <Section title="Testnet pools" intro="Read from the chain in your browser.">
+        <div className="overflow-hidden rounded-xl border bg-card">
+          <table className="num w-full text-sm">
+            <thead className="border-b text-xs text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2.5 text-left font-medium">Pool</th>
+                <th className="px-4 py-2.5 text-right font-medium">Fee</th>
+                <th className="px-4 py-2.5 text-right font-medium">Price (token1 per token0)</th>
+                <th className="px-4 py-2.5 text-right font-medium">Positions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pools === null ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                    Reading the chain…
+                  </td>
+                </tr>
+              ) : (
+                pools.map((p) => (
+                  <tr key={p.pool_id} className="border-b last:border-b-0">
+                    <td className="px-4 py-2.5 font-medium">
+                      {sym(p.token0)} / {sym(p.token1)}
+                      {p.paused && <span className="ml-2 text-xs text-warn">paused</span>}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">{(p.fee_tier / 10_000).toString()} %</td>
+                    <td className="px-4 py-2.5 text-right">{Number(p.price).toPrecision(6)}</td>
+                    <td className="px-4 py-2.5 text-right text-muted-foreground">{p.positions}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Earn High APR</h3>
-                      <p className="text-muted-foreground">
-                        Competitive annual percentage rates with additional QRDX token rewards
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Coins className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">LP Tokens</h3>
-                      <p className="text-muted-foreground">
-                        Receive LP tokens representing your pool share, redeemable anytime
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.2)} className="mt-8 text-center">
-            <Button size="lg" asChild>
-              <Link href="/">Back to Home</Link>
-            </Button>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.3)} className="mt-8 grid grid-cols-3 gap-4">
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">0.05%</div>
-                <div className="text-xs text-muted-foreground">LP Fee</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">45%+</div>
-                <div className="text-xs text-muted-foreground">Max APR</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">100+</div>
-                <div className="text-xs text-muted-foreground">Pool Pairs</div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </div>
-      
-      <Footer />
-    </div>
+      <section className="border-y bg-card/30">
+        <Section title="How pools work">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Feature icon={Ruler} title="Your range">
+              Liquidity trades only between the prices you choose. A narrower range earns more of the fees per unit of capital, and stops earning sooner when the price leaves it.
+            </Feature>
+            <Feature icon={Percent} title="Fees">
+              Four tiers: 0.01 %, 0.05 %, 0.3 % and 1 %. 70 % of every swap's fee goes to in-range liquidity providers, 30 % to the protocol.
+            </Feature>
+            <Feature icon={Shuffle} title="Books and pools together">
+              Swaps compare every pool with the pair's order book and fill on the better venue, so pool liquidity and resting orders compete for every trade.
+            </Feature>
+            <Feature icon={Coins} title="Exact deposits">
+              The node quotes the most liquidity your amounts buy and the exact deposit it takes before you sign.
+            </Feature>
+            <Feature icon={Lock} title="Creating a pool">
+              Stake 10,000 QRDX, refunded when the pool is removed, or burn 5,000 QRDX for a permanent pool. Creating a pool also opens the pair's order book.
+            </Feature>
+            <Feature icon={Droplets} title="Impermanent loss">
+              As the price moves, a position shifts toward the token that fell. Fees offset this; they do not always cover it.
+            </Feature>
+          </div>
+          <div className="mx-auto mt-10 max-w-3xl">
+            <Note title="Testnet">Pools are live on testnet, where tokens have no value.</Note>
+          </div>
+        </Section>
+      </section>
+    </>
   )
 }

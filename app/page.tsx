@@ -1,467 +1,177 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Shield, TrendingUp, Zap, Users, Lock, ArrowRight, ChevronRight, Droplets, Activity, AlertTriangle, Handshake } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { motion } from 'framer-motion'
+import { ArrowLeftRight, ArrowUpRight, Atom, Boxes, CircleDot, Code2, Coins, KeyRound, Layers, LineChart, Search, ShieldCheck, TrendingUp, Wallet } from 'lucide-react'
+import { ButtonLink, Feature, LiveMarkets, LiveTiles, Section, fadeUp } from '@/components/site/blocks'
+import { useTestnet } from '@/lib/live'
+import { apps, docs } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+const PRODUCTS = [
+  { href: apps.trade, icon: LineChart, title: 'QRDX Trade', text: 'Limit orders, swaps routed to the best venue, liquidity pools and perpetuals, plus a public API.', cta: 'Open Trade' },
+  { href: apps.wallet, icon: Wallet, title: 'QRDX Wallet', text: 'Browser extension, web app and iPhone app. One recovery phrase restores your classic and post-quantum keys.', cta: 'Get the wallet' },
+  { href: apps.explorer, icon: Search, title: 'QRDX Explorer', text: 'Blocks, transactions, tokens and markets, with charts, and a public profile for your address.', cta: 'Explore' },
+  { href: docs.home, icon: Code2, title: 'Docs', text: 'Guides for every app, and developer references whose examples run live against testnet.', cta: 'Read the docs' },
+]
 
-function AnimatedNumber({ value, prefix = '', suffix = '', decimals = 0 }: { value: number, prefix?: string, suffix?: string, decimals?: number }) {
-  const [displayValue, setDisplayValue] = useState(0)
-
-  useEffect(() => {
-    let start = 0
-    const end = value
-    const duration = 2000
-    const increment = end / (duration / 16)
-
-    const timer = setInterval(() => {
-      start += increment
-      if (start >= end) {
-        setDisplayValue(end)
-        clearInterval(timer)
-      } else {
-        setDisplayValue(start)
-      }
-    }, 16)
-
-    return () => clearInterval(timer)
-  }, [value])
-
-  return (
-    <span>
-      {prefix}{displayValue.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{suffix}
-    </span>
-  )
-}
+const ROADMAP = [
+  { state: 'Live on testnet', tone: 'text-bid', items: ['Post-quantum proof of stake', 'Spot books and concentrated-liquidity pools', 'Perpetuals with a validator oracle', 'Native tokens and NFTs', 'Wallet, Trade, Explorer'] },
+  { state: 'Next', tone: 'text-warn', items: ['Security audits', 'Mainnet launch', 'Bridged USD stablecoin for perps'] },
+  { state: 'Planned', tone: 'text-muted-foreground', items: ['Bridges and asset shielding', 'The Doomsday circuit breaker', 'Governance', 'Post-quantum multisig'] },
+]
 
 export default function Home() {
+  const stats = useTestnet()
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      
-      {/* Under Construction Banner */}
-      <div className="container px-4 mx-auto pt-20">
-        <Alert className="bg-yellow-500/10 border-yellow-500/50 text-yellow-600 dark:text-yellow-500">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Under Construction:</strong> QRDX is currently in development. Features and information are subject to change.
-          </AlertDescription>
-        </Alert>
-      </div>
-      
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-16 md:pt-20 md:pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
-        
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Main Hero Content */}
-            <motion.div 
-              className="flex-1 text-center lg:text-left max-w-4xl"
-              initial="initial"
-              animate="animate"
-              variants={{
-                initial: {},
-                animate: { transition: { staggerChildren: 0.1 } }
-              }}
-            >
-              <motion.div
-                variants={fadeIn()}
-                className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-primary/10 border border-primary/20"
-              >
-                <Shield className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Quantum-Resistant Security</span>
-              </motion.div>
+    <>
+      <section className="hero-glow relative overflow-hidden border-b">
+        <div className="mx-auto max-w-6xl px-4 pb-16 pt-32 sm:pt-40">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="mx-auto max-w-3xl text-center">
+            <a href={docs.networks} target="_blank" rel="noopener noreferrer" className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
+              <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-bid text-bid" /> Testnet is live <ArrowUpRight className="h-3 w-3" />
+            </a>
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">The blockchain built for the quantum era</h1>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+              Accounts and validators secured by NIST-standard post-quantum signatures, with order books, liquidity pools and perpetuals built into the protocol itself.
+            </p>
+            <div className="mt-9 flex flex-wrap justify-center gap-3">
+              <ButtonLink href={apps.trade}>Launch app</ButtonLink>
+              <ButtonLink href="/get-started" variant="outline">
+                Get started
+              </ButtonLink>
+              <ButtonLink href="/whitepaper" variant="outline">
+                Whitepaper
+              </ButtonLink>
+            </div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }} className="mt-16">
+            <LiveTiles stats={stats} />
+          </motion.div>
+        </div>
+      </section>
 
-              <motion.h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-foreground"
-                variants={fadeIn()}
-              >
-                Shield Your Assets for the{' '}
-                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-foreground">
-                  Quantum Era
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-2xl mx-auto lg:mx-0"
-                variants={fadeIn()}
-              >
-                Convert ETH → qETH, BTC → qBTC with quantum-resistant cryptography. Trade and secure your assets on the first post-quantum DEX.
-              </motion.p>
-              
-              <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
-                variants={fadeIn()}
-              >
-                <Button size="lg" className="text-lg px-8" asChild>
-                  <Link href="/get-started" className="flex items-center">
-                    Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8" asChild>
-                  <Link href="/trade">
-                    Launch App
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8" asChild>
-                  <Link href="/whitepaper">
-                    Read Whitepaper
-                  </Link>
-                </Button>
-              </motion.div>
-            </motion.div>
+      <Section
+        title="Post-quantum from the ground up"
+        intro="A quantum computer running Shor's algorithm could forge the elliptic-curve signatures that secure Bitcoin and Ethereum. QRDX signs with ML-DSA-65 (FIPS 204), which no known quantum algorithm breaks."
+      >
+        <div className="grid gap-4 md:grid-cols-3">
+          <Feature icon={ShieldCheck} title="Validators sign post-quantum">
+            Every block and attestation is signed with ML-DSA-65. Classic keys cannot validate. Proof of stake with 2-second slots and epoch finality.
+          </Feature>
+          <Feature icon={KeyRound} title="Post-quantum accounts">
+            Every account has a <span className="font-mono text-foreground">0xPQ…</span> address signed with ML-DSA-65. One recovery phrase restores it alongside the classic key.
+          </Feature>
+          <Feature icon={Layers} title="Still speaks Ethereum">
+            Post-quantum accounts map to ordinary 20-byte account ids, so contracts, MetaMask and Ethereum tools keep working, and native tokens are ERC-20s in the EVM.
+          </Feature>
+        </div>
+        <motion.div {...fadeUp} className="mt-8 text-center">
+          <a href={docs.security} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+            What post-quantum protects, and what it does not <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+        </motion.div>
+      </Section>
 
-            {/* Partnership Sidebar */}
-            <motion.div 
-              className="lg:w-80 flex-shrink-0"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              <Card className="sticky top-24 border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-primary/5 shadow-xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center">
-                      <Handshake className="h-8 w-8 text-primary" />
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-center mb-3">
-                    Become a Partner
-                  </h3>
-                  
-                  <p className="text-muted-foreground text-center mb-6">
-                    Join the QRDX Partner Program and earn rewards by helping grow the quantum-resistant ecosystem.
-                  </p>
-                  
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-start gap-2">
-                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-sm">Earn referral commissions on trading fees</p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-sm">Access exclusive partnership benefits</p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-sm">Get priority support and resources</p>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-sm">Help shape the future of quantum-safe DeFi</p>
-                    </div>
-                  </div>
-                  
-                  <Button className="w-full" size="lg" asChild>
-                    <a href="https://trade.qrdx.org/partner" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                      Join Partner Program
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
+      <section className="border-y bg-card/30">
+        <Section
+          title="An exchange in the protocol"
+          intro="Trading is part of the chain's state transition, not a contract on top of it. Validators execute every order, swap and liquidation, and every node agrees on the result."
+        >
+          <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+            <div className="grid gap-4">
+              <Feature icon={ArrowLeftRight} title="Spot: books and pools together">
+                Every pair has an order book and concentrated-liquidity pools. A swap settles on whichever venue pays the most. Native QRDX trades directly, with no wrapping.
+              </Feature>
+              <Feature icon={TrendingUp} title="Perpetuals, zero-sum">
+                Matched on an on-chain book, margined at a mark price, priced by a validator-voted oracle, with funding, liquidations and a backstop vault. Profits are paid by losses; nothing is minted.
+              </Feature>
+              <Feature icon={Coins} title="Tokens without contracts">
+                A token is a registry entry and balances in consensus. Create one and open its market in the same block. Extensions, NFTs and ERC-20/721 views included.
+              </Feature>
+            </div>
+            <motion.div {...fadeUp}>
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Testnet markets, live</h3>
+                <a href={apps.trade} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                  All markets <ArrowUpRight className="h-3 w-3" />
+                </a>
+              </div>
+              <LiveMarkets stats={stats} limit={9} />
+              <p className="mt-3 text-xs text-muted-foreground">Prices and trades come from the chain. Testnet tokens have no value.</p>
             </motion.div>
           </div>
-
-            {/* Stats Grid - Commented out for now
-            <motion.div 
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
-              variants={fadeIn(0.2)}
-            >
-              <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl md:text-4xl font-bold mb-2 text-primary">
-                    <AnimatedNumber value={2.4} prefix="$" suffix="B" decimals={1} />
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Value Locked</div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl md:text-4xl font-bold mb-2 text-primary">
-                    <AnimatedNumber value={847} suffix="M" decimals={0} />
-                  </div>
-                  <div className="text-sm text-muted-foreground">24h Volume</div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl md:text-4xl font-bold mb-2 text-primary">
-                    <AnimatedNumber value={156000} suffix="+" decimals={0} />
-                  </div>
-                  <div className="text-sm text-muted-foreground">Active Users</div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-primary/20 bg-card/50 backdrop-blur">
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl md:text-4xl font-bold mb-2 text-primary">
-                    <AnimatedNumber value={2847} suffix="+" decimals={0} />
-                  </div>
-                  <div className="text-sm text-muted-foreground">Liquidity Pools</div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            */}
-        </div>
+        </Section>
       </section>
 
-      {/* Asset Shielding Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="container px-4 mx-auto">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-            className="text-center mb-12"
-          >
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-4"
-              variants={fadeIn()}
-            >
-              Asset Shielding: Quantum-Safe Migration
-            </motion.h2>
-            <motion.p 
-              className="text-xl text-muted-foreground max-w-3xl mx-auto"
-              variants={fadeIn()}
-            >
-              Protect your cryptocurrency from quantum computing threats. Shield your assets with NIST-standardized post-quantum cryptography.
-            </motion.p>
-          </motion.div>
-
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.15 } }
-            }}
-          >
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
-                <div className="text-5xl font-bold mb-4 text-primary">ETH → qETH</div>
-                <h3 className="text-xl font-bold mb-3">Shield Ethereum</h3>
-                <p className="text-muted-foreground">
-                  Lock your ETH on Ethereum mainnet and receive quantum-resistant qETH on QRDX Chain. 1:1 backed and fully redeemable.
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
-                <div className="text-5xl font-bold mb-4 text-primary">BTC → qBTC</div>
-                <h3 className="text-xl font-bold mb-3">Shield Bitcoin</h3>
-                <p className="text-muted-foreground">
-                  Convert your Bitcoin (via WBTC) into quantum-safe qBTC. Secured by CRYSTALS-Dilithium signatures and trustless bridges.
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full p-8 text-center border-primary/20 hover:shadow-xl transition-all">
-                <div className="text-5xl font-bold mb-4 text-primary">ANY → qRC20</div>
-                <h3 className="text-xl font-bold mb-3">Shield Any Asset</h3>
-                <p className="text-muted-foreground">
-                  Migrate USDC, USDT, and any ERC-20 token to their quantum-resistant qRC20 equivalents on QRDX Chain.
-                </p>
-              </Card>
-            </motion.div>
-          </motion.div>
-
-          <motion.div 
-            className="mt-12 text-center"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeIn(0.3)}
-          >
-            <Button size="lg" className="text-lg px-8" asChild>
-              <Link href="/whitepaper#asset-shielding" className="flex items-center">
-                Learn About Asset Shielding
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </motion.div>
+      <Section title="Use it today" intro="Everything below runs on testnet now.">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PRODUCTS.map((p) => (
+            <motion.a {...fadeUp} key={p.title} href={p.href} target="_blank" rel="noopener noreferrer" className="group flex flex-col rounded-xl border bg-card p-6 transition-colors hover:border-primary/50">
+              <p.icon className="h-6 w-6 text-primary" />
+              <h3 className="mt-4 font-semibold">{p.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
+              <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                {p.cta} <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </span>
+            </motion.a>
+          ))}
         </div>
+      </Section>
+
+      <section className="border-t bg-card/30">
+        <Section title="Where QRDX is" intro="Testnet runs the core protocol today. Mainnet follows the audits; bridges and asset shielding come after.">
+          <div className="grid gap-4 md:grid-cols-3">
+            {ROADMAP.map((r) => (
+              <motion.div {...fadeUp} key={r.state} className="rounded-xl border bg-card p-6">
+                <h3 className={`flex items-center gap-2 text-sm font-semibold ${r.tone}`}>
+                  <CircleDot className="h-4 w-4" /> {r.state}
+                </h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {r.items.map((i) => (
+                    <li key={i}>{i}</li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <ButtonLink href={docs.roadmap} variant="outline">
+              Status and roadmap
+            </ButtonLink>
+            <ButtonLink href="/wallet/shielding" variant="outline">
+              About asset shielding
+            </ButtonLink>
+          </div>
+        </Section>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 md:py-24">
-        <div className="container px-4 mx-auto">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-            className="text-center mb-12"
-          >
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-4"
-              variants={fadeIn()}
-            >
-              Why Choose QRDX?
-            </motion.h2>
-            <motion.p 
-              className="text-xl text-muted-foreground max-w-2xl mx-auto"
-              variants={fadeIn()}
-            >
-              Built for the quantum era with cutting-edge security and performance
-            </motion.p>
-          </motion.div>
-
-          <motion.div 
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Quantum-Resistant Security</h3>
-                <p className="text-muted-foreground">
-                  Protected by post-quantum cryptography algorithms, ensuring your assets remain secure in the quantum computing era
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Lightning Fast</h3>
-                <p className="text-muted-foreground">
-                  Experience sub-second transaction finality with our optimized quantum-resistant blockchain architecture
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Lowest Fees</h3>
-                <p className="text-muted-foreground">
-                  Trade with minimal fees starting at 0.05%, with additional discounts for QRDX token holders
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Droplets className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Deep Liquidity</h3>
-                <p className="text-muted-foreground">
-                  Access deep liquidity pools with minimal slippage for optimal trading experience
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Lock className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Non-Custodial</h3>
-                <p className="text-muted-foreground">
-                  Your keys, your crypto. Trade directly from your wallet without trusting intermediaries
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={fadeIn()}>
-              <Card className="h-full hover:shadow-lg transition-shadow p-6">
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold mb-3">Community Governed</h3>
-                <p className="text-muted-foreground">
-                  Participate in governance decisions and shape the future of the protocol through DAO voting
-                </p>
-              </Card>
-            </motion.div>
-          </motion.div>
+      <section className="hero-glow border-t">
+        <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+          <Atom className="mx-auto h-10 w-10 text-primary" />
+          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Try it in five minutes</h2>
+          <p className="mt-3 text-muted-foreground">Install the wallet, switch to testnet and place an order. Or read the chain from code, right in the docs.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <ButtonLink href="/get-started">Get started</ButtonLink>
+            <ButtonLink href={docs.build} variant="outline">
+              Build on QRDX
+            </ButtonLink>
+          </div>
+          <p className="mt-6 text-xs text-muted-foreground">
+            <Link href="/stake" className="hover:text-foreground">
+              Run a validator
+            </Link>
+            {' · '}
+            <a href={apps.explorer} className="hover:text-foreground">
+              See the chain
+            </a>
+            {' · '}
+            <a href={docs.tokens} className="hover:text-foreground">
+              <Boxes className="mb-0.5 mr-1 inline h-3 w-3" />
+              Native tokens
+            </a>
+          </p>
         </div>
       </section>
-
-      {/* Trading CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-primary/10 via-background to-primary/5">
-        <div className="container px-4 mx-auto">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-            className="max-w-4xl mx-auto text-center"
-          >
-            <motion.div variants={fadeIn()}>
-              <Activity className="h-16 w-16 mx-auto mb-6 text-primary" />
-            </motion.div>
-            
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-6"
-              variants={fadeIn()}
-            >
-              Start Trading in Seconds
-            </motion.h2>
-            
-            <motion.p 
-              className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-              variants={fadeIn()}
-            >
-              Connect your wallet and start swapping tokens instantly. No registration required.
-            </motion.p>
-
-            <motion.div variants={fadeIn()}>
-              <Button size="lg" className="text-lg px-8" asChild>
-                <Link href="/trade" className="flex items-center">
-                  Launch Trading App
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+    </>
   )
 }

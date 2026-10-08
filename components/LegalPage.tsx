@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
 
 export interface LegalSection {
   id: string
@@ -18,8 +16,6 @@ interface LegalPageProps {
 export default function LegalPage({ title, lastUpdated, summary, sections }: LegalPageProps) {
   return (
     <div className="min-h-screen">
-      <Navigation />
-
       <section className="pt-32 pb-12 md:pt-40 md:pb-16">
         <div className="container px-4 mx-auto max-w-4xl">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{title}</h1>
@@ -59,8 +55,6 @@ export default function LegalPage({ title, lastUpdated, summary, sections }: Leg
           </div>
         </div>
       </section>
-
-      <Footer />
     </div>
   )
 }

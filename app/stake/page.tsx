@@ -1,122 +1,139 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Coins, Lock, TrendingUp } from 'lucide-react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
+import { useEffect, useState } from 'react'
+import { Clock, Coins, Gavel, KeyRound, Server, ShieldCheck } from 'lucide-react'
+import { ButtonLink, Feature, Note, PageHero, Section } from '@/components/site/blocks'
+import { apps, docs, testnet } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+interface Validator {
+  address: string
+  stake: string
+  effective_stake: string
+  status: string
+  activation_epoch: string
+  slashed: boolean | string
+}
+
+const PARAMS = [
+  ['Signature scheme', 'ML-DSA-65 only'],
+  ['Minimum stake', '100,000 QRDX'],
+  ['Active validators', 'at most 150'],
+  ['Slot', '2 seconds'],
+  ['Epoch', '32 slots'],
+  ['Finality', 'two-thirds of active stake attests'],
+  ['Activation', '4 epochs after the deposit'],
+  ['Ejection', 'stake below 50,000 QRDX'],
+]
 
 export default function StakePage() {
+  const [validators, setValidators] = useState<Validator[] | null>(null)
+  useEffect(() => {
+    fetch(`${testnet.node}/get_validators`)
+      .then((r) => r.json())
+      .then((b: { result?: Validator[] }) => setValidators(b.result ?? []))
+      .catch(() => setValidators([]))
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <Navigation />
-      
-      <div className="container px-4 mx-auto pt-32 pb-16">
-        <motion.div
-          className="max-w-2xl mx-auto"
-          initial="initial"
-          animate="animate"
-          variants={{
-            initial: {},
-            animate: { transition: { staggerChildren: 0.1 } }
-          }}
-        >
-          <motion.div variants={fadeIn()} className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-6">
-              <Coins className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-5xl font-bold mb-4">Staking Platform</h1>
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 rounded-full bg-primary/10 border border-primary/20">
-              <span className="text-lg font-medium text-primary">Coming Soon</span>
-            </div>
-            <p className="text-xl text-muted-foreground mb-8">
-              QRDX staking functionality is under development
-            </p>
-          </motion.div>
+    <>
+      <PageHero
+        eyebrow="Validators"
+        title="Secure QRDX with a post-quantum key"
+        actions={
+          <>
+            <ButtonLink href={docs.consensus}>Consensus and validators</ButtonLink>
+            <ButtonLink href={`${apps.explorer}/validators`} variant="outline">
+              Validator set
+            </ButtonLink>
+          </>
+        }
+      >
+        QRDX is proof of stake, and every validator signs blocks and attestations with ML-DSA-65. Validators stake their own QRDX; there is no delegation.
+      </PageHero>
 
-          <motion.div variants={fadeIn(0.1)}>
-            <Card className="border-primary/20">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-center">What to Expect</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Coins className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Earn Passive Income</h3>
-                      <p className="text-muted-foreground">
-                        Stake QRDX tokens and receive daily rewards distributed directly to your wallet
-                      </p>
-                    </div>
-                  </div>
+      <Section title="Testnet validators" intro="Read from the node in your browser.">
+        <div className="overflow-hidden rounded-xl border bg-card">
+          <table className="num w-full text-sm">
+            <thead className="border-b text-xs text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2.5 text-left font-medium">Validator</th>
+                <th className="px-4 py-2.5 text-right font-medium">Stake</th>
+                <th className="hidden px-4 py-2.5 text-right font-medium sm:table-cell">Effective stake</th>
+                <th className="px-4 py-2.5 text-right font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {validators === null ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
+                    Reading the chain…
+                  </td>
+                </tr>
+              ) : (
+                validators.map((v) => (
+                  <tr key={v.address} className="border-b last:border-b-0">
+                    <td className="px-4 py-2.5">
+                      <a href={`${apps.explorer}/address/${v.address}?network=testnet`} target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-primary hover:underline">
+                        {v.address.slice(0, 12)}…{v.address.slice(-8)}
+                      </a>
+                    </td>
+                    <td className="px-4 py-2.5 text-right">{Number(v.stake).toLocaleString()} QRDX</td>
+                    <td className="hidden px-4 py-2.5 text-right text-muted-foreground sm:table-cell">{Number(v.effective_stake).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                    <td className={`px-4 py-2.5 text-right ${v.status === 'active' ? 'text-bid' : 'text-warn'}`}>{String(v.slashed) === 'True' || v.slashed === true ? 'slashed' : v.status}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">High APR Rewards</h3>
-                      <p className="text-muted-foreground">
-                        Flexible and locked staking options with competitive annual returns up to 52%
-                      </p>
-                    </div>
-                  </div>
+      <section className="border-y bg-card/30">
+        <Section title="Becoming a validator">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Feature icon={Server} title="1. Run a node">
+              Run the QRDX node with a post-quantum validator key. Classic keys cannot propose or attest.
+            </Feature>
+            <Feature icon={Coins} title="2. Stake">
+              Send a <span className="font-mono text-foreground">STAKE_DEPOSIT</span> of at least 100,000 QRDX. The stake is debited from your account, so it is at risk.
+            </Feature>
+            <Feature icon={Clock} title="3. Activate">
+              The validator registers as pending and every node activates it a few epochs later. <span className="font-mono text-foreground">STAKE_EXIT</span> refunds the stake at the finalized exit epoch.
+            </Feature>
+          </div>
+        </Section>
+      </section>
 
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10 mt-1">
-                      <Lock className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold mb-2">Governance Rights</h3>
-                      <p className="text-muted-foreground">
-                        Staked tokens grant voting power to participate in protocol governance decisions
-                      </p>
-                    </div>
-                  </div>
+      <Section title="Parameters">
+        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="overflow-hidden rounded-xl border bg-card">
+            <dl className="divide-y text-sm">
+              {PARAMS.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-4 px-4 py-3">
+                  <dt className="text-muted-foreground">{k}</dt>
+                  <dd className="text-right font-medium">{v}</dd>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.2)} className="mt-8 text-center">
-            <Button size="lg" asChild>
-              <Link href="/">Back to Home</Link>
-            </Button>
-          </motion.div>
-
-          <motion.div variants={fadeIn(0.3)} className="mt-8 grid grid-cols-3 gap-4">
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">12.5%</div>
-                <div className="text-xs text-muted-foreground">Min APR</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">52%</div>
-                <div className="text-xs text-muted-foreground">Max APR</div>
-              </CardContent>
-            </Card>
-            <Card className="border-primary/20">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-primary">Daily</div>
-                <div className="text-xs text-muted-foreground">Rewards</div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </div>
-      
-      <Footer />
-    </div>
+              ))}
+            </dl>
+          </div>
+          <div className="grid gap-4">
+            <Feature icon={Gavel} title="Slashing">
+              Double signing and surround votes cost 50 % of stake, invalid attestations 30 %, extended downtime 5 %. A slashed validator never exits, so it forfeits its stake. Reporters and the including proposer receive a share.
+            </Feature>
+            <Feature icon={ShieldCheck} title="The price oracle">
+              Validators also vote external USD prices for the perpetual markets. The oracle is the stake-weighted median of fresh votes, and only counts when a majority of stake has voted.
+            </Feature>
+            <Feature icon={KeyRound} title="Keys">
+              A validator key is an ML-DSA-65 key pair. Keep it on the validator, with slashing protection on.
+            </Feature>
+          </div>
+        </div>
+        <div className="mx-auto mt-10 max-w-3xl">
+          <Note title="No staking yield product">
+            QRDX has no delegation, pooled staking or advertised APY. Staking means running a validator.
+          </Note>
+        </div>
+      </Section>
+    </>
   )
 }
