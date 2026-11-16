@@ -16,13 +16,15 @@ interface Validator {
 
 const PARAMS = [
   ['Signature scheme', 'ML-DSA-65 only'],
-  ['Minimum stake', '100,000 QRDX'],
+  ['Minimum stake', '1,000 QRDX'],
   ['Active validators', 'at most 150'],
-  ['Slot', '2 seconds'],
-  ['Epoch', '32 slots'],
-  ['Finality', 'two-thirds of active stake attests'],
+  ['Slot', '250 ms'],
+  ['Epoch', '32 slots (8 seconds)'],
+  ['Finality', 'two-thirds of active weight attests'],
   ['Activation', '4 epochs after the deposit'],
-  ['Ejection', 'stake below 50,000 QRDX'],
+  ['Ejection', 'stake below 500 QRDX'],
+  ['Unbonding', '40,320 epochs (about 3.7 days)'],
+  ['Staking rate', '5 % a year, new QRDX'],
 ]
 
 export default function StakePage() {
@@ -48,12 +50,12 @@ export default function StakePage() {
           </>
         }
       >
-        QRDX is proof of stake, and every validator signs blocks and attestations with ML-DSA-65. Validators stake their own QRDX; there is no delegation.
+        QRDX is proof of stake, and every validator signs blocks and attestations with ML-DSA-65. Run a validator, or delegate QRDX to one and share its rewards.
       </PageHero>
 
       <Section title="Testnet validators" intro="Read from the node in your browser.">
-        <div className="overflow-hidden rounded-xl border bg-card">
-          <table className="num w-full text-sm">
+        <div className="overflow-x-auto border-t border-foreground/15">
+          <table className="num w-full text-sm [&_td:first-child]:pl-0 [&_td:last-child]:pr-0 [&_th:first-child]:pl-0 [&_th:last-child]:pr-0">
             <thead className="border-b text-xs text-muted-foreground">
               <tr>
                 <th className="px-4 py-2.5 text-left font-medium">Validator</th>
@@ -95,7 +97,7 @@ export default function StakePage() {
               Run the QRDX node with a post-quantum validator key. Classic keys cannot propose or attest.
             </Feature>
             <Feature icon={Coins} title="2. Stake">
-              Send a <span className="font-mono text-foreground">STAKE_DEPOSIT</span> of at least 100,000 QRDX. The stake is debited from your account, so it is at risk.
+              Send a <span className="font-mono text-foreground">STAKE_DEPOSIT</span> of at least 1,000 QRDX. The stake is debited from your account, so it is at risk.
             </Feature>
             <Feature icon={Clock} title="3. Activate">
               The validator registers as pending and every node activates it a few epochs later. <span className="font-mono text-foreground">STAKE_EXIT</span> refunds the stake at the finalized exit epoch.
@@ -106,8 +108,8 @@ export default function StakePage() {
 
       <Section title="Parameters">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-xl border bg-card">
-            <dl className="divide-y text-sm">
+          <div className="overflow-x-auto border-t border-foreground/15">
+            <dl className="divide-y border-b text-sm [&>div]:px-0">
               {PARAMS.map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-4 px-4 py-3">
                   <dt className="text-muted-foreground">{k}</dt>
@@ -128,9 +130,11 @@ export default function StakePage() {
             </Feature>
           </div>
         </div>
-        <div className="mx-auto mt-10 max-w-3xl">
-          <Note title="No staking yield product">
-            QRDX has no delegation, pooled staking or advertised APY. Staking means running a validator.
+        <div className="mt-12 max-w-3xl">
+          <Note title="Delegation">
+            Each validator has a pool. <span className="font-mono text-foreground">STAKE_DELEGATE</span> adds QRDX to it for shares after a 4-epoch warm-up; the validator&apos;s rewards raise the share
+            price, less its commission (10 % unless it sets another). Delegated QRDX is slashed with the pool, and comes back after unbonding. Delegate from QRDX Trade&apos;s Stake page or the
+            wallet.
           </Note>
         </div>
       </Section>

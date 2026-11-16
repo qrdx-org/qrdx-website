@@ -126,20 +126,6 @@
   letter-spacing: -0.01em;
 }
 
-/* Dark mode: a faint QRDX-blue light from the top of a hero section. */
-.hero-glow {
-  background-image: radial-gradient(60% 120% at 50% -20%, hsl(var(--primary) / 0.14), transparent 70%);
-}
-:root:not(.dark) .hero-glow {
-  background-image: none;
-}
-
-.glass {
-  background: hsl(var(--card) / 0.6);
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
-}
-
 @keyframes pulse-dot {
   0% { box-shadow: 0 0 0 0 currentColor; }
   70% { box-shadow: 0 0 0 5px transparent; }
@@ -155,11 +141,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pulse-dot, .flash-in { animation: none; }
-}
-
-/* Older pages still use these. */
-.gradient-text {
-  color: hsl(var(--foreground));
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }

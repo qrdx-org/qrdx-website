@@ -127,8 +127,8 @@ export default function WhitepaperPage() {
                 className="prose max-w-none dark:prose-invert prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:tracking-tight prose-h1:hidden
                   prose-h2:mt-14 prose-h2:border-b prose-h2:pb-3 prose-h2:text-3xl prose-p:leading-7 prose-p:text-muted-foreground prose-li:text-muted-foreground
                   prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground
-                  prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:before:content-none prose-code:after:content-none
-                  prose-pre:border prose-pre:bg-card prose-pre:text-foreground prose-table:text-sm prose-th:bg-muted/50 prose-th:p-2 prose-td:p-2 prose-img:mx-auto"
+                  prose-code:break-all prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.85em] prose-code:before:content-none prose-code:after:content-none
+                  prose-pre:max-w-full prose-pre:overflow-x-auto [&_pre_code]:break-normal prose-pre:border prose-pre:bg-card prose-pre:text-foreground prose-table:block prose-table:max-w-full prose-table:overflow-x-auto prose-table:text-sm prose-th:bg-muted/50 prose-th:p-2 prose-td:p-2 prose-img:mx-auto"
               >
                 <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]]}>
                   {markdown}

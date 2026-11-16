@@ -1,7 +1,7 @@
 {
-  "name": "QRDX - Quantum-Resistant Decentralized Exchange",
+  "name": "QRDX",
   "short_name": "QRDX",
-  "description": "Trade, shield, and secure your crypto assets with quantum-resistant technology",
+  "description": "A blockchain secured by post-quantum signatures, with an exchange built into the protocol",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",

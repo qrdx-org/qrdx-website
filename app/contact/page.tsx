@@ -1,277 +1,93 @@
 'use client'
 
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, MessageSquare, Send, BookOpen, Handshake } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import { Eyebrow, PageHero, Section } from '@/components/site/blocks'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { apps, contact, docs, social } from '@/lib/site'
 
-const fadeIn = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { delay, duration: 0.6 } }
-})
+const CHANNELS = [
+  { k: 'Support', v: contact.support, href: `mailto:${contact.support}`, text: 'Help with the wallet, Trade or the explorer.' },
+  { k: 'Research', v: contact.research, href: `mailto:${contact.research}`, text: 'The protocol, the cryptography, working together.' },
+  { k: 'Security', v: 'Report a vulnerability', href: docs.reporting, text: 'Privately, before anything is public. The page says how.' },
+  { k: 'Partners', v: 'trade.qrdx.org/partner', href: `${apps.trade}/partner`, text: 'Listing a market, or building on the exchange.' },
+  { k: 'Community', v: 'Telegram', href: social.telegram, text: 'Questions and announcements, with other people using QRDX.' },
+]
+
+const FIELD = 'h-11 rounded-md border-foreground/15 bg-transparent'
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    subject: '',
-    message: ''
-  })
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const change = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [e.target.id]: e.target.value }))
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // No server receives this: it opens the visitor's email app with the message filled in.
+  const submit = (e: FormEvent) => {
     e.preventDefault()
-    
-    const { firstName, lastName, email, subject, message } = formData
-    const fullName = `${firstName} ${lastName}`.trim()
-    
-    const mailtoSubject = encodeURIComponent(subject || 'Contact Form Submission')
-    const mailtoBody = encodeURIComponent(
-      `Name: ${fullName}\nEmail: ${email}\n\n${message}`
-    )
-    
-    window.location.href = `mailto:support@mail.qrdx.org?subject=${mailtoSubject}&body=${mailtoBody}`
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.id]: e.target.value
-    }))
+    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
+    window.location.href = `mailto:${contact.support}?subject=${encodeURIComponent(form.subject || 'Contact form')}&body=${encodeURIComponent(body)}`
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-24">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            className="text-center max-w-4xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={{
-              initial: {},
-              animate: { transition: { staggerChildren: 0.1 } }
-            }}
-          >
-            <motion.h1 
-              className="text-4xl md:text-6xl font-bold mb-6"
-              variants={fadeIn()}
-            >
-              Contact Us
-            </motion.h1>
-            
-            <motion.p 
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-              variants={fadeIn(0.2)}
-            >
-              Get in touch with our team. We&apos;re here to help and answer any questions you might have.
-            </motion.p>
+    <>
+      <PageHero eyebrow="Contact" title="Talk to the people building QRDX">
+        Most questions are answered in the{' '}
+        <a href={docs.home} target="_blank" rel="noopener noreferrer" className="text-foreground underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
+          docs
+        </a>
+        . For everything else, write to the right address below.
+      </PageHero>
 
-            <motion.div
-              className="bg-accent/50 border border-border rounded-lg p-6 max-w-2xl mx-auto"
-              variants={fadeIn(0.3)}
-            >
-              <div className="flex items-start gap-3">
-                <BookOpen className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <h3 className="font-semibold mb-1">Small Issue?</h3>
-                  <p className="text-sm text-muted-foreground">
-                    For quick answers, check out our{' '}
-                    <a href="https://docs.qrdx.org/docs" className="text-primary hover:underline font-medium">
-                      documentation
-                    </a>
-                    {' '}or visit our{' '}
-                    <a href="https://docs.qrdx.org/docs" className="text-primary hover:underline font-medium">
-                      support section
-                    </a>
-                    .
-                  </p>
-                </div>
+      <Section>
+        <div className="grid gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <dl className="border-t border-foreground/15">
+            {CHANNELS.map((c) => (
+              <div key={c.k} className="grid gap-x-6 gap-y-1 border-b py-5 sm:grid-cols-[7rem_1fr]">
+                <dt className="pt-0.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted-foreground">{c.k}</dt>
+                <dd>
+                  <a
+                    href={c.href}
+                    {...(c.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className="group inline-flex items-center gap-1.5 font-medium underline decoration-foreground/20 underline-offset-4 hover:decoration-foreground"
+                  >
+                    {c.v}
+                    {c.href.startsWith('http') && <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                  </a>
+                  <p className="mt-1 text-sm text-muted-foreground">{c.text}</p>
+                </dd>
               </div>
-            </motion.div>
-          </motion.div>
+            ))}
+          </dl>
+
+          <form onSubmit={submit} className="space-y-5">
+            <Eyebrow>Write to support</Eyebrow>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="block space-y-2 text-sm">
+                <span>Name</span>
+                <Input id="name" value={form.name} onChange={change} autoComplete="name" className={FIELD} />
+              </label>
+              <label className="block space-y-2 text-sm">
+                <span>Email</span>
+                <Input id="email" type="email" value={form.email} onChange={change} autoComplete="email" required className={FIELD} />
+              </label>
+            </div>
+            <label className="block space-y-2 text-sm">
+              <span>Subject</span>
+              <Input id="subject" value={form.subject} onChange={change} className={FIELD} />
+            </label>
+            <label className="block space-y-2 text-sm">
+              <span>Message</span>
+              <Textarea id="message" value={form.message} onChange={change} required rows={7} className="rounded-md border-foreground/15 bg-transparent" />
+            </label>
+            <div className="flex flex-wrap items-center gap-4">
+              <button type="submit" className="inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+                Open in your email app
+              </button>
+              <span className="text-xs text-muted-foreground">Nothing is sent from this page; your email app sends it to {contact.support}.</span>
+            </div>
+          </form>
         </div>
-      </section>
-
-      {/* Contact Form Section */}
-      <section className="py-16 md:py-24">
-        <div className="container px-4 mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Contact Form */}
-            <motion.div
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-              variants={fadeIn()}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                    Send us a message
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form className="space-y-4" onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="firstName" className="text-sm font-medium">
-                          First Name
-                        </label>
-                        <Input 
-                          id="firstName" 
-                          placeholder="John" 
-                          value={formData.firstName}
-                          onChange={handleChange}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="lastName" className="text-sm font-medium">
-                          Last Name
-                        </label>
-                        <Input 
-                          id="lastName" 
-                          placeholder="Doe"
-                          value={formData.lastName}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="text-sm font-medium">
-                        Email
-                      </label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="subject" className="text-sm font-medium">
-                        Subject
-                      </label>
-                      <Input 
-                        id="subject" 
-                        placeholder="How can we help?"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="message" className="text-sm font-medium">
-                        Message
-                      </label>
-                      <Textarea 
-                        id="message" 
-                        placeholder="Tell us more about your inquiry..."
-                        rows={5}
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full gap-2">
-                      Send Message
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Contact Information */}
-            <motion.div
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-              variants={fadeIn(0.2)}
-              className="space-y-8"
-            >
-              <div>
-                <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
-                <p className="text-muted-foreground">
-                  Whether you have questions about our platform, need technical support, 
-                  or want to explore partnership opportunities, we&apos;re here to help.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                        <Mail className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">Email Support</h3>
-                        <p className="text-sm text-muted-foreground">support@mail.qrdx.org</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="pt-6">
-                    <a 
-                      href="https://t.me/qrdx_official" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="block hover:opacity-80 transition-opacity"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                          <MessageSquare className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Community</h3>
-                          <p className="text-sm text-muted-foreground">Join our Telegram community</p>
-                        </div>
-                      </div>
-                    </a>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="pt-6">
-                    <a 
-                      href="https://trade.qrdx.org/partner" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="block hover:opacity-80 transition-opacity"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                          <Handshake className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">Partnerships</h3>
-                          <p className="text-sm text-muted-foreground">Explore partnership opportunities</p>
-                        </div>
-                      </div>
-                    </a>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="p-6 bg-accent rounded-lg">
-                <h3 className="font-medium mb-2">Response Time</h3>
-                <p className="text-sm text-muted-foreground">
-                  We typically respond to all inquiries within 24 hours during business days.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-    </div>
+      </Section>
+    </>
   )
 }

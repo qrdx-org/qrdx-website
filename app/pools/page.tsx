@@ -46,8 +46,8 @@ export default function PoolsPage() {
       </PageHero>
 
       <Section title="Testnet pools" intro="Read from the chain in your browser.">
-        <div className="overflow-hidden rounded-xl border bg-card">
-          <table className="num w-full text-sm">
+        <div className="overflow-x-auto border-t border-foreground/15">
+          <table className="num w-full text-sm [&_td:first-child]:pl-0 [&_td:last-child]:pr-0 [&_th:first-child]:pl-0 [&_th:last-child]:pr-0">
             <thead className="border-b text-xs text-muted-foreground">
               <tr>
                 <th className="px-4 py-2.5 text-left font-medium">Pool</th>
@@ -103,7 +103,7 @@ export default function PoolsPage() {
               As the price moves, a position shifts toward the token that fell. Fees offset this; they do not always cover it.
             </Feature>
           </div>
-          <div className="mx-auto mt-10 max-w-3xl">
+          <div className="mt-12 max-w-3xl">
             <Note title="Testnet">Pools are live on testnet, where tokens have no value.</Note>
           </div>
         </Section>

@@ -117,12 +117,11 @@ const sections: LegalSection[] = [
           qrdx.org does not set tracking cookies. It uses your browser&apos;s local storage to remember:
         </p>
         <ul>
-          <li><strong>cookie-consent</strong>: your choice in the cookie banner;</li>
+          <li><strong>cookie-consent</strong>: that you have read the notice saying this, so it is not shown again;</li>
           <li><strong>theme</strong>: your light or dark mode preference.</li>
         </ul>
         <p>
-          This data stays in your browser and is never sent to us. You can change your cookie choice through the
-          &quot;Cookies&quot; link in the footer, or clear it at any time through your browser settings. trade.qrdx.org
+          This data stays in your browser and is never sent to us. Clear it at any time through your browser settings. trade.qrdx.org
           uses local storage the same way, and also stores the public wallet addresses you connect and the wallet pairings
           you create, so they persist between visits.
         </p>

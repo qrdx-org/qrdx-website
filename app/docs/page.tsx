@@ -22,7 +22,7 @@ export default function DocsPage() {
       <Section>
         <div className="grid gap-4 md:grid-cols-3">
           {SECTIONS.map((s) => (
-            <a key={s.title} href={s.href} target="_blank" rel="noopener noreferrer" className="group rounded-xl border bg-card p-6 transition-colors hover:border-primary/50">
+            <a key={s.title} href={s.href} target="_blank" rel="noopener noreferrer" className="group rounded-lg border p-6 transition-colors hover:border-foreground/40">
               <s.icon className="h-5 w-5 text-primary" />
               <h2 className="mt-4 flex items-center gap-1 font-semibold">
                 {s.title} <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

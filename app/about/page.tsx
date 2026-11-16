@@ -23,7 +23,7 @@ export default function AboutPage() {
       </PageHero>
 
       <Section title="The problem">
-        <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-muted-foreground">
+        <div className="max-w-3xl space-y-5 text-lg leading-relaxed text-muted-foreground">
           <p>
             Bitcoin and Ethereum accounts are protected by elliptic-curve signatures. Shor&apos;s algorithm, run on a large fault-tolerant quantum computer, would derive a private key from its public key, and every account that has
             ever published its public key would be open to theft. No such computer exists today, but keys and ledgers last for decades, and a chain cannot change its signatures overnight.
@@ -63,16 +63,16 @@ export default function AboutPage() {
       </section>
 
       <Section title="Get in touch">
-        <div className="mx-auto grid max-w-3xl gap-3 text-sm sm:grid-cols-3">
-          <a href={`mailto:${contact.support}`} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+        <div className="grid max-w-4xl gap-3 text-sm sm:grid-cols-3">
+          <a href={`mailto:${contact.support}`} className="rounded-lg border p-5 hover:border-foreground/40">
             <div className="font-semibold">Support</div>
             <div className="mt-1 text-muted-foreground">{contact.support}</div>
           </a>
-          <a href={`mailto:${contact.research}`} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+          <a href={`mailto:${contact.research}`} className="rounded-lg border p-5 hover:border-foreground/40">
             <div className="font-semibold">Research</div>
             <div className="mt-1 text-muted-foreground">{contact.research}</div>
           </a>
-          <a href={docs.reporting} className="rounded-xl border bg-card p-5 hover:border-primary/50">
+          <a href={docs.reporting} className="rounded-lg border p-5 hover:border-foreground/40">
             <div className="font-semibold">Security</div>
             <div className="mt-1 text-muted-foreground">{contact.security}</div>
           </a>

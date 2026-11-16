@@ -1,8 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { ArrowUpRight, Code2, Coins, LineChart, Search, Wallet } from 'lucide-react'
-import { ButtonLink, PageHero, Section, fadeUp } from '@/components/site/blocks'
+import { ButtonLink, PageHero, Section } from '@/components/site/blocks'
 import { apps, docs, social } from '@/lib/site'
 
 const STEPS = [
@@ -40,27 +39,27 @@ export default function GetStartedPage() {
       </PageHero>
 
       <Section>
-        <ol className="mx-auto grid max-w-3xl gap-4">
+        <ol className="max-w-4xl border-b">
           {STEPS.map((s, i) => (
-            <motion.li {...fadeUp} key={s.title} className="flex gap-5 rounded-xl border bg-card p-6">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-background text-sm font-semibold">{i + 1}</span>
+            <li key={s.title} className="grid gap-x-8 gap-y-3 border-t border-foreground/15 py-8 sm:grid-cols-[5rem_1fr]">
+              <span className="num font-mono text-sm text-muted-foreground">{String(i + 1).padStart(2, '0')}</span>
               <div>
-                <h2 className="flex items-center gap-2 font-semibold">
-                  <s.icon className="h-4 w-4 text-primary" /> {s.title}
+                <h2 className="flex items-center gap-2 text-xl font-medium tracking-tight">
+                  <s.icon className="h-4 w-4 text-muted-foreground" /> {s.title}
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
-                <a href={s.link.href} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                <p className="mt-2.5 max-w-2xl leading-relaxed text-muted-foreground">{s.text}</p>
+                <a href={s.link.href} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm underline decoration-foreground/20 underline-offset-4 hover:decoration-foreground">
                   {s.link.label} <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </div>
-            </motion.li>
+            </li>
           ))}
         </ol>
       </Section>
 
       <section className="border-t bg-card/30">
         <Section title="Building something?" intro="Read the chain, sign transactions and integrate the wallet. The docs' examples run live against testnet, in the page.">
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap gap-3">
             <ButtonLink href={docs.build}>
               <Code2 className="h-4 w-4" /> Build on QRDX
             </ButtonLink>

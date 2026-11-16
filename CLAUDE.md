@@ -39,7 +39,7 @@ qrdx-website/
 │   └── dependabot.yml
 ├── app/                        # Next.js App Router
 │   ├── layout.tsx              # Root layout with Inter font
-│   ├── page.tsx                # Home page (328 lines, quantum-focused hero)
+│   ├── page.tsx                # Home page (live blocks, validator key, markets)
 │   ├── globals.css             # Tailwind + CSS custom properties
 │   ├── about/page.tsx          # About page
 │   ├── contact/page.tsx        # Contact page
@@ -150,7 +150,7 @@ From `.github/instructions/no retard.instructions.md`:
 
 ### 5. Component Patterns
 - Client components: Use `'use client'` directive when needed
-- Animations: Framer Motion for interactive elements
+- Animations: none on scroll; see "Layout and the look"
 - Navigation: Responsive design with desktop/mobile versions
 - Icons: Lucide React (optimized via Next.js config)
 
@@ -197,15 +197,17 @@ The design system uses HSL color values via CSS custom properties:
 All colors have dark mode variants.
 
 ### Typography
-- Font: Inter (Google Fonts)
-- Loaded in root layout.tsx
+- Inter for text, JetBrains Mono for labels, data, addresses and endpoints (both loaded in `app/layout.tsx`)
+- Headings: `font-medium`, tight negative tracking, large and left-aligned; small labels are mono, uppercase, wide tracking (`Eyebrow`)
 
-### Animations
-- Framer Motion animations for page transitions and interactions
-- Common patterns:
-  - `fadeIn(delay)`: Opacity + Y-axis fade
-  - `slideIn(direction)`: Directional slide animations
-  - Staggered children animations
+### Layout and the look
+The site is editorial and technical, not a template. Keep it that way:
+- One column measure everywhere: `WRAP` in `components/site/blocks.tsx` (max 1200px, 20/32px gutters). Left-aligned; a `Section` puts its title left and its introduction beside it.
+- Structure comes from hairline rules (`border-t border-foreground/15`, rows divided by `border-b`), not boxes. No card grids of icons in squares, no pill badges, no glows or gradients, no gradient text.
+- Real data is the imagery: the live block list, a validator's actual public key, markets from the chain. Do not add stock illustrations or decorative charts.
+- Colour: monochrome plus the one QRDX blue (dark) / black (light) as `primary`; `bid`, `ask` and `warn` only for meaning.
+- Motion: none on scroll. Things that move are live data (new blocks) and hover states. `fadeUp` is an empty object kept for older call sites. Respect `prefers-reduced-motion`.
+- Check every page at 390px wide: no horizontal scroll.
 
 ## Current Pages
 
@@ -213,7 +215,7 @@ All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not in
 
 | Route | Page |
 | --- | --- |
-| `/` | Home: hero, live testnet tiles and markets, post-quantum and exchange features, products, status |
+| `/` | Home: live testnet blocks beside the headline, chain statistics, a validator's ML-DSA-65 public key and key and signature sizes to scale, the exchange with live markets, the apps, status, testnet endpoints (`components/site/home.tsx`) |
 | `/trade`, `/pools`, `/stake` | Product pages with live testnet data (markets, pools, validators) and links into the apps |
 | `/wallet` (`/wallet/create`) | QRDX Wallet (`components/pages/WalletPage.tsx`) |
 | `/wallet/funding` | Getting QRDX: testnet has no public faucet; mainnet not launched |
@@ -287,7 +289,7 @@ Edit CSS variables in `app/globals.css` (`:root` and `.dark`)
 4. Read the full context of files before editing (use large line ranges)
 5. Follow the established patterns in existing components
 6. Use TypeScript strictly (this is a .tsx project)
-7. Leverage Framer Motion for animations
+7. Follow "Layout and the look" above; motion only for live data and hover
 8. Use the `cn()` utility for className combinations
 9. Maintain responsive design (mobile + desktop)
 10. Keep accessibility in mind (Radix UI primitives are accessible by default)
@@ -298,12 +300,12 @@ QRDX focuses on:
 - Quantum-resistant cryptography solutions
 - Professional, modern web presence
 - Fast performance (Bun + Turbopack + static export)
-- Excellent UX with smooth animations
+- An intentional, editorial design that shows real chain data
 - Clean, maintainable code structure
 
 ---
 
-**Last Updated**: October 8, 2026
+**Last Updated**: November 16, 2026
 **Next.js Version**: 16.0.1
 **Package Manager**: pnpm@10.6.4
 **Runtime**: Bun

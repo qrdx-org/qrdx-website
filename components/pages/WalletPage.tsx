@@ -64,7 +64,7 @@ export function WalletPage() {
             Trade on a computer and approve on your phone: QRDX Connect links them through an end-to-end encrypted relay.
           </Feature>
         </div>
-        <div className="mx-auto mt-10 grid max-w-4xl gap-4 md:grid-cols-2">
+        <div className="mt-12 grid max-w-4xl gap-8 md:grid-cols-2">
           <Note title="Back up your recovery phrase">
             It is the only backup, and it restores both keys of every account. Safari deletes website storage after seven days unused; install the iPhone app from Safari to avoid that.
           </Note>
@@ -72,7 +72,7 @@ export function WalletPage() {
             No hardware wallet supports ML-DSA yet. The wallet has not had a third-party audit; one is planned before mainnet.
           </Note>
         </div>
-        <div className="mt-8 text-center">
+        <div className="mt-10">
           <ButtonLink href={docs.walletSecurity} variant="outline">
             How the wallet protects keys
           </ButtonLink>

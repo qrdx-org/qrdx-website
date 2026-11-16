@@ -72,7 +72,7 @@ export default function TradePage() {
             Every operation succeeds whole or changes nothing but its fee. A swap below your minimum simply fails.
           </Feature>
         </div>
-        <div className="mx-auto mt-10 max-w-3xl">
+        <div className="mt-12 max-w-3xl">
           <Note title="Testnet">
             Trading is live on testnet, where tokens have no value. Perps collateral on testnet is native QRDX; mainnet will settle in a bridged USD stablecoin.
           </Note>
