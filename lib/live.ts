@@ -13,7 +13,7 @@
 import { useSyncExternalStore } from 'react'
 import { testnet } from './site'
 
-async function rpc<T>(method: string, ...params: unknown[]): Promise<T> {
+export async function rpc<T>(method: string, ...params: unknown[]): Promise<T> {
   const res = await fetch(testnet.rpc, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -25,7 +25,7 @@ async function rpc<T>(method: string, ...params: unknown[]): Promise<T> {
   return body.result as T
 }
 
-const get = <T>(url: string) => fetch(url, { signal: AbortSignal.timeout(12_000) }).then((r) => r.json() as Promise<T>)
+export const get = <T>(url: string) => fetch(url, { signal: AbortSignal.timeout(12_000) }).then((r) => r.json() as Promise<T>)
 
 /** A market as trade.qrdx.org shows it: spot oriented by its page (QRDX/USDC, not USDC/QRDX). */
 export interface Market {

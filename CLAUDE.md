@@ -220,13 +220,16 @@ All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not in
 | `/wallet` (`/wallet/create`) | QRDX Wallet (`components/pages/WalletPage.tsx`) |
 | `/wallet/funding` | Getting QRDX: testnet has no public faucet; mainnet not launched |
 | `/wallet/shielding` | Asset shielding: **planned**, from the whitepaper; clearly marked as not available |
+| `/network` | Testnet live: validators and delegation, staking and governance parameters, proposals, the Doomsday Protocol's state, blocks (`components/pages/NetworkPage.tsx`, `lib/network.ts`) |
+| `/changelog` | What shipped, newest first, filterable by product (`lib/changelog.ts`: add an entry when something reaches users) |
 | `/explorer`, `/get-started`, `/services`, `/about`, `/docs`, `/contact` | Product overview, onboarding, what runs, mission, docs index, contact |
 | `/whitepaper` | Reader for `public/QRDX-Whitepaper-v3.2.md`; contents built from its headings |
-| `/terms`, `/privacy` | Legal (`components/LegalPage.tsx`) |
+| `/terms`, `/privacy` | Legal (`components/LegalPage.tsx`). trade.qrdx.org asks visitors to accept the Terms and stores the Terms' date (`TERMS_VERSION` in qrdx-trade `lib/terms.ts`): change both when the Terms change |
+| `sitemap.xml`, `robots.txt`, share image, 404 | `app/sitemap.ts` (list a new page there), `app/robots.ts`, `app/og.png/route.tsx`, `app/not-found.tsx` |
 
 ## Content and data rules
 
-- **Say what is real.** Live means live on testnet; mainnet has not launched. Whitepaper-only features (bridges, asset shielding, governance) are labelled planned. Check claims against qrdx-node, qrdx-trade and qrdx-wallet docs, and docs.qrdx.org.
+- **Say what is real.** Live means live on testnet; mainnet has not launched. Governance, the bridge, account control and multisig, QRDX names, and quantum migration with the Doomsday Protocol run on testnet (node 3.0.0). Whitepaper-only features (asset shielding beyond the bridge, wider chain adapters) are labelled planned. Check claims against qrdx-node, qrdx-trade and qrdx-wallet docs, and docs.qrdx.org.
 - **No generated data.** Live numbers come from the testnet node and the trade API in the visitor's browser (`lib/live.ts`); an unreadable number shows as a dash.
 - **Links live in `lib/site.ts`** (apps, docs pages, socials, contact addresses). Docs links point at docs.qrdx.org (`/docs/...` paths).
 - **Theme**: the shared QRDX tokens in `app/globals.css` (same as trade, explorer and docs): navy with QRDX blue in dark mode, black on white in light mode. Shared page blocks are in `components/site/blocks.tsx`.
@@ -305,7 +308,7 @@ QRDX focuses on:
 
 ---
 
-**Last Updated**: November 16, 2026
+**Last Updated**: November 17, 2026
 **Next.js Version**: 16.0.1
 **Package Manager**: pnpm@10.6.4
 **Runtime**: Bun

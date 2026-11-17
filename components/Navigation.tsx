@@ -15,12 +15,14 @@ const PRODUCTS = [
   { href: '/wallet', title: 'Wallet', text: 'Extension, web and iPhone' },
   { href: '/explorer', title: 'Explorer', text: 'Blocks, tokens, markets, profiles' },
   { href: '/stake', title: 'Validate', text: 'Run or delegate to a validator' },
+  { href: '/network', title: 'Network', text: 'Validators, governance and blocks, live' },
 ]
 
 const DEVELOPERS = [
   { href: docs.build, title: 'Build on QRDX', text: 'JSON-RPC, REST, streams, signing' },
   { href: docs.home, title: 'Documentation', text: 'Guides, concepts and references' },
   { href: '/whitepaper', title: 'Whitepaper', text: 'The protocol design' },
+  { href: '/changelog', title: 'What\u2019s new', text: 'Releases of the node and the apps' },
 ]
 
 const LINK = 'rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground'

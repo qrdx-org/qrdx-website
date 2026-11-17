@@ -10,6 +10,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: 'QRDX Wallet', href: apps.wallet },
       { label: 'QRDX Explorer', href: apps.explorer },
       { label: 'Run a validator', href: '/stake' },
+      { label: 'Network', href: '/network' },
     ],
   },
   {
@@ -19,6 +20,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: 'Documentation', href: docs.home },
       { label: 'Whitepaper', href: '/whitepaper' },
       { label: 'Status and roadmap', href: docs.roadmap },
+      { label: 'What\u2019s new', href: '/changelog' },
     ],
   },
   {

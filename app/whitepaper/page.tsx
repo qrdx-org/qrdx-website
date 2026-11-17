@@ -80,6 +80,17 @@ export default function WhitepaperPage() {
             {meta.updated ? ` · ${meta.updated}` : ''}
           </span>
         )}
+        <span className="mt-1 block text-sm">
+          Earlier versions:{' '}
+          <a href="/QRDX-Whitepaper-v2.3.pdf" className="underline decoration-foreground/20 underline-offset-4 hover:decoration-foreground">
+            2.3
+          </a>
+          ,{' '}
+          <a href="/QRDX-Whitepaper-v2.0.pdf" className="underline decoration-foreground/20 underline-offset-4 hover:decoration-foreground">
+            2.0
+          </a>{' '}
+          (PDF)
+        </span>
       </PageHero>
 
       <div className="mx-auto max-w-7xl px-4 py-12">

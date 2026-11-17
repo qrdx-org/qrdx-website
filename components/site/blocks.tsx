@@ -98,14 +98,22 @@ export const num = (v: number | null, f: (x: number) => string = (x) => x.toLoca
 export function LiveTiles({ stats }: { stats?: ChainStats }) {
   const own = useTestnet()
   const s = stats ?? own
-  const tiles = [
-    { label: 'Block height', value: num(s.height) },
-    { label: 'Block interval', value: num(s.blockInterval, (x) => `${Math.round(x * 1000)} ms`) },
-    { label: 'Finalized epoch', value: num(s.finalizedEpoch) },
-    { label: 'Validators', value: num(s.validators) },
-    { label: 'Trades, 24 h', value: num(s.trades24h) },
-    { label: 'Native tokens', value: num(s.tokens) },
-  ]
+  return (
+    <StatGrid
+      tiles={[
+        { label: 'Block height', value: num(s.height) },
+        { label: 'Block interval', value: num(s.blockInterval, (x) => `${Math.round(x * 1000)} ms`) },
+        { label: 'Finalized epoch', value: num(s.finalizedEpoch) },
+        { label: 'Validators', value: num(s.validators) },
+        { label: 'Trades, 24 h', value: num(s.trades24h) },
+        { label: 'Native tokens', value: num(s.tokens) },
+      ]}
+    />
+  )
+}
+
+/** Six figures in a ruled row: two columns on a phone, three on a tablet, six on a desktop. */
+export function StatGrid({ tiles }: { tiles: { label: string; value: ReactNode }[] }) {
   return (
     // The 1px gaps over the border colour are the rules between cells, at every column count.
     <div className="grid grid-cols-2 gap-px border-y bg-border sm:grid-cols-3 lg:grid-cols-6">

@@ -32,6 +32,12 @@ export const docs = {
   walletSecurity: `${apps.docs}/docs/security/wallet-security`,
   reporting: `${apps.docs}/docs/security/reporting`,
   roadmap: `${apps.docs}/docs/roadmap`,
+  staking: `${apps.docs}/docs/guides/staking`,
+  governance: `${apps.docs}/docs/guides/governance`,
+  bridge: `${apps.docs}/docs/guides/bridge`,
+  accountControl: `${apps.docs}/docs/guides/account-control`,
+  names: `${apps.docs}/docs/guides/names`,
+  quantumMigration: `${apps.docs}/docs/guides/quantum-migration`,
 }
 
 export const social = {

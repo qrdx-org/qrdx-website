@@ -19,7 +19,7 @@ const sections: LegalSection[] = [
         </p>
         <ul>
           <li>the website at <strong>qrdx.org</strong> and its subpages;</li>
-          <li>the trading interface at <strong>trade.qrdx.org</strong>, including swap, pool, stake, and bridge features;</li>
+          <li>the trading interface at <strong>trade.qrdx.org</strong>, including spot, swap, pool, perpetual, vault, stake, and launch features;</li>
           <li>the <strong>QRDX Wallet</strong> browser extension and mobile applications;</li>
           <li>the block explorer at <strong>explorer.qrdx.org</strong>, the documentation at <strong>docs.qrdx.org</strong>, and any other interface published by the QRDX contributors.</li>
         </ul>
@@ -37,7 +37,7 @@ const sections: LegalSection[] = [
     content: (
       <>
         <p>
-          The QRDX blockchain and its smart contracts (the &quot;Protocol&quot;) form a decentralized, permissionless
+          The QRDX blockchain, its built-in exchange, and its smart contracts (the &quot;Protocol&quot;) form a decentralized, permissionless
           network run by independent node operators and validators. QRDX does not own, operate, or control the
           Protocol. The Interfaces are software that let you read data from and submit transactions to the Protocol.
         </p>
@@ -71,9 +71,9 @@ const sections: LegalSection[] = [
             with the wrong amount.
           </li>
           <li>
-            <strong>Smart contract risk.</strong> Smart contracts, including those for trading, liquidity pools,
-            staking, and asset shielding or bridging (such as qETH and qBTC), can contain bugs or vulnerabilities that
-            lead to loss of funds. Audits reduce this risk but do not remove it.
+            <strong>Protocol and smart contract risk.</strong> The Protocol&apos;s exchange, staking, governance and bridge,
+            and smart contracts deployed on it, can contain bugs or vulnerabilities that lead to loss of funds. Audits
+            reduce this risk but do not remove it.
           </li>
           <li>
             <strong>Cryptographic risk.</strong> QRDX uses post-quantum cryptography. Cryptographic research continues,
@@ -100,6 +100,39 @@ const sections: LegalSection[] = [
         <p>
           Test networks and test tokens have no monetary value. Do not send real assets to a testnet address.
         </p>
+      </>
+    ),
+  },
+  {
+    id: 'trading',
+    title: 'Trading, Leverage, and Vaults',
+    content: (
+      <>
+        <p>trade.qrdx.org lets you place orders on the Protocol&apos;s order books, swap, provide liquidity, trade perpetual futures, and deposit into vaults. In particular:</p>
+        <ul>
+          <li>
+            <strong>Leverage and liquidation.</strong> Perpetual positions are leveraged. If your margin falls below the
+            maintenance requirement, the Protocol liquidates the position, and you can lose all of the margin backing it.
+            Prices can move faster than you can add margin or close a position.
+          </li>
+          <li>
+            <strong>Funding and oracle prices.</strong> Perpetual positions pay or receive funding, and are marked to an
+            oracle price that the Protocol&apos;s validators set. Mark prices can differ from prices elsewhere.
+          </li>
+          <li>
+            <strong>Order execution.</strong> The Protocol matches orders by its own rules. An order can fill partly, at a
+            worse price than shown, or not at all, and an operation that fails still costs its network fee.
+          </li>
+          <li>
+            <strong>Vaults and sub-accounts.</strong> A vault&apos;s leader trades its depositors&apos; funds; depositing
+            means trusting the leader&apos;s decisions, and losses are shared. QRDX does not select, review, or supervise
+            vault leaders.
+          </li>
+          <li>
+            <strong>Trading keys.</strong> If you approve a trading key (one-click trading), anything that holds it can
+            place and cancel orders for your account until it expires or you revoke it.
+          </li>
+        </ul>
       </>
     ),
   },
@@ -294,14 +327,15 @@ export default function TermsPage() {
   return (
     <LegalPage
       title="Terms of Service"
-      lastUpdated="October 3, 2026"
+      lastUpdated="November 17, 2026"
       summary={
         <>
           <p className="font-semibold text-foreground">Summary (the full Terms below control)</p>
           <p>
             QRDX is a decentralized blockchain. qrdx.org, trade.qrdx.org, and the QRDX Wallet are non-custodial software
             you use <strong>entirely at your own risk</strong>. We never hold your funds or keys, cannot reverse
-            transactions, and cannot recover lost assets. Everything is provided as is, with no warranties.
+            transactions, and cannot recover lost assets. Leveraged positions can be liquidated and lose all of their margin.
+            Everything is provided as is, with no warranties.
           </p>
         </>
       }

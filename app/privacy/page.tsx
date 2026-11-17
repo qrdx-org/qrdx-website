@@ -122,8 +122,8 @@ const sections: LegalSection[] = [
         </ul>
         <p>
           This data stays in your browser and is never sent to us. Clear it at any time through your browser settings. trade.qrdx.org
-          uses local storage the same way, and also stores the public wallet addresses you connect and the wallet pairings
-          you create, so they persist between visits.
+          uses local storage the same way, and also stores the public wallet addresses you connect, the wallet pairings
+          you create, and the date of the Terms you accepted and when you accepted them, so they persist between visits.
         </p>
       </>
     ),
@@ -218,7 +218,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
-      lastUpdated="October 3, 2026"
+      lastUpdated="November 17, 2026"
       summary={
         <>
           <p className="font-semibold text-foreground">Summary (the full policy below controls)</p>
