@@ -2,20 +2,20 @@
 
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
+import { KeyField } from '@/components/gfx/KeyField'
 import type { ChainStats } from '@/lib/live'
 import { apps, testnet } from '@/lib/site'
 import { cn } from '@/lib/utils'
 
-const ROWS = 9
-
 /**
  * Testnet's blocks as the node's stream announces them: height, hash, and the time since the
  * block before. Rows are kept at a fixed count so the hero does not move while they arrive.
+ * Over the lattice it is frosted glass, so the nodes those blocks light show through.
  */
-export function BlockTape({ stats }: { stats: ChainStats }) {
+export function BlockTape({ stats, rows = 9, className }: { stats: ChainStats; rows?: number; className?: string }) {
   const { blocks, live, chainId, finalizedEpoch } = stats
   return (
-    <div className="overflow-hidden rounded-lg border bg-card/60 font-mono text-[12px]">
+    <div className={cn('overflow-hidden rounded-xl border border-foreground/10 bg-background/55 font-mono text-[12px] shadow-2xl shadow-black/10 backdrop-blur-xl dark:shadow-black/40', className)}>
       <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5 text-muted-foreground">
         <span className="flex items-center gap-2 text-foreground">
           <span className={cn('h-1.5 w-1.5 rounded-full', live ? 'pulse-dot bg-bid text-bid' : 'bg-muted-foreground')} />
@@ -29,7 +29,7 @@ export function BlockTape({ stats }: { stats: ChainStats }) {
         <span className="text-right">After</span>
       </div>
       <ol>
-        {Array.from({ length: ROWS }, (_, i) => {
+        {Array.from({ length: rows }, (_, i) => {
           const b = blocks[i]
           const prev = blocks[i + 1]
           const gap = b && prev && prev.height === b.height - 1 ? Math.round((b.ts - prev.ts) * 1000) : null
@@ -37,7 +37,7 @@ export function BlockTape({ stats }: { stats: ChainStats }) {
             <li
               key={b ? b.height : `empty-${i}`}
               className={cn('grid grid-cols-[6.5rem_1fr_4.5rem] gap-3 border-b px-4 py-[7px] last:border-b-0', i === 0 && b && 'flash-in')}
-              style={{ opacity: b ? 1 - i * 0.07 : 0.35 }}
+              style={{ opacity: b ? 1 - i * (0.6 / rows) : 0.35 }}
             >
               <span className="num text-foreground">{b ? `#${b.height.toLocaleString('en-US')}` : '—'}</span>
               <span className="truncate text-muted-foreground">{b ? `${b.hash.slice(0, 8)}…${b.hash.slice(-6)}` : ' '}</span>
@@ -67,14 +67,20 @@ export function ValidatorKey({ stats }: { stats: ChainStats }) {
   const bytes = hex.length / 2
   return (
     <figure className="flex h-full flex-col">
-      <div className="relative flex-1 overflow-hidden rounded-lg border bg-card/60 p-4 sm:p-5">
+      <KeyField publicKey={k ? hex : null} className="aspect-[4/3] w-full rounded-t-xl border border-b-0 bg-card sm:aspect-[2.3/1]">
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-4 p-4 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground sm:p-5">
+          <span>Fig. 1 · one column per byte, as tall as its value</span>
+          <span className="hidden sm:inline">61 × 32</span>
+        </div>
+      </KeyField>
+      <div className="relative flex-1 overflow-hidden rounded-b-xl border bg-card/60 p-4 first:rounded-t-xl sm:p-5">
         {k ? (
-          <p className="break-all font-mono text-[9px] leading-[1.5] tracking-[0.02em] text-muted-foreground/80 sm:text-[10px] lg:text-[11px]">
-            <mark className="rounded-[2px] bg-primary/20 text-foreground ring-1 ring-primary/40 dark:bg-primary/25">{hex.slice(0, CLASSIC_PUBKEY_BYTES * 2)}</mark>
+          <p className="break-all font-mono text-[8.5px] leading-[1.55] tracking-[0.02em] text-muted-foreground/80 sm:text-[9.5px] lg:text-[10px]">
+            <mark className="rounded-[2px] bg-signal/20 text-foreground ring-1 ring-signal/50">{hex.slice(0, CLASSIC_PUBKEY_BYTES * 2)}</mark>
             {hex.slice(CLASSIC_PUBKEY_BYTES * 2)}
           </p>
         ) : (
-          <p className="flex h-full min-h-72 items-center justify-center font-mono text-xs text-muted-foreground">Reading a validator&apos;s key from testnet…</p>
+          <p className="flex h-full min-h-40 items-center justify-center font-mono text-xs text-muted-foreground">Reading a validator&apos;s key from testnet…</p>
         )}
       </div>
       <figcaption className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 font-mono text-[11px] text-muted-foreground">
@@ -91,7 +97,7 @@ export function ValidatorKey({ stats }: { stats: ChainStats }) {
           )}
         </span>
         <span className="flex items-center gap-2">
-          <span className="inline-block h-2.5 w-2.5 rounded-[2px] bg-primary/30 ring-1 ring-primary/50" /> {CLASSIC_PUBKEY_BYTES} bytes: a whole secp256k1 key
+          <span className="inline-block h-2.5 w-2.5 rounded-[2px] bg-signal/40 ring-1 ring-signal" /> {CLASSIC_PUBKEY_BYTES} bytes: a whole secp256k1 key
         </span>
       </figcaption>
     </figure>
@@ -138,7 +144,7 @@ function Bar({ label, bytes, accent }: { label: string; bytes: number; accent?: 
     <div className="grid grid-cols-[5.5rem_1fr] items-center gap-3 font-mono text-[11px] sm:grid-cols-[6rem_1fr]">
       <span className={accent ? 'text-foreground' : 'text-muted-foreground'}>{label}</span>
       <div className="flex items-center gap-2">
-        <span className={cn('h-2 rounded-[1px]', accent ? 'bg-primary' : 'bg-foreground/50')} style={{ width: `max(3px, calc((100% - 4.5rem) * ${bytes / MAX}))` }} />
+        <span className={cn('rule-draw h-2 rounded-[1px]', accent ? 'bg-signal' : 'bg-foreground/50')} style={{ width: `max(3px, calc((100% - 4.5rem) * ${bytes / MAX}))` }} />
         <span className="num shrink-0 text-muted-foreground">{bytes.toLocaleString('en-US')} B</span>
       </div>
     </div>

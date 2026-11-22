@@ -1,4 +1,4 @@
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import CookieConsent from '@/components/CookieConsent'
@@ -7,8 +7,9 @@ import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import type { Metadata } from 'next'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
+const sans = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
+const serif = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument' })
 
 const description =
   'QRDX is a blockchain secured by NIST-standard post-quantum signatures (ML-DSA-65), with order books, liquidity pools and perpetuals built into the protocol. Testnet is live.'
@@ -51,9 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="QRDX" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#030712" />
+        <meta name="theme-color" content="#090a0d" />
       </head>
-      <body className={`${inter.className} ${inter.variable} ${mono.variable}`}>
+      <body className={`${sans.variable} ${mono.variable} ${serif.variable} font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

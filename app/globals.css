@@ -2,9 +2,13 @@
 @plugin "@tailwindcss/typography";
 
 /*
- * QRDX theme: the same tokens as trade.qrdx.org, explorer.qrdx.org and docs.qrdx.org.
- * Dark is QRDX navy with QRDX blue as the one accent; light is strictly black on
- * white. Colour is kept for meaning: success / failure, buys and sells, warnings.
+ * QRDX theme, shared in its tokens with trade.qrdx.org, explorer.qrdx.org and docs.qrdx.org.
+ *
+ * Ink and bone: a near-black with a trace of blue, and a warm off-white, so the page reads like
+ * print rather than a screen default. One accent, Cherenkov blue (`signal`): the light charged
+ * particles give off in water, for a chain built against what comes after classical machines.
+ * In light mode buttons are ink and the signal deepens to stay legible on paper. Colour beyond
+ * that carries meaning only: buys and sells, failures, warnings.
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -30,74 +34,83 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-signal: hsl(var(--signal));
   --color-bid: hsl(var(--bid));
   --color-ask: hsl(var(--ask));
   --color-warn: hsl(var(--warn));
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
+  /* Paper. */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 4%;
-    --canvas: 0 0% 96.5%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
-    --primary: 0 0% 4%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 4%;
-    --muted: 0 0% 95.5%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 0 0% 94%;
-    --accent-foreground: 0 0% 4%;
-    --destructive: 354 72% 48%;
+    --background: 40 20% 97.5%;
+    --foreground: 228 18% 8%;
+    --canvas: 40 14% 94.5%;
+    --card: 40 25% 99%;
+    --card-foreground: 228 18% 8%;
+    --popover: 40 25% 99%;
+    --popover-foreground: 228 18% 8%;
+    --primary: 228 18% 8%;
+    --primary-foreground: 40 20% 97.5%;
+    --secondary: 40 10% 93%;
+    --secondary-foreground: 228 18% 8%;
+    --muted: 40 10% 93.5%;
+    --muted-foreground: 228 6% 38%;
+    --accent: 40 12% 91.5%;
+    --accent-foreground: 228 18% 8%;
+    --destructive: 356 72% 47%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 89%;
-    --input: 0 0% 86%;
-    --ring: 0 0% 4%;
-    --radius: 0.625rem;
-    --bid: 152 62% 33%;
-    --ask: 354 72% 48%;
-    --warn: 32 95% 42%;
-    /* charts */
-    --chart-1: 0 0% 4%;
-    --chart-2: 0 0% 45%;
-    --chart-3: 0 0% 70%;
+    --border: 40 8% 86.5%;
+    --input: 40 8% 82%;
+    --ring: 196 100% 34%;
+    --signal: 196 100% 34%;
+    --radius: 0.5rem;
+    --bid: 152 62% 31%;
+    --ask: 356 72% 47%;
+    --warn: 30 90% 40%;
+    --chart-1: 228 18% 8%;
+    --chart-2: 196 100% 34%;
+    --chart-3: 228 6% 70%;
+    --grain: 0.05;
   }
 
+  /* Ink. */
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 214 32% 96%;
-    --canvas: 225 72% 3%;
-    --card: 223 58% 6.5%;
-    --card-foreground: 214 32% 96%;
-    --popover: 223 55% 8%;
-    --popover-foreground: 214 32% 96%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 42% 12%;
-    --secondary-foreground: 214 32% 96%;
-    --muted: 222 42% 11%;
-    --muted-foreground: 217 18% 62%;
-    --accent: 221 45% 13%;
-    --accent-foreground: 214 32% 96%;
-    --destructive: 355 78% 58%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 221 40% 14%;
-    --input: 221 38% 17%;
-    --ring: 217 91% 60%;
-    --bid: 156 66% 46%;
-    --ask: 355 80% 61%;
-    --warn: 38 92% 56%;
-    --chart-1: 217 91% 60%;
-    --chart-2: 217 60% 40%;
-    --chart-3: 217 30% 28%;
+    --background: 228 14% 4.3%;
+    --foreground: 40 18% 92%;
+    --canvas: 228 16% 3%;
+    --card: 228 11% 6.8%;
+    --card-foreground: 40 18% 92%;
+    --popover: 228 11% 8.5%;
+    --popover-foreground: 40 18% 92%;
+    --primary: 191 100% 63%;
+    --primary-foreground: 228 30% 6%;
+    --secondary: 228 9% 10.5%;
+    --secondary-foreground: 40 18% 92%;
+    --muted: 228 9% 10%;
+    --muted-foreground: 40 4% 60%;
+    --accent: 228 9% 12%;
+    --accent-foreground: 40 18% 92%;
+    --destructive: 357 85% 64%;
+    --destructive-foreground: 228 30% 6%;
+    --border: 228 7% 14%;
+    --input: 228 7% 18%;
+    --ring: 191 100% 63%;
+    --signal: 191 100% 63%;
+    --bid: 150 62% 50%;
+    --ask: 357 85% 64%;
+    --warn: 38 95% 60%;
+    --chart-1: 191 100% 63%;
+    --chart-2: 40 18% 70%;
+    --chart-3: 228 7% 30%;
+    --grain: 0.07;
   }
 }
 
@@ -109,12 +122,37 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1;
+    font-feature-settings: "ss01" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background: hsl(var(--primary) / 0.25);
+    background: hsl(var(--signal) / 0.28);
   }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+/* Film grain over everything: flat fills on a screen look machine-made; grain does not. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 100;
+  pointer-events: none;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* An editorial accent: one or two words of a headline in italic serif, never a whole line. */
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 /* Numbers line up. */
@@ -126,6 +164,118 @@
   letter-spacing: -0.01em;
 }
 
+/* The lattice's still frame: shown until the live canvas draws, and where WebGPU is missing. */
+.lattice-still {
+  background-image: url("/gfx/lattice-light.jpg");
+}
+.dark .lattice-still {
+  background-image: url("/gfx/lattice-dark.jpg");
+}
+@media (max-aspect-ratio: 1/1) {
+  .lattice-still {
+    background-image: url("/gfx/lattice-light-tall.jpg");
+  }
+  .dark .lattice-still {
+    background-image: url("/gfx/lattice-dark-tall.jpg");
+  }
+}
+
+/* The hero headline arrives word by word, each lifting out of a blur. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.rise-word {
+  display: inline-block;
+  animation: rise 1.1s var(--ease-out-expo) both;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms);
+}
+.rise-in {
+  animation: rise 1.1s var(--ease-out-expo) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/*
+ * Scroll-driven: sections settle in as they enter the viewport, and their top rules draw across.
+ * CSS only (animation-timeline), so content is simply there where it is unsupported.
+ */
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+/* Hidden where scroll timelines are unsupported. */
+.scroll-progress {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: settle linear both;
+    animation-timeline: view();
+    /* Settled after 280px of travel, however tall the element is. */
+    animation-range: entry 0% entry 280px;
+  }
+  .rule-draw {
+    transform-origin: left;
+    animation: draw linear both;
+    animation-timeline: view();
+    animation-range: entry 60px entry 420px;
+  }
+  .scroll-progress {
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* A light that follows the pointer across a surface (--mx / --my are set by useSpotlight). */
+.spot {
+  position: relative;
+  isolation: isolate;
+}
+.spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), hsl(var(--signal) / 0.09), transparent 60%);
+}
+.spot:hover::before {
+  opacity: 1;
+}
+
 @keyframes pulse-dot {
   0% { box-shadow: 0 0 0 0 currentColor; }
   70% { box-shadow: 0 0 0 5px transparent; }
@@ -134,13 +284,36 @@
 .pulse-dot { animation: pulse-dot 2s ease-out infinite; }
 
 @keyframes flash-in {
-  from { background-color: hsl(var(--primary) / 0.12); }
+  from { background-color: hsl(var(--signal) / 0.14); }
   to { background-color: transparent; }
 }
 .flash-in { animation: flash-in 1.2s ease-out; }
 
+/* A row of live figures scrolling sideways: two copies, moved left by one copy's width. */
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 70s) linear infinite;
+}
+.marquee:hover .animate-marquee {
+  animation-play-state: paused;
+}
+.marquee-fade {
+  mask-image: linear-gradient(to right, transparent, black 64px, black calc(100% - 64px), transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot, .flash-in { animation: none; }
+  .pulse-dot,
+  .flash-in,
+  .rise-word,
+  .rise-in,
+  .reveal,
+  .rule-draw,
+  .animate-marquee {
+    animation: none;
+  }
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }

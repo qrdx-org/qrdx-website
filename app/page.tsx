@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { ArrowUpRight, ArrowLeftRight, Coins, KeyRound, Layers, ShieldCheck, TrendingUp } from 'lucide-react'
+import { Lattice } from '@/components/gfx/Lattice'
 import { ButtonLink, Eyebrow, Feature, LiveMarkets, LiveTiles, Section, WRAP } from '@/components/site/blocks'
 import { BlockTape, Endpoints, SizeTable, ValidatorKey } from '@/components/site/home'
+import { RiseText, spotlight } from '@/components/site/motion'
 import { useTestnet } from '@/lib/live'
 import { apps, docs } from '@/lib/site'
 import { cn } from '@/lib/utils'
@@ -36,37 +38,48 @@ export default function Home() {
   const stats = useTestnet()
   return (
     <>
-      <section>
-        <div className={cn(WRAP, 'grid gap-12 pb-14 pt-28 sm:pt-36 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-16 lg:pb-20')}>
-          <div className="flex flex-col">
-            <Eyebrow className="mb-7">Post-quantum proof of stake · testnet</Eyebrow>
-            <h1 className="text-[2.75rem] font-medium leading-[1] tracking-[-0.045em] sm:text-7xl xl:text-[5.25rem]">
-              Every block is signed <span className="whitespace-nowrap">post-quantum.</span>
+      <section className="relative isolate overflow-hidden">
+        <Lattice className="absolute inset-0 -z-10" />
+        <div className={cn(WRAP, 'flex min-h-[min(94svh,940px)] flex-col pb-10 pt-32 sm:pt-40')}>
+          <div className="max-w-[68rem]">
+            <Eyebrow className="rise-in mb-8 flex items-center gap-3">
+              <span className={cn('h-1.5 w-1.5 rounded-full', stats.live ? 'pulse-dot bg-signal text-signal' : 'bg-muted-foreground')} />
+              Testnet live · post-quantum proof of stake
+            </Eyebrow>
+            <h1 className="text-[3.1rem] font-medium leading-[0.96] tracking-[-0.055em] sm:text-[5.25rem] xl:text-[6.25rem]">
+              <RiseText parts={[{ text: 'Every block is signed' }, { text: 'post-quantum.', serif: true, nowrap: true }]} />
             </h1>
-            <p className="mt-7 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
+            <p className="rise-in mt-8 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground" style={{ '--d': '520ms' } as React.CSSProperties}>
               QRDX validators and accounts sign with ML-DSA-65, the lattice signature NIST standardized in FIPS 204. Its order books, pools and perpetuals are part of the
               protocol, not contracts on top of it.
             </p>
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <div className="rise-in mt-10 flex flex-wrap items-center gap-3" style={{ '--d': '640ms' } as React.CSSProperties}>
               <ButtonLink href={apps.trade}>Open Trade</ButtonLink>
               <ButtonLink href="/get-started" variant="outline">
                 Get started
               </ButtonLink>
-              <Link href="/whitepaper" className="text-sm text-muted-foreground underline decoration-foreground/20 sm:ml-1 underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground">
+              <Link href="/whitepaper" className="text-sm text-muted-foreground underline decoration-foreground/20 underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground sm:ml-2">
                 Read the whitepaper
               </Link>
             </div>
           </div>
-          <div className="lg:pt-14">
-            <BlockTape stats={stats} />
+          <div className="mt-auto grid items-end gap-10 pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)]">
+            <p className="rise-in max-w-sm font-mono text-[11px] leading-relaxed text-muted-foreground" style={{ '--d': '900ms' } as React.CSSProperties}>
+              <span className="mr-2 inline-block h-1.5 w-1.5 -translate-y-px rounded-full bg-signal align-middle" />
+              Behind this text: a module lattice, the structure ML-DSA rests on. Each node that flares is a testnet block as it arrives, placed by its hash; a wave crosses it when an
+              epoch is finalized.
+            </p>
+            <BlockTape stats={stats} rows={6} className="rise-in hidden lg:block" />
           </div>
         </div>
-        <div className={WRAP}>
-          <LiveTiles stats={stats} />
-        </div>
       </section>
+      <div className={WRAP}>
+        <LiveTiles stats={stats} />
+      </div>
 
       <Section
+        index="01"
+        label="Keys"
         title={
           <>
             What a <span className="whitespace-nowrap">post-quantum</span> key looks like
@@ -96,6 +109,8 @@ export default function Home() {
 
       <div className="border-y bg-canvas/60 dark:bg-card/30">
         <Section
+          index="02"
+          label="Exchange"
           title="The exchange is part of the chain"
           intro="Validators execute every order, swap and liquidation as part of the state transition, and every node agrees on the result. There is no exchange contract and no off-chain matching engine."
         >
@@ -128,17 +143,19 @@ export default function Home() {
         </Section>
       </div>
 
-      <Section title="Use it today" intro="Each of these runs against testnet now, from the same keys.">
+      <Section index="03" label="Apps" title="Use it today" intro="Each of these runs against testnet now, from the same keys.">
         <ul className="border-t border-foreground/15">
-          {PRODUCTS.map((p) => (
+          {PRODUCTS.map((p, i) => (
             <li key={p.name}>
               <a
                 href={p.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group grid items-baseline gap-x-8 gap-y-2 border-b py-6 sm:grid-cols-[10rem_1fr_auto] sm:py-7"
+                onPointerMove={spotlight}
+                className="spot group grid items-baseline gap-x-8 gap-y-2 border-b py-6 sm:grid-cols-[2.5rem_10rem_1fr_auto] sm:py-8"
               >
-                <span className="text-2xl font-medium tracking-tight transition-colors group-hover:text-primary sm:text-3xl">{p.name}</span>
+                <span className="hidden font-mono text-[11px] text-muted-foreground sm:block">0{i + 1}</span>
+                <span className="text-2xl font-medium tracking-[-0.03em] transition-[color,transform] duration-500 ease-out-expo group-hover:translate-x-1.5 group-hover:text-signal sm:text-[2rem]">{p.name}</span>
                 <span className="max-w-xl text-pretty leading-relaxed text-muted-foreground">{p.text}</span>
                 <span className="flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors group-hover:text-foreground">
                   {p.host}
@@ -151,11 +168,11 @@ export default function Home() {
       </Section>
 
       <div className="border-t">
-        <Section title="Where QRDX is" intro="Testnet runs the protocol today. Mainnet follows the audits.">
+        <Section index="04" label="Status" title="Where QRDX is" intro="Testnet runs the protocol today. Mainnet follows the audits.">
           <div className="grid gap-10 md:grid-cols-3 md:gap-8">
             {STATUS.map((s) => (
               <div key={s.state}>
-                <span className={cn('block h-0.5 w-full', s.rule)} />
+                <span className={cn('rule-draw block h-0.5 w-full', s.rule)} />
                 <h3 className="mt-5 font-medium">{s.state}</h3>
                 <ul className="mt-4 space-y-2.5 text-[15px] text-muted-foreground">
                   {s.items.map((i) => (
@@ -171,10 +188,13 @@ export default function Home() {
         </Section>
       </div>
 
-      <section className="border-t">
-        <div className={cn(WRAP, 'grid gap-12 py-16 sm:py-24 lg:grid-cols-2 lg:gap-16')}>
-          <div>
-            <h2 className="text-balance text-4xl font-medium leading-[1.05] tracking-[-0.035em] sm:text-5xl">Testnet is open. Point anything at it.</h2>
+      <section className="relative isolate overflow-hidden border-t">
+        <Lattice intensity={0.45} className="absolute inset-0 -z-10" />
+        <div className={cn(WRAP, 'grid gap-12 py-20 sm:py-32 lg:grid-cols-2 lg:gap-16')}>
+          <div className="reveal">
+            <h2 className="text-balance text-4xl font-medium leading-[1.02] tracking-[-0.045em] sm:text-[3.6rem]">
+              Testnet is open. Point <span className="serif">anything</span> at it.
+            </h2>
             <p className="mt-5 max-w-md text-pretty leading-relaxed text-muted-foreground">
               Install the wallet and place an order in a few minutes, or call the node from code. It speaks Ethereum JSON-RPC as well as its own.
             </p>
@@ -185,7 +205,7 @@ export default function Home() {
               </ButtonLink>
             </div>
           </div>
-          <div className="lg:pt-2">
+          <div className="reveal rounded-xl border border-foreground/10 bg-background/60 p-5 backdrop-blur-xl lg:mt-2">
             <Endpoints stats={stats} />
             <p className="mt-4 text-xs text-muted-foreground">
               Or{' '}

@@ -1,5 +1,18 @@
+import { wgslTurbopackRule } from '@vgpu/wgsl/next'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // WGSL shaders (components/gfx) import as prepared vgpu modules, compiled at build time.
+  turbopack: {
+    rules: {
+      '*.wgsl': wgslTurbopackRule({ minify: true }),
+    },
+  },
+  webpack(config) {
+    config.module.rules.push({ test: /\.wgsl$/, loader: '@vgpu/wgsl/loader-webpack', options: { minify: true } })
+    return config
+  },
+
   ...(process.env.NODE_ENV === 'production' && {
     output: 'export',
     trailingSlash: true,

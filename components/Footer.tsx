@@ -20,7 +20,6 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: 'Documentation', href: docs.home },
       { label: 'Whitepaper', href: '/whitepaper' },
       { label: 'Status and roadmap', href: docs.roadmap },
-      { label: 'What\u2019s new', href: '/changelog' },
     ],
   },
   {
@@ -46,12 +45,15 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 
 export default function Footer() {
   return (
-    <footer className="border-t">
+    <footer className="relative overflow-hidden border-t">
       <div className="mx-auto grid w-full max-w-[1200px] gap-12 px-5 py-16 sm:px-8 md:grid-cols-[1.5fr_repeat(4,1fr)]">
         <div>
           <Wordmark />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted-foreground">A blockchain secured by post-quantum signatures, with an exchange built into the protocol.</p>
-          <p className="mt-5 font-mono text-[11px] text-muted-foreground">ML-DSA-65 · NIST FIPS 204</p>
+          <p className="mt-5 flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+            <span className="h-px w-5 bg-signal" />
+            ML-DSA-65 · NIST FIPS 204
+          </p>
           <div className="mt-6 flex gap-4 text-sm">
             {[
               { href: social.x, label: 'X' },
@@ -85,7 +87,11 @@ export default function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t">
+      {/* The name, cut off by the page's edge: a sign-off, not a logo. */}
+      <div aria-hidden className="pointer-events-none mx-auto -mb-[0.2em] w-full max-w-[1200px] select-none px-5 text-[27vw] font-semibold leading-[0.8] tracking-[-0.07em] text-foreground/[0.045] sm:px-8 lg:text-[19rem]">
+        QRDX
+      </div>
+      <div className="relative border-t bg-background">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-2 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:px-8">
           <span>© {new Date().getFullYear()} QRDX Foundation</span>
           <span>

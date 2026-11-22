@@ -12,7 +12,8 @@ QRDX is a modern Next.js website focused on quantum-resistant digital solutions 
 - **TypeScript**: 5.7.2
 - **Styling**: Tailwind CSS 4.1.16 with CSS Variables
 - **UI Components**: shadcn/ui (Radix UI primitives)
-- **Animations**: Framer Motion 12.23.24
+- **Animations**: CSS (keyframes and scroll-driven `animation-timeline`); Framer Motion 12.23.24 is installed
+- **WebGPU graphics**: vgpu 0.6.0 with `@vgpu/wgsl` (WGSL shaders imported as modules; loader rule in `next.config.mjs`, types in `wgsl-env.d.ts`)
 - **Icons**: Lucide React 0.552.0
 
 ### Package Manager
@@ -38,7 +39,7 @@ qrdx-website/
 │   │   └── use shadcn.instructions.md   # Component generation rules
 │   └── dependabot.yml
 ├── app/                        # Next.js App Router
-│   ├── layout.tsx              # Root layout with Inter font
+│   ├── layout.tsx              # Root layout: Geist, Geist Mono, Instrument Serif
 │   ├── page.tsx                # Home page (live blocks, validator key, markets)
 │   ├── globals.css             # Tailwind + CSS custom properties
 │   ├── about/page.tsx          # About page
@@ -150,7 +151,7 @@ From `.github/instructions/no retard.instructions.md`:
 
 ### 5. Component Patterns
 - Client components: Use `'use client'` directive when needed
-- Animations: none on scroll; see "Layout and the look"
+- Animations: CSS only; see "Layout and the look"
 - Navigation: Responsive design with desktop/mobile versions
 - Icons: Lucide React (optimized via Next.js config)
 
@@ -197,16 +198,21 @@ The design system uses HSL color values via CSS custom properties:
 All colors have dark mode variants.
 
 ### Typography
-- Inter for text, JetBrains Mono for labels, data, addresses and endpoints (both loaded in `app/layout.tsx`)
-- Headings: `font-medium`, tight negative tracking, large and left-aligned; small labels are mono, uppercase, wide tracking (`Eyebrow`)
+- Geist for text, Geist Mono for labels, data, addresses and endpoints, Instrument Serif italic (`.serif`) for one or two words of a headline, never a whole line (all loaded in `app/layout.tsx`)
+- Headings: `font-medium`, tight negative tracking (-0.04em to -0.055em), large and left-aligned; small labels are mono, uppercase, wide tracking (`Eyebrow`)
 
 ### Layout and the look
 The site is editorial and technical, not a template. Keep it that way:
-- One column measure everywhere: `WRAP` in `components/site/blocks.tsx` (max 1200px, 20/32px gutters). Left-aligned; a `Section` puts its title left and its introduction beside it.
-- Structure comes from hairline rules (`border-t border-foreground/15`, rows divided by `border-b`), not boxes. No card grids of icons in squares, no pill badges, no glows or gradients, no gradient text.
-- Real data is the imagery: the live block list, a validator's actual public key, markets from the chain. Do not add stock illustrations or decorative charts.
-- Colour: monochrome plus the one QRDX blue (dark) / black (light) as `primary`; `bid`, `ask` and `warn` only for meaning.
-- Motion: none on scroll. Things that move are live data (new blocks) and hover states. `fadeUp` is an empty object kept for older call sites. Respect `prefers-reduced-motion`.
+- One column measure everywhere: `WRAP` in `components/site/blocks.tsx` (max 1200px, 20/32px gutters). Left-aligned; a `Section` puts its title left and its introduction beside it. Home sections are numbered (`index`/`label` on `Section`: "01 Keys").
+- Structure comes from hairline rules (`border-t border-foreground/15`, rows divided by `border-b`), not boxes. No card grids of icons in squares, no pill badges, no gradient text. Buttons are pills (`ButtonLink`).
+- Colour: ink and bone (dark), ink on paper (light), and one accent, Cherenkov blue, as `signal`. In dark mode `primary` is the signal; in light mode buttons are ink. `bid`, `ask` and `warn` only for meaning. Film grain sits over every page (`body::after`).
+- Graphics are real data or the protocol's own structure, drawn with WebGPU (`components/gfx`):
+  - `Lattice` (`lattice.wgsl`, `lattice-scene.ts`): a module lattice behind the home hero, page heroes (`PageHero`, quieter) and the closing band. Each testnet block from the stream lights the node its hash points at; a finalized epoch sends a wave through it. Nothing in it is invented: no flares without blocks.
+  - `KeyField` (`keyfield.wgsl`, `keyfield-scene.ts`): a validator's actual ML-DSA-65 public key, one column per byte, the first 33 bytes (a whole secp256k1 key) in signal.
+  - One shared device (`lib/gpu.ts`); loops pause off screen; one still frame under `prefers-reduced-motion`; a lost device falls back.
+  - Without WebGPU the lattice shows its still frames (`public/gfx/lattice-{dark,light}[-tall].jpg`: renders of `lattice.wgsl` with no blocks and no wave, made by drawing the effect into a vgpu `target` in a browser and reading the pixels back; remake them when the shader changes) and the key field is left out.
+  - Check a shader change in a browser with `--enable-unsafe-webgpu`; `npx vgpu check <file.wgsl>` validates WGSL where a GPU is available. No stock illustrations or decorative charts.
+- Motion: the hero headline rises word by word (`RiseText`); sections settle in and rules draw across as they scroll in (`.reveal`, `.rule-draw`, CSS scroll timelines, so content is simply there where they are unsupported); a hairline under the nav tracks scroll; live figures roll (`RollingNumber`); hover lights follow the pointer (`.spot` with `spotlight`). Respect `prefers-reduced-motion` (every animation has an off switch in `globals.css`).
 - Check every page at 390px wide: no horizontal scroll.
 
 ## Current Pages
@@ -221,7 +227,6 @@ All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not in
 | `/wallet/funding` | Getting QRDX: testnet has no public faucet; mainnet not launched |
 | `/wallet/shielding` | Asset shielding: **planned**, from the whitepaper; clearly marked as not available |
 | `/network` | Testnet live: validators and delegation, staking and governance parameters, proposals, the Doomsday Protocol's state, blocks (`components/pages/NetworkPage.tsx`, `lib/network.ts`) |
-| `/changelog` | What shipped, newest first, filterable by product (`lib/changelog.ts`: add an entry when something reaches users) |
 | `/explorer`, `/get-started`, `/services`, `/about`, `/docs`, `/contact` | Product overview, onboarding, what runs, mission, docs index, contact |
 | `/whitepaper` | Reader for `public/QRDX-Whitepaper-v3.2.md`; contents built from its headings |
 | `/terms`, `/privacy` | Legal (`components/LegalPage.tsx`). trade.qrdx.org asks visitors to accept the Terms and stores the Terms' date (`TERMS_VERSION` in qrdx-trade `lib/terms.ts`): change both when the Terms change |
@@ -232,7 +237,7 @@ All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not in
 - **Say what is real.** Live means live on testnet; mainnet has not launched. Governance, the bridge, account control and multisig, QRDX names, and quantum migration with the Doomsday Protocol run on testnet (node 3.0.0). Whitepaper-only features (asset shielding beyond the bridge, wider chain adapters) are labelled planned. Check claims against qrdx-node, qrdx-trade and qrdx-wallet docs, and docs.qrdx.org.
 - **No generated data.** Live numbers come from the testnet node and the trade API in the visitor's browser (`lib/live.ts`); an unreadable number shows as a dash.
 - **Links live in `lib/site.ts`** (apps, docs pages, socials, contact addresses). Docs links point at docs.qrdx.org (`/docs/...` paths).
-- **Theme**: the shared QRDX tokens in `app/globals.css` (same as trade, explorer and docs): navy with QRDX blue in dark mode, black on white in light mode. Shared page blocks are in `components/site/blocks.tsx`.
+- **Theme**: the shared QRDX tokens in `app/globals.css` (same values in trade, explorer and docs): ink and bone with Cherenkov blue in dark mode, ink on paper in light mode. Shared page blocks are in `components/site/blocks.tsx`, motion helpers in `components/site/motion.tsx`.
 
 ## Utilities
 
@@ -292,7 +297,7 @@ Edit CSS variables in `app/globals.css` (`:root` and `.dark`)
 4. Read the full context of files before editing (use large line ranges)
 5. Follow the established patterns in existing components
 6. Use TypeScript strictly (this is a .tsx project)
-7. Follow "Layout and the look" above; motion only for live data and hover
+7. Follow "Layout and the look" above: graphics from real data or the protocol, motion in CSS
 8. Use the `cn()` utility for className combinations
 9. Maintain responsive design (mobile + desktop)
 10. Keep accessibility in mind (Radix UI primitives are accessible by default)

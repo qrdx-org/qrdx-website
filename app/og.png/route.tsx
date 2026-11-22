@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { ImageResponse } from 'next/og'
 
 export const dynamic = 'force-static'
@@ -5,11 +7,11 @@ export const dynamic = 'force-static'
 const size = { width: 1200, height: 630 }
 
 // The dark theme's tokens (app/globals.css .dark), as hex.
-const BG = '#030712'
-const FG = '#f1f5f9'
-const MUTED = '#8b97ad'
-const RULE = '#162036'
-const BLUE = '#3b82f6'
+const BG = '#090a0d'
+const FG = '#eeece7'
+const MUTED = '#9d9a95'
+const RULE = '#26272c'
+const SIGNAL = '#42dcff'
 
 const FACTS = [
   ['Signatures', 'ML-DSA-65, FIPS 204'],
@@ -22,18 +24,25 @@ const FACTS = [
  * three facts. A route rather than opengraph-image.tsx so the static export names it with .png.
  */
 export function GET() {
+  // The home hero's lattice, as its still frame, behind the headline.
+  const lattice = `data:image/jpeg;base64,${readFileSync(join(process.cwd(), 'public/gfx/lattice-dark.jpg')).toString('base64')}`
   return new ImageResponse(
     (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: BG, color: FG, padding: '64px 72px' }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: BG, color: FG, padding: '64px 72px', position: 'relative' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={lattice} width={1200} height={675} alt="" style={{ position: 'absolute', top: 0, left: 0, width: 1200, height: 675, objectFit: 'cover' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 26 }}>
           <div style={{ display: 'flex', fontWeight: 600, letterSpacing: -0.5 }}>QRDX</div>
           <div style={{ display: 'flex', alignItems: 'center', color: MUTED, fontSize: 20, letterSpacing: 2 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 5, background: BLUE, marginRight: 12 }} />
+            <div style={{ width: 10, height: 10, borderRadius: 5, background: SIGNAL, marginRight: 12 }} />
             TESTNET LIVE
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', marginTop: 'auto' }}>
-          <div style={{ display: 'flex', fontSize: 84, lineHeight: 1.02, letterSpacing: -3.5, maxWidth: 940 }}>Every block is signed post-quantum.</div>
+          <div style={{ display: 'flex', flexDirection: 'column', fontSize: 84, lineHeight: 1.02, letterSpacing: -3.5, maxWidth: 980 }}>
+            <span>Every block is signed</span>
+            <span>post-quantum.</span>
+          </div>
           <div style={{ display: 'flex', marginTop: 56, borderTop: `1px solid ${RULE}` }}>
             {FACTS.map(([k, v], i) => (
               <div key={k} style={{ display: 'flex', flexDirection: 'column', flex: 1, paddingTop: 22, paddingLeft: i ? 28 : 0, borderLeft: i ? `1px solid ${RULE}` : 'none' }}>
