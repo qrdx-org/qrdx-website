@@ -24,13 +24,15 @@ const FACTS = [
  * three facts. A route rather than opengraph-image.tsx so the static export names it with .png.
  */
 export function GET() {
-  // The home hero's lattice, as its still frame, behind the headline.
+  // The home hero's lattice, as its still frame, to the right of the headline.
   const lattice = `data:image/jpeg;base64,${readFileSync(join(process.cwd(), 'public/gfx/lattice-dark.jpg')).toString('base64')}`
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: BG, color: FG, padding: '64px 72px', position: 'relative' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={lattice} width={1200} height={675} alt="" style={{ position: 'absolute', top: 0, left: 0, width: 1200, height: 675, objectFit: 'cover' }} />
+        <img src={lattice} width={1200} height={675} alt="" style={{ position: 'absolute', top: 10, left: 190, width: 1200, height: 675 }} />
+        {/* The figures along the bottom stay on plain ink. */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 260, display: 'flex', backgroundImage: `linear-gradient(to top, ${BG} 45%, transparent)` }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 26 }}>
           <div style={{ display: 'flex', fontWeight: 600, letterSpacing: -0.5 }}>QRDX</div>
           <div style={{ display: 'flex', alignItems: 'center', color: MUTED, fontSize: 20, letterSpacing: 2 }}>

@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils'
 import type { startLattice } from './lattice-scene'
 
 /**
- * The lattice (lattice.wgsl) behind a hero. Its still frame shows first and stays where the
+ * The liquid lattice (lattice.wgsl) behind a hero. Its still frame shows first and stays where the
  * browser has no WebGPU; the live canvas fades in over it once it has drawn. New testnet blocks
- * and finalized epochs, from the shared stream, light it up.
+ * and finalized epochs, from the shared stream, swell and colour it.
  */
 export function Lattice({ intensity = 1, className }: { intensity?: number; className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -52,7 +52,7 @@ export function Lattice({ intensity = 1, className }: { intensity?: number; clas
   }, [finalizedEpoch])
 
   return (
-    <div aria-hidden className={cn('pointer-events-none overflow-hidden', className)}>
+    <div aria-hidden className={cn('pointer-events-none overflow-hidden [container-type:size]', className)}>
       <div className="lattice-still absolute inset-0 bg-cover bg-center" style={{ opacity: intensity }} />
       <canvas ref={canvasRef} className={cn('absolute inset-0 h-full w-full transition-opacity duration-[1400ms] ease-out', state === 'live' ? 'opacity-100' : 'opacity-0')} />
     </div>

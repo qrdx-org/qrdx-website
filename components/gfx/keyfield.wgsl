@@ -1,5 +1,6 @@
 // A validator's ML-DSA-65 public key, byte by byte: 1,952 columns on a 61 x 32 grid, each as
-// tall as its byte. The first 33 bytes, as many as a whole secp256k1 public key, are in signal.
+// tall as its byte and coloured by it (a thin film, as on the lattice, as thick as the byte is
+// large). The first 33 bytes, as many as a whole secp256k1 public key, are in signal.
 // One instanced draw, no vertex buffers: each instance builds its box from vertex_index.
 
 struct Camera {
@@ -81,24 +82,48 @@ fn faceNormal(f: u32) -> vec3f {
   return out;
 }
 
+/** The same thin film as lattice.wgsl: what a film `d` micrometres thick reflects at this angle. */
+fn film(d: f32, cosI: f32) -> vec3f {
+  let cosT = sqrt(1.0 - (1.0 - cosI * cosI) / (1.33 * 1.33));
+  let c = 0.5 - 0.5 * cos(6.2831853 * 2.0 * 1.33 * d * cosT / vec3f(0.65, 0.532, 0.45));
+  return mix(vec3f(1.0), c * 1.5, mix(0.42, 0.62, scene.dark));
+}
+
+/** A simpler studio than the lattice's: a broad light overhead, a strip to the right, the room. */
+fn studio(r: vec3f) -> vec3f {
+  let top = smoothstep(0.35, 0.95, r.y);
+  let strip = exp(-pow((r.x - 0.7) / 0.1, 2.0)) * smoothstep(-0.4, 0.4, r.y);
+  let sky = smoothstep(-0.4, 0.9, r.y);
+  if (scene.dark > 0.5) {
+    return mix(vec3f(0.03), vec3f(0.2), sky) + vec3f(top * 1.3 + strip * 0.9);
+  }
+  return mix(vec3f(0.62), vec3f(1.0), sky) + vec3f(top * 0.4 + strip * 0.3);
+}
+
 @fragment fn fs_main(in: Out) -> @location(0) vec4f {
-  let light = normalize(vec3f(-0.45, 1.0, 0.3));
-  let lambert = max(dot(in.normal, light), 0.0);
+  let v = normalize(scene.eye - in.world);
+  let cosI = clamp(dot(in.normal, v), 0.0, 1.0);
   let top = step(0.5, in.normal.y);
   // Darker toward each column's foot: a cheap stand-in for the light its neighbours block.
-  let foot = mix(0.5, 1.0, smoothstep(0.0, 1.6, in.world.y));
-  let shade = (0.2 + 0.5 * lambert + 0.3 * top) * foot;
+  let foot = mix(0.45, 1.0, smoothstep(0.0, 1.6, in.world.y));
 
   // A read head passes over the bytes in order, like a verifier walking the key.
   let d = (f32(in.index) - scene.scan) / 24.0;
   let head = exp(-d * d);
 
-  let classic = in.index < CLASSIC;
-  // On ink the lit faces are the bright ones; on paper they are the pale ones.
-  let ink = mix(mix(0.12, 0.8, in.value) * (1.2 - shade), mix(0.14, 0.95, in.value) * shade, scene.dark);
-  var col = mix(scene.bg, scene.line, clamp(ink + head * 0.35 * top, 0.0, 1.0));
-  if (classic) {
-    col = mix(scene.bg, scene.signal, clamp(0.45 + shade * 0.75, 0.0, 1.0));
+  // Each column is mirror-bright under a film as thick as its byte is large, so its colour is
+  // its value: low bytes bronze, then violet, high bytes blue.
+  let fres = 0.04 + 0.96 * pow(1.0 - max(cosI, 0.15), 5.0);
+  let mirror = mix(mix(0.62, 0.42, scene.dark), 1.0, fres);
+  let tint = film(0.14 + in.value * 0.17, cosI);
+  var col = studio(reflect(-v, in.normal)) * tint * mirror * foot;
+  // On ink, a soft light from the left keeps the columns' sides from going black, so their
+  // heights still read.
+  col += tint * 0.22 * max(dot(in.normal, normalize(vec3f(-0.8, 0.5, 0.3))), 0.0) * foot * scene.dark;
+  col += head * 0.25 * top * mix(vec3f(-0.4), vec3f(1.0), scene.dark);
+  if (in.index < CLASSIC) {
+    let lit = clamp(0.45 + (0.3 + 0.5 * top) * foot * 0.75, 0.0, 1.0);
+    col = mix(scene.bg, scene.signal, lit);
   }
   // Fade the far rows into the background.
   let far = smoothstep(scene.fog, scene.fog + 34.0, distance(in.world, scene.eye));

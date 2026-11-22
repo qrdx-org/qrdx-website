@@ -171,7 +171,16 @@ body::after {
 .dark .lattice-still {
   background-image: url("/gfx/lattice-dark.jpg");
 }
-@media (max-aspect-ratio: 1/1) {
+/* Chosen by the hero's own shape (Lattice is a size container), as the live form is. */
+@container (aspect-ratio > 2.1) {
+  .lattice-still {
+    background-image: url("/gfx/lattice-light-wide.jpg");
+  }
+  .dark .lattice-still {
+    background-image: url("/gfx/lattice-dark-wide.jpg");
+  }
+}
+@container (aspect-ratio < 1) {
   .lattice-still {
     background-image: url("/gfx/lattice-light-tall.jpg");
   }

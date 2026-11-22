@@ -66,8 +66,8 @@ export default function Home() {
           <div className="mt-auto grid items-end gap-10 pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)]">
             <p className="rise-in max-w-sm font-mono text-[11px] leading-relaxed text-muted-foreground" style={{ '--d': '900ms' } as React.CSSProperties}>
               <span className="mr-2 inline-block h-1.5 w-1.5 -translate-y-px rounded-full bg-signal align-middle" />
-              Behind this text: a module lattice, the structure ML-DSA rests on. Each node that flares is a testnet block as it arrives, placed by its hash; a wave crosses it when an
-              epoch is finalized.
+              Beside this text: a module lattice, the structure ML-DSA rests on, made of liquid. Each node that swells and glows is a testnet block as it arrives, chosen by its
+              hash; a band of colour runs through it when an epoch is finalized.
             </p>
             <BlockTape stats={stats} rows={6} className="rise-in hidden lg:block" />
           </div>

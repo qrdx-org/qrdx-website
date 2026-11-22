@@ -1,7 +1,7 @@
 /**
- * Drives lattice.wgsl: the camera's slow flight, the pointer's parallax, the scroll push, and
- * real chain events. `block(hash)` lights the node the block's hash points at; `finalized()`
- * sends a wave from just ahead of the camera.
+ * Drives lattice.wgsl: the form's slow turn, the pointer's tilt, the scroll, and real chain
+ * events. `block(hash)` swells the node the block's hash points at; `finalized()` sends a band of
+ * colour out through the form.
  */
 
 import { effect, frame, frameLoop, surface } from 'vgpu'
@@ -11,69 +11,37 @@ import { onThemeChange, prefersReducedMotion, sharedGpu, tokenRgb } from '@/lib/
 
 type Vec3 = [number, number, number]
 
-const YAW = 0.62
-const PITCH = 0.3
-const SPEED = 0.3
-const START: Vec3 = [0.37, 0.21, 0.0]
+/** Radians the form turns each second. */
+const SPIN = 0.07
 const BLOCKS = 6
+/** lattice.wgsl's CELLS and RADIUS. */
+const CELLS = 1.7
+const RADIUS = 1.45
 
-/** lattice.wgsl's BASIS: world position to lattice coordinates. */
-const toLattice = ([x, y, z]: Vec3): Vec3 => [x + 0.2 * y + 0.1 * z, y + 0.14 * z, z]
+/** lattice.wgsl's UNBASIS: lattice coordinates to the form's space. */
+const fromLattice = ([x, y, z]: Vec3): Vec3 => [x - 0.2 * y - 0.072 * z, y - 0.14 * z, z]
 
-/** The camera's axes for a yaw and pitch, the same rotation the shader builds. */
-function axes(yaw: number, pitch: number) {
-  const cy = Math.cos(yaw)
-  const sy = Math.sin(yaw)
-  const cp = Math.cos(pitch)
-  const sp = Math.sin(pitch)
-  // rotY(yaw) * rotX(pitch) applied to x, y and z.
-  const right: Vec3 = [cy, 0, -sy]
-  const up: Vec3 = [sy * sp, cp, cy * sp]
-  const forward: Vec3 = [sy * cp, -sp, cy * cp]
-  return { right, up, forward }
-}
+/** The nodes deep enough inside the form to be fully formed: the ones a block can light. */
+const NODES: Vec3[] = (() => {
+  const out: Vec3[] = []
+  for (let x = -3; x <= 3; x++)
+    for (let y = -3; y <= 3; y++)
+      for (let z = -3; z <= 3; z++) {
+        const [a, b, c] = fromLattice([x, y, z])
+        if (Math.hypot(a, b, c) / CELLS < RADIUS * 0.5) out.push([x, y, z])
+      }
+  return out
+})()
 
-const add = (a: Vec3, b: Vec3, k = 1): Vec3 => [a[0] + b[0] * k, a[1] + b[1] * k, a[2] + b[2] * k]
-const AXES = axes(YAW, PITCH)
-
-/** Where the camera is at `t` seconds into the flight, pushed ahead by the page's scroll (0 to 1). */
-export const cameraAt = (t: number, scroll = 0): Vec3 => add(add(START, AXES.forward, t * SPEED), AXES.forward, scroll * 2.4)
-
-/** The camera's position and angles with the pointer's parallax (-1 to 1 on each axis). */
-export function view(t: number, scroll: number, px: number, py: number) {
-  return {
-    camPos: add(add(cameraAt(t, scroll), AXES.right, px * 0.25), AXES.up, py * 0.15),
-    yaw: YAW + px * 0.07,
-    pitch: PITCH - py * 0.05,
-  }
-}
-
-/**
- * The lattice cell a block lights: ahead of the camera, placed by the block's hash. Wide screens
- * keep the headline's side (the left) quiet, phones the top.
- */
-export function blockCell(hash: string, t: number, scroll: number, tall: boolean): Vec3 {
-  const [a, b, c] = seed(hash)
-  const side = tall ? (a - 0.5) * 1.8 : 0.35 + a * 1.9
-  const lift = tall ? -0.3 - b * 1.1 : (b - 0.5) * 1.6
-  let p = add(cameraAt(t + 1.5, scroll), AXES.forward, 3.6 + c * 3.4)
-  p = add(add(p, AXES.right, side), AXES.up, lift)
-  return toLattice(p).map(Math.round) as Vec3
-}
-
-/** Where a finality wave starts: just ahead of the camera, off to the right. */
-export const waveCenter = (t: number, scroll: number): Vec3 => toLattice(add(add(cameraAt(t, scroll), AXES.forward, 5), AXES.right, 1.2))
-
-/** Three numbers from 0 to 1 taken from a block hash, so the same block always lands on the same node. */
-function seed(hash: string): Vec3 {
-  const h = hash.replace(/^0x/, '')
-  const part = (i: number) => parseInt(h.slice(i * 8, i * 8 + 8) || '0', 16) / 0xffffffff
-  return [part(0), part(1), part(2)]
+/** The node a block lights, chosen by its hash, so the same block always lands on the same node. */
+export function nodeFor(hash: string): Vec3 {
+  const part = parseInt(hash.replace(/^0x/, '').slice(0, 8) || '0', 16) / 0x100000000
+  return NODES[Math.floor(part * NODES.length)]
 }
 
 export interface LatticeOptions {
   canvas: HTMLCanvasElement
-  /** How strongly the lattice shows: 1 on the home hero, lower behind page titles. */
+  /** How strongly the form shows: 1 on the home hero, lower behind page titles. */
   intensity: number
   /** Called once the first frame is on the canvas (or never, when WebGPU is unavailable). */
   onReady: () => void
@@ -91,15 +59,15 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
 
   const t0 = performance.now()
   const now = () => (performance.now() - t0) / 1000
-  // Reduced motion: one moment of the flight, held.
+  // Reduced motion: one moment, held.
   const time = () => (still ? 14 : now())
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
   let scroll = 0
-  // Each block's lattice cell and its age in seconds (99: none yet).
+  // Each block's lattice node and its age in seconds (99: none yet).
   const blocks: [number, number, number, number][] = Array.from({ length: BLOCKS }, () => [0, 0, 0, 99])
-  const blockAt: number[] = Array(BLOCKS).fill(-99)
+  const arrived: number[] = Array(BLOCKS).fill(-99)
   let nextBlock = 0
-  let wave: { center: Vec3; at: number } = { center: [0, 0, 0], at: -99 }
+  let waveAt = -99
   // Frame times, to step down resolution once on a slow GPU.
   let slowFrames = 0
   let frames = 0
@@ -117,14 +85,15 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
     const t = time()
     pointer.x += (pointer.tx - pointer.x) * 0.04
     pointer.y += (pointer.ty - pointer.y) * 0.04
-    for (let i = 0; i < BLOCKS; i++) blocks[i][3] = still ? 99 : t - blockAt[i]
+    for (let i = 0; i < BLOCKS; i++) blocks[i][3] = still ? 99 : t - arrived[i]
     fx.set({
       params: {
         resolution: out.size,
         time: t,
-        ...view(t, scroll, pointer.x, pointer.y),
-        waveCenter: wave.center,
-        waveAge: still ? 99 : t - wave.at,
+        spin: t * SPIN + scroll * 1.1,
+        scroll,
+        pointer: still ? [0, 0] : [pointer.x, pointer.y],
+        waveAge: still ? 99 : t - waveAt,
         fade: 1 - scroll * 0.75,
         blocks,
       },
@@ -204,17 +173,15 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
           params: {
             resolution: out.size,
             pointer: [0, 0],
-            camPos: START,
             time: 0,
-            bg: [0, 0, 0],
-            yaw: YAW,
-            line: [1, 1, 1],
-            pitch: PITCH,
-            signal: [0, 1, 1],
+            spin: 0,
+            scroll: 0,
             dark: 1,
-            waveCenter: [0, 0, 0],
+            bg: [0, 0, 0],
             waveAge: 99,
+            line: [1, 1, 1],
             intensity,
+            signal: [0, 1, 1],
             fade: 1,
             blocks,
           },
@@ -239,20 +206,17 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
   })()
 
   return {
-    /** A new block from the stream: light the node its hash lands on, ahead of the camera. */
+    /** A new block from the stream: the node its hash points at swells and lights up. */
     block(hash: string) {
       if (!fx || still) return
-      const t = time()
-      const cell = blockCell(hash, t, scroll, canvas.clientWidth < canvas.clientHeight * 0.95)
       const i = nextBlock++ % BLOCKS
-      blocks[i] = [...cell, 0]
-      blockAt[i] = t
+      blocks[i] = [...nodeFor(hash), 0]
+      arrived[i] = time()
     },
-    /** An epoch was finalized: a wave runs out through the lattice. */
+    /** An epoch was finalized: a band of colour runs out through the form. */
     finalized() {
       if (!fx || still) return
-      const t = time()
-      wave = { center: waveCenter(t, scroll), at: t }
+      waveAt = time()
     },
     dispose() {
       disposed = true

@@ -22,7 +22,7 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return <p className={cn('font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground', className)}>{children}</p>
 }
 
-/** A page's title over a quieter lattice than the home page's. */
+/** A page's title beside a quieter lattice than the home page's. */
 export function PageHero({ eyebrow, title, children, actions }: { eyebrow?: string; title: ReactNode; children?: ReactNode; actions?: ReactNode }) {
   return (
     <section className="relative isolate border-b">
