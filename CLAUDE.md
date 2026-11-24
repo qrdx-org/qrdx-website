@@ -237,7 +237,7 @@ All pages share `Navigation` and `Footer` from `app/layout.tsx` (pages do not in
 - **Say what is real.** Live means live on testnet; mainnet has not launched. Governance, the bridge, account control and multisig, QRDX names, and quantum migration with the Doomsday Protocol run on testnet (node 3.0.0). Whitepaper-only features (asset shielding beyond the bridge, wider chain adapters) are labelled planned. Check claims against qrdx-node, qrdx-trade and qrdx-wallet docs, and docs.qrdx.org.
 - **No generated data.** Live numbers come from the testnet node and the trade API in the visitor's browser (`lib/live.ts`); an unreadable number shows as a dash.
 - **Links live in `lib/site.ts`** (apps, docs pages, socials, contact addresses). Docs links point at docs.qrdx.org (`/docs/...` paths).
-- **Theme**: monochrome tokens in `app/globals.css` (the wallet's black and white; trade, explorer and docs still carry the earlier ink-and-bone tokens with Cherenkov blue). Shared page blocks are in `components/site/blocks.tsx`, motion helpers in `components/site/motion.tsx`.
+- **Theme**: monochrome tokens in `app/globals.css`, the same values as trade, explorer and the wallet (docs.qrdx.org still carries the earlier ink-and-bone tokens with Cherenkov blue). Shared page blocks are in `components/site/blocks.tsx`, motion helpers in `components/site/motion.tsx`.
 
 ## Utilities
 
