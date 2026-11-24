@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { Lattice } from '@/components/gfx/Lattice'
+import { Sea } from '@/components/gfx/Sea'
 import { Index, RollingNumber, spotlight } from '@/components/site/motion'
 import { fmtPrice, useTestnet, type ChainStats } from '@/lib/live'
 import { apps } from '@/lib/site'
@@ -22,11 +22,11 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return <p className={cn('font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground', className)}>{children}</p>
 }
 
-/** A page's title beside a quieter lattice than the home page's. */
+/** A page's title over a quieter sea than the home page's. */
 export function PageHero({ eyebrow, title, children, actions }: { eyebrow?: string; title: ReactNode; children?: ReactNode; actions?: ReactNode }) {
   return (
     <section className="relative isolate border-b">
-      <Lattice intensity={0.6} className="absolute inset-0 -z-10" />
+      <Sea intensity={0.6} className="absolute inset-0 -z-10" />
       <div className={cn(WRAP, 'pb-14 pt-28 sm:pb-20 sm:pt-40')}>
         {eyebrow && (
           <Eyebrow className="rise-in mb-6 flex items-center gap-3">

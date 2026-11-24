@@ -3,16 +3,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTestnet } from '@/lib/live'
 import { cn } from '@/lib/utils'
-import type { startLattice } from './lattice-scene'
+import type { startSea } from './sea-scene'
 
 /**
- * The liquid lattice (lattice.wgsl) behind a hero. Its still frame shows first and stays where the
+ * The sea of dots (sea.wgsl) behind a hero. Its still frame shows first and stays where the
  * browser has no WebGPU; the live canvas fades in over it once it has drawn. New testnet blocks
- * and finalized epochs, from the shared stream, swell and colour it.
+ * and finalized epochs, from the shared stream, ripple and swell it.
  */
-export function Lattice({ intensity = 1, className }: { intensity?: number; className?: string }) {
+export function Sea({ intensity = 1, className }: { intensity?: number; className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const scene = useRef<ReturnType<typeof startLattice> | null>(null)
+  const scene = useRef<ReturnType<typeof startSea> | null>(null)
   const [state, setState] = useState<'loading' | 'live' | 'still'>('loading')
   const { blocks, finalizedEpoch } = useTestnet()
   const head = blocks[0]?.hash
@@ -21,15 +21,15 @@ export function Lattice({ intensity = 1, className }: { intensity?: number; clas
     const canvas = canvasRef.current
     if (!canvas) return
     let live = true
-    let s: ReturnType<typeof startLattice> | null = null
-    import('./lattice-scene').then(
-      ({ startLattice }) => {
+    let s: ReturnType<typeof startSea> | null = null
+    import('./sea-scene').then(
+      ({ startSea }) => {
         if (!live) return
-        s = startLattice({ canvas, intensity, onReady: () => live && setState('live'), onFail: () => live && setState('still') })
+        s = startSea({ canvas, intensity, onReady: () => live && setState('live'), onFail: () => live && setState('still') })
         scene.current = s
       },
       (e) => {
-        console.warn('QRDX graphics: could not load the lattice.', e)
+        console.warn('QRDX graphics: could not load the sea.', e)
         if (live) setState('still')
       }
     )
@@ -53,7 +53,7 @@ export function Lattice({ intensity = 1, className }: { intensity?: number; clas
 
   return (
     <div aria-hidden className={cn('pointer-events-none overflow-hidden [container-type:size]', className)}>
-      <div className="lattice-still absolute inset-0 bg-cover bg-center" style={{ opacity: intensity }} />
+      <div className="sea-still absolute inset-0 bg-cover bg-center" style={{ opacity: intensity }} />
       <canvas ref={canvasRef} className={cn('absolute inset-0 h-full w-full transition-opacity duration-[1400ms] ease-out', state === 'live' ? 'opacity-100' : 'opacity-0')} />
     </div>
   )

@@ -1,6 +1,6 @@
 // A validator's ML-DSA-65 public key, byte by byte: 1,952 columns on a 61 x 32 grid, each as
-// tall as its byte and coloured by it (a thin film, as on the lattice, as thick as the byte is
-// large). The first 33 bytes, as many as a whole secp256k1 public key, are in signal.
+// tall as its byte, in monochrome chrome that brightens with it. The first 33 bytes, as many as a
+// whole secp256k1 public key, are solid ink.
 // One instanced draw, no vertex buffers: each instance builds its box from vertex_index.
 
 struct Camera {
@@ -82,14 +82,7 @@ fn faceNormal(f: u32) -> vec3f {
   return out;
 }
 
-/** The same thin film as lattice.wgsl: what a film `d` micrometres thick reflects at this angle. */
-fn film(d: f32, cosI: f32) -> vec3f {
-  let cosT = sqrt(1.0 - (1.0 - cosI * cosI) / (1.33 * 1.33));
-  let c = 0.5 - 0.5 * cos(6.2831853 * 2.0 * 1.33 * d * cosT / vec3f(0.65, 0.532, 0.45));
-  return mix(vec3f(1.0), c * 1.5, mix(0.42, 0.62, scene.dark));
-}
-
-/** A simpler studio than the lattice's: a broad light overhead, a strip to the right, the room. */
+/** A plain studio: a broad light overhead, a strip to the right, the room. */
 fn studio(r: vec3f) -> vec3f {
   let top = smoothstep(0.35, 0.95, r.y);
   let strip = exp(-pow((r.x - 0.7) / 0.1, 2.0)) * smoothstep(-0.4, 0.4, r.y);
@@ -111,11 +104,11 @@ fn studio(r: vec3f) -> vec3f {
   let d = (f32(in.index) - scene.scan) / 24.0;
   let head = exp(-d * d);
 
-  // Each column is mirror-bright under a film as thick as its byte is large, so its colour is
-  // its value: low bytes bronze, then violet, high bytes blue.
+  // Each column is mirror-bright, brighter the larger its byte, so its value reads twice: in its
+  // height and its tone.
   let fres = 0.04 + 0.96 * pow(1.0 - max(cosI, 0.15), 5.0);
   let mirror = mix(mix(0.62, 0.42, scene.dark), 1.0, fres);
-  let tint = film(0.14 + in.value * 0.17, cosI);
+  let tint = vec3f(mix(0.5, 1.1, in.value));
   var col = studio(reflect(-v, in.normal)) * tint * mirror * foot;
   // On ink, a soft light from the left keeps the columns' sides from going black, so their
   // heights still read.

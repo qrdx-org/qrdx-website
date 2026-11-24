@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowUpRight, ArrowLeftRight, Coins, KeyRound, Layers, ShieldCheck, TrendingUp } from 'lucide-react'
-import { Lattice } from '@/components/gfx/Lattice'
+import { Sea } from '@/components/gfx/Sea'
 import { ButtonLink, Eyebrow, Feature, LiveMarkets, LiveTiles, Section, WRAP } from '@/components/site/blocks'
 import { BlockTape, Endpoints, SizeTable, ValidatorKey } from '@/components/site/home'
 import { RiseText, spotlight } from '@/components/site/motion'
@@ -39,7 +39,7 @@ export default function Home() {
   return (
     <>
       <section className="relative isolate overflow-hidden">
-        <Lattice className="absolute inset-0 -z-10" />
+        <Sea className="absolute inset-0 -z-10" />
         <div className={cn(WRAP, 'flex min-h-[min(94svh,940px)] flex-col pb-10 pt-32 sm:pt-40')}>
           <div className="max-w-[68rem]">
             <Eyebrow className="rise-in mb-8 flex items-center gap-3">
@@ -66,8 +66,8 @@ export default function Home() {
           <div className="mt-auto grid items-end gap-10 pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,25rem)]">
             <p className="rise-in max-w-sm font-mono text-[11px] leading-relaxed text-muted-foreground" style={{ '--d': '900ms' } as React.CSSProperties}>
               <span className="mr-2 inline-block h-1.5 w-1.5 -translate-y-px rounded-full bg-signal align-middle" />
-              Beside this text: a module lattice, the structure ML-DSA rests on, made of liquid. Each node that swells and glows is a testnet block as it arrives, chosen by its
-              hash; a band of colour runs through it when an epoch is finalized.
+              Behind this text: a sea of dots, each as large as the light it catches. Every ripple is a testnet block as it arrives, falling where its hash points; a swell
+              rolls in from the horizon when an epoch is finalized.
             </p>
             <BlockTape stats={stats} rows={6} className="rise-in hidden lg:block" />
           </div>
@@ -189,7 +189,7 @@ export default function Home() {
       </div>
 
       <section className="relative isolate overflow-hidden border-t">
-        <Lattice intensity={0.45} className="absolute inset-0 -z-10" />
+        <Sea intensity={0.45} className="absolute inset-0 -z-10" />
         <div className={cn(WRAP, 'grid gap-12 py-20 sm:py-32 lg:grid-cols-2 lg:gap-16')}>
           <div className="reveal">
             <h2 className="text-balance text-4xl font-medium leading-[1.02] tracking-[-0.045em] sm:text-[3.6rem]">

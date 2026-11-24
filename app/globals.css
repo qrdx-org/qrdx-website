@@ -2,13 +2,10 @@
 @plugin "@tailwindcss/typography";
 
 /*
- * QRDX theme, shared in its tokens with trade.qrdx.org, explorer.qrdx.org and docs.qrdx.org.
- *
- * Ink and bone: a near-black with a trace of blue, and a warm off-white, so the page reads like
- * print rather than a screen default. One accent, Cherenkov blue (`signal`): the light charged
- * particles give off in water, for a chain built against what comes after classical machines.
- * In light mode buttons are ink and the signal deepens to stay legible on paper. Colour beyond
- * that carries meaning only: buys and sells, failures, warnings.
+ * QRDX theme: monochrome, as the wallet. Ink on white in light mode, white on near-black in dark;
+ * greys between. `signal` is kept as a name for emphasis (a live dot, a section's index, the
+ * classic-key bytes) and is the ink itself. Colour carries meaning only: buys and sells,
+ * failures, warnings. The texture is the dotted sea (components/gfx/sea.wgsl), not grain.
  */
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -48,69 +45,67 @@
 }
 
 @layer base {
-  /* Paper. */
+  /* White. */
   :root {
-    --background: 40 20% 97.5%;
-    --foreground: 228 18% 8%;
-    --canvas: 40 14% 94.5%;
-    --card: 40 25% 99%;
-    --card-foreground: 228 18% 8%;
-    --popover: 40 25% 99%;
-    --popover-foreground: 228 18% 8%;
-    --primary: 228 18% 8%;
-    --primary-foreground: 40 20% 97.5%;
-    --secondary: 40 10% 93%;
-    --secondary-foreground: 228 18% 8%;
-    --muted: 40 10% 93.5%;
-    --muted-foreground: 228 6% 38%;
-    --accent: 40 12% 91.5%;
-    --accent-foreground: 228 18% 8%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
+    --canvas: 0 0% 96.5%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 0 0% 95.5%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 4%;
     --destructive: 356 72% 47%;
     --destructive-foreground: 0 0% 100%;
-    --border: 40 8% 86.5%;
-    --input: 40 8% 82%;
-    --ring: 196 100% 34%;
-    --signal: 196 100% 34%;
+    --border: 0 0% 89%;
+    --input: 0 0% 85%;
+    --ring: 0 0% 4%;
+    --signal: 0 0% 4%;
     --radius: 0.5rem;
     --bid: 152 62% 31%;
     --ask: 356 72% 47%;
     --warn: 30 90% 40%;
-    --chart-1: 228 18% 8%;
-    --chart-2: 196 100% 34%;
-    --chart-3: 228 6% 70%;
-    --grain: 0.05;
+    --chart-1: 0 0% 4%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 70%;
   }
 
-  /* Ink. */
+  /* Black. */
   .dark {
-    --background: 228 14% 4.3%;
-    --foreground: 40 18% 92%;
-    --canvas: 228 16% 3%;
-    --card: 228 11% 6.8%;
-    --card-foreground: 40 18% 92%;
-    --popover: 228 11% 8.5%;
-    --popover-foreground: 40 18% 92%;
-    --primary: 191 100% 63%;
-    --primary-foreground: 228 30% 6%;
-    --secondary: 228 9% 10.5%;
-    --secondary-foreground: 40 18% 92%;
-    --muted: 228 9% 10%;
-    --muted-foreground: 40 4% 60%;
-    --accent: 228 9% 12%;
-    --accent-foreground: 40 18% 92%;
+    --background: 0 0% 3%;
+    --foreground: 0 0% 98%;
+    --canvas: 0 0% 2%;
+    --card: 0 0% 5.5%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 9.5%;
+    --muted-foreground: 0 0% 62%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 357 85% 64%;
-    --destructive-foreground: 228 30% 6%;
-    --border: 228 7% 14%;
-    --input: 228 7% 18%;
-    --ring: 191 100% 63%;
-    --signal: 191 100% 63%;
+    --destructive-foreground: 0 0% 4%;
+    --border: 0 0% 14%;
+    --input: 0 0% 18%;
+    --ring: 0 0% 98%;
+    --signal: 0 0% 98%;
     --bid: 150 62% 50%;
     --ask: 357 85% 64%;
     --warn: 38 95% 60%;
-    --chart-1: 191 100% 63%;
-    --chart-2: 40 18% 70%;
-    --chart-3: 228 7% 30%;
-    --grain: 0.07;
+    --chart-1: 0 0% 98%;
+    --chart-2: 0 0% 60%;
+    --chart-3: 0 0% 30%;
   }
 }
 
@@ -127,24 +122,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
   ::selection {
-    background: hsl(var(--signal) / 0.28);
+    background: hsl(var(--foreground) / 0.18);
   }
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
-}
-
-/* Film grain over everything: flat fills on a screen look machine-made; grain does not. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  z-index: 100;
-  pointer-events: none;
-  opacity: var(--grain);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
 }
 
 /* An editorial accent: one or two words of a headline in italic serif, never a whole line. */
@@ -164,28 +147,28 @@ body::after {
   letter-spacing: -0.01em;
 }
 
-/* The lattice's still frame: shown until the live canvas draws, and where WebGPU is missing. */
-.lattice-still {
-  background-image: url("/gfx/lattice-light.jpg");
+/* The sea's still frame: shown until the live canvas draws, and where WebGPU is missing. */
+.sea-still {
+  background-image: url("/gfx/sea-light.png");
 }
-.dark .lattice-still {
-  background-image: url("/gfx/lattice-dark.jpg");
+.dark .sea-still {
+  background-image: url("/gfx/sea-dark.png");
 }
-/* Chosen by the hero's own shape (Lattice is a size container), as the live form is. */
+/* Chosen by the hero's own shape (Sea is a size container), as the live one is. */
 @container (aspect-ratio > 2.1) {
-  .lattice-still {
-    background-image: url("/gfx/lattice-light-wide.jpg");
+  .sea-still {
+    background-image: url("/gfx/sea-light-wide.png");
   }
-  .dark .lattice-still {
-    background-image: url("/gfx/lattice-dark-wide.jpg");
+  .dark .sea-still {
+    background-image: url("/gfx/sea-dark-wide.png");
   }
 }
 @container (aspect-ratio < 1) {
-  .lattice-still {
-    background-image: url("/gfx/lattice-light-tall.jpg");
+  .sea-still {
+    background-image: url("/gfx/sea-light-tall.png");
   }
-  .dark .lattice-still {
-    background-image: url("/gfx/lattice-dark-tall.jpg");
+  .dark .sea-still {
+    background-image: url("/gfx/sea-dark-tall.png");
   }
 }
 
@@ -279,7 +262,7 @@ body::after {
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s;
-  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), hsl(var(--signal) / 0.09), transparent 60%);
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), hsl(var(--foreground) / 0.06), transparent 60%);
 }
 .spot:hover::before {
   opacity: 1;
@@ -293,7 +276,7 @@ body::after {
 .pulse-dot { animation: pulse-dot 2s ease-out infinite; }
 
 @keyframes flash-in {
-  from { background-color: hsl(var(--signal) / 0.14); }
+  from { background-color: hsl(var(--foreground) / 0.1); }
   to { background-color: transparent; }
 }
 .flash-in { animation: flash-in 1.2s ease-out; }

@@ -4,8 +4,8 @@
   "description": "A blockchain secured by post-quantum signatures, with an exchange built into the protocol",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#090a0d",
-  "theme_color": "#090a0d",
+  "background_color": "#080808",
+  "theme_color": "#080808",
   "orientation": "portrait-primary",
   "icons": [
     {

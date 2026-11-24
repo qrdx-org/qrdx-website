@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="QRDX" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#090a0d" />
+        <meta name="theme-color" content="#080808" />
       </head>
       <body className={`${sans.variable} ${mono.variable} ${serif.variable} font-sans`}>
         <ThemeProvider

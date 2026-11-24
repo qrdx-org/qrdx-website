@@ -1,54 +1,43 @@
 /**
- * Drives lattice.wgsl: the form's slow turn, the pointer's tilt, the scroll, and real chain
- * events. `block(hash)` swells the node the block's hash points at; `finalized()` sends a band of
- * colour out through the form.
+ * Drives sea.wgsl: the pointer's turn, the scroll, and real chain events. `block(hash)` drops a
+ * ripple where the block's hash points; `finalized()` sends a swell in from the horizon.
  */
 
 import { effect, frame, frameLoop, surface } from 'vgpu'
 import type { Effect, Frame, FrameLoopHandle, Gpu, Surface } from 'vgpu'
-import latticeShader from './lattice.wgsl'
+import seaShader from './sea.wgsl'
 import { onThemeChange, prefersReducedMotion, sharedGpu, tokenRgb } from '@/lib/gpu'
 
-type Vec3 = [number, number, number]
+const RIPPLES = 8
+/** sea.wgsl's FOCAL, and its eye's travel with the scroll. */
+const FOCAL = 1.7
+const TRAVEL = 1.4
 
-/** Radians the form turns each second. */
-const SPIN = 0.07
-const BLOCKS = 6
-/** lattice.wgsl's CELLS and RADIUS. */
-const CELLS = 1.7
-const RADIUS = 1.45
-
-/** lattice.wgsl's UNBASIS: lattice coordinates to the form's space. */
-const fromLattice = ([x, y, z]: Vec3): Vec3 => [x - 0.2 * y - 0.072 * z, y - 0.14 * z, z]
-
-/** The nodes deep enough inside the form to be fully formed: the ones a block can light. */
-const NODES: Vec3[] = (() => {
-  const out: Vec3[] = []
-  for (let x = -3; x <= 3; x++)
-    for (let y = -3; y <= 3; y++)
-      for (let z = -3; z <= 3; z++) {
-        const [a, b, c] = fromLattice([x, y, z])
-        if (Math.hypot(a, b, c) / CELLS < RADIUS * 0.5) out.push([x, y, z])
-      }
-  return out
-})()
-
-/** The node a block lights, chosen by its hash, so the same block always lands on the same node. */
-export function nodeFor(hash: string): Vec3 {
-  const part = parseInt(hash.replace(/^0x/, '').slice(0, 8) || '0', 16) / 0x100000000
-  return NODES[Math.floor(part * NODES.length)]
+/**
+ * Where a block's ripple falls, chosen by its hash (the same block, the same place): x across the
+ * view and z (distance) on the sea, at a depth where its ring reads. On a wide screen it falls on
+ * the side away from the headline.
+ */
+export function rippleAt(hash: string, aspect: number, eyeZ: number): [number, number] {
+  const hex = hash.replace(/^0x/, '').padEnd(8, '0')
+  const u = parseInt(hex.slice(0, 4), 16) / 0xffff
+  const v = parseInt(hex.slice(4, 8), 16) / 0xffff
+  const z = 1.3 + v * 1.9
+  const half = (aspect * z) / FOCAL
+  const x = aspect > 1.05 ? (-0.3 + u * 1.2) * half : (u - 0.5) * 1.5 * half
+  return [x, eyeZ + z]
 }
 
-export interface LatticeOptions {
+export interface SeaOptions {
   canvas: HTMLCanvasElement
-  /** How strongly the form shows: 1 on the home hero, lower behind page titles. */
+  /** How strongly the sea shows: 1 on the home hero, lower behind page titles. */
   intensity: number
   /** Called once the first frame is on the canvas (or never, when WebGPU is unavailable). */
   onReady: () => void
   onFail: () => void
 }
 
-export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOptions) {
+export function startSea({ canvas, intensity, onReady, onFail }: SeaOptions) {
   let disposed = false
   let gpu: Gpu | null = null
   let out: Surface | null = null
@@ -60,13 +49,13 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
   const t0 = performance.now()
   const now = () => (performance.now() - t0) / 1000
   // Reduced motion: one moment, held.
-  const time = () => (still ? 14 : now())
+  const time = () => (still ? 14 : 14 + now())
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
   let scroll = 0
-  // Each block's lattice node and its age in seconds (99: none yet).
-  const blocks: [number, number, number, number][] = Array.from({ length: BLOCKS }, () => [0, 0, 0, 99])
-  const arrived: number[] = Array(BLOCKS).fill(-99)
-  let nextBlock = 0
+  // Each block's ripple: where it fell (x, _, z) and its age in seconds (99: none yet).
+  const ripples: [number, number, number, number][] = Array.from({ length: RIPPLES }, () => [0, 0, 0, 99])
+  const fell: number[] = Array(RIPPLES).fill(-99)
+  let next = 0
   let waveAt = -99
   // Frame times, to step down resolution once on a slow GPU.
   let slowFrames = 0
@@ -77,7 +66,7 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
   function colors() {
     if (!fx) return
     const dark = document.documentElement.classList.contains('dark')
-    fx.set({ params: { bg: tokenRgb('--background'), line: tokenRgb('--foreground'), signal: tokenRgb('--signal'), dark: dark ? 1 : 0 } })
+    fx.set({ params: { bg: tokenRgb('--background'), fg: tokenRgb('--foreground'), dark: dark ? 1 : 0 } })
   }
 
   function render(currentFrame: Frame) {
@@ -85,17 +74,16 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
     const t = time()
     pointer.x += (pointer.tx - pointer.x) * 0.04
     pointer.y += (pointer.ty - pointer.y) * 0.04
-    for (let i = 0; i < BLOCKS; i++) blocks[i][3] = still ? 99 : t - arrived[i]
+    for (let i = 0; i < RIPPLES; i++) ripples[i][3] = still ? 99 : t - fell[i]
     fx.set({
       params: {
         resolution: out.size,
         time: t,
-        spin: t * SPIN + scroll * 1.1,
         scroll,
         pointer: still ? [0, 0] : [pointer.x, pointer.y],
         waveAge: still ? 99 : t - waveAt,
         fade: 1 - scroll * 0.75,
-        blocks,
+        ripples,
       },
     })
     currentFrame.pass(out, fx)
@@ -120,7 +108,7 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
     if (!gpu || !out) return
     lowRes = true
     out.dispose()
-    out = surface(gpu, canvas, { dpr: 0.6, alphaMode: 'opaque', label: 'lattice' })
+    out = surface(gpu, canvas, { dpr: 1, alphaMode: 'opaque', label: 'sea' })
   }
 
   function play() {
@@ -165,25 +153,23 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
         pause()
         onFail()
       })
-      const big = Math.max(window.innerWidth, window.innerHeight) > 1600
-      out = surface(gpu, canvas, { dpr: [1, big ? 1.25 : 1.5], alphaMode: 'opaque', label: 'lattice' })
-      fx = effect(gpu, latticeShader, {
-        label: 'lattice',
+      // The dots are drawn per device pixel, so they stay round and crisp.
+      out = surface(gpu, canvas, { dpr: [1, 2], alphaMode: 'opaque', label: 'sea' })
+      fx = effect(gpu, seaShader, {
+        label: 'sea',
         set: {
           params: {
             resolution: out.size,
             pointer: [0, 0],
-            time: 0,
-            spin: 0,
+            time: time(),
             scroll: 0,
             dark: 1,
+            intensity,
             bg: [0, 0, 0],
             waveAge: 99,
-            line: [1, 1, 1],
-            intensity,
-            signal: [0, 1, 1],
+            fg: [1, 1, 1],
             fade: 1,
-            blocks,
+            ripples,
           },
         },
       })
@@ -200,20 +186,21 @@ export function startLattice({ canvas, intensity, onReady, onFail }: LatticeOpti
       io.observe(canvas)
       play()
     } catch (e) {
-      console.warn('QRDX graphics: lattice is showing its still frame.', e)
+      console.warn('QRDX graphics: the sea is showing its still frame.', e)
       if (!disposed) onFail()
     }
   })()
 
   return {
-    /** A new block from the stream: the node its hash points at swells and lights up. */
+    /** A new block from the stream: a ripple runs out from where its hash points. */
     block(hash: string) {
-      if (!fx || still) return
-      const i = nextBlock++ % BLOCKS
-      blocks[i] = [...nodeFor(hash), 0]
-      arrived[i] = time()
+      if (!fx || !out || still) return
+      const i = next++ % RIPPLES
+      const [x, z] = rippleAt(hash, out.size[0] / Math.max(out.size[1], 1), scroll * TRAVEL)
+      ripples[i] = [x, 0, z, 0]
+      fell[i] = time()
     },
-    /** An epoch was finalized: a band of colour runs out through the form. */
+    /** An epoch was finalized: a swell runs in from the horizon. */
     finalized() {
       if (!fx || still) return
       waveAt = time()
